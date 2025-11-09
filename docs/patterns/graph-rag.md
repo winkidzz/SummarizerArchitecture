@@ -59,11 +59,6 @@ Graph-based knowledge retrieval using entity relationships
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

@@ -59,11 +59,6 @@ Real-time streaming RAG for live data
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

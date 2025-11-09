@@ -4,11 +4,34 @@
 
 This specification defines the architecture and structure for an evolving reference architecture project focused on **AI-powered summarization systems for healthcare use cases**. The project serves as a comprehensive guide for architects and developers building healthcare summarization solutions.
 
+### Project Dual Goals
+
+This project has **two interconnected goals** that work together to create a self-maintaining, always-current reference architecture:
+
+**Goal 1: Pattern Documentation** - Research and develop AI strategies, patterns, and blueprints for healthcare summarization
+- Create comprehensive RAG pattern library
+- Document use cases and implementation guidance
+- Provide multi-vendor support (Anthropic, Google, Azure, AWS, etc.)
+- Maintain production-quality examples and architecture diagrams
+
+**Goal 2: Self-Updating Research System** - Agentic AI that monitors research sources and automatically keeps Goal 1 documentation current
+- Monitor arXiv for latest AI/RAG research papers
+- Track Anthropic, Google AI, Microsoft, AWS research blogs
+- Ingest research into ChromaDB knowledge base
+- Validate patterns against latest research
+- Generate update recommendations
+- Keep documentation current with latest techniques
+
+**How They Work Together**: Goal 2's agentic system continuously monitors research sources (arXiv, industry blogs) and updates the ChromaDB knowledge base. It then validates Goal 1's pattern documentation against this research, ensuring the architecture patterns remain current with the latest AI innovations.
+
 ### Project Scope Clarification
 
 **Project Infrastructure** (this project's tools):
 - Uses local/Ollama/free LLM tools for the AI assistant that helps build and maintain documentation
 - Document store uses local/embedded tools (ChromaDB, Docling) for managing architecture patterns
+- Claude Skills for automated research monitoring and pattern validation
+- arXiv API integration for latest AI research
+- Web scraping for industry blog monitoring
 
 **Documented Patterns** (what this project documents):
 - **Healthcare summarization architecture patterns** that support **ALL vendors and platforms**
@@ -18,11 +41,13 @@ This specification defines the architecture and structure for an evolving refere
 
 ## Goals
 
-1. **Pattern Library**: Create a comprehensive library of RAG (Retrieval-Augmented Generation) patterns and summarization architectures
-2. **Use Case Documentation**: Document when to use each pattern for specific use cases
-3. **Multi-Vendor Support**: Provide implementation guidance for Xariv, Gemini, Anthropic, LangChain, Spring AI, Google ADK, and Claude Skills
-4. **Evolving Architecture**: Continuously update with new patterns and techniques as they emerge
-5. **Reference Quality**: Maintain production-quality documentation with working examples
+1. **Pattern Library (Goal 1)**: Create a comprehensive library of RAG (Retrieval-Augmented Generation) patterns and summarization architectures
+2. **Use Case Documentation (Goal 1)**: Document when to use each pattern for specific use cases
+3. **Multi-Vendor Support (Goal 1)**: Provide implementation guidance for Gemini, Anthropic, Azure OpenAI, AWS Bedrock, LangChain, Spring AI, Google ADK, and Claude Skills
+4. **Self-Updating System (Goal 2)**: Agentic AI that monitors arXiv and research sources to keep documentation current
+5. **Automated Validation (Goal 2)**: Pattern validation against latest research in ChromaDB knowledge base
+6. **Evolving Architecture (Goal 1 + 2)**: Continuously update with new patterns and techniques as they emerge
+7. **Reference Quality (Goal 1)**: Maintain production-quality documentation with working examples
 
 ## Scope
 
@@ -98,7 +123,103 @@ See [Healthcare Data Access Patterns](./docs/healthcare-data-patterns.md) for de
   - Microservices on top of BigQuery
   - GraphQL on BigQuery or Spanner DB
 
-### 4. Vendor Implementations (No Restrictions)
+### 4. Self-Updating Research System (Goal 2)
+
+The project includes an **agentic AI system** that automatically monitors research sources and keeps pattern documentation current.
+
+#### 4.1 Research Monitoring Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Research Sources                          │
+├─────────────────────────────────────────────────────────────┤
+│  • arXiv (cs.CL, cs.AI, cs.LG, cs.IR)                       │
+│  • Anthropic Blog & Research                                │
+│  • Google AI Blog                                           │
+│  • Microsoft Research AI                                    │
+│  • AWS Machine Learning Blog                               │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Research Monitor (Claude Skill)                 │
+├─────────────────────────────────────────────────────────────┤
+│  • Search arXiv API for papers (weekly)                     │
+│  • Monitor blog RSS feeds                                   │
+│  • Evaluate paper quality & relevance                       │
+│  • Extract key insights                                     │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  ChromaDB Knowledge Base                     │
+├─────────────────────────────────────────────────────────────┤
+│  Collection: research_papers                                │
+│  • Paper abstracts + metadata                               │
+│  • arXiv IDs, authors, dates                                │
+│  • Categories, relevance scores                             │
+│  • Sentence-transformer embeddings                          │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│             Pattern Validator (Claude Skill)                 │
+├─────────────────────────────────────────────────────────────┤
+│  • Parse pattern documentation                              │
+│  • Validate performance claims vs ChromaDB                  │
+│  • Test code examples                                       │
+│  • Check for deprecated APIs                                │
+│  • Generate update recommendations                          │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Validation Reports                          │
+├─────────────────────────────────────────────────────────────┤
+│  • Outdated benchmarks flagged                              │
+│  • Deprecated API warnings                                  │
+│  • Missing research citations                               │
+│  • Pattern update recommendations                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 4.2 Claude Skills
+
+Located in [`.claude/skills/`](../../.claude/skills/):
+
+**research-monitor** - Automated research monitoring
+- Searches arXiv for RAG, LLM, healthcare AI papers
+- Monitors industry blogs (Anthropic, Google, Microsoft, AWS)
+- Evaluates research quality and relevance
+- Ingests into ChromaDB with metadata
+- Runs weekly (automated via GitHub Actions/cron)
+
+**pattern-validator** - Pattern documentation validation
+- Validates performance claims against latest research
+- Tests code examples for correctness
+- Checks for deprecated model versions and APIs
+- Generates validation reports
+- Triggers after research monitor finds new papers
+
+#### 4.3 Implementation Scripts
+
+Located in [`scripts/`](../../scripts/):
+
+- **`research_monitor.py`** - Research monitoring implementation
+- **`pattern_validator.py`** - Pattern validation implementation
+
+See [Claude Skills README](../../.claude/skills/README.md) for usage documentation.
+
+#### 4.4 Automation
+
+**Weekly Research Cycle**:
+1. Monday 9 AM: Research monitor searches arXiv (last 7 days)
+2. Ingest papers into ChromaDB (quality score >= 0.5)
+3. Pattern validator runs against updated research
+4. Validation report generated with update recommendations
+5. (Future) LLM-powered automatic pattern updates
+
+### 5. Vendor Implementations (No Restrictions)
 Each pattern should include implementations for multiple vendors. **All vendors are supported** - no restrictions:
 
 **Cloud Platforms:**
@@ -112,8 +233,7 @@ Each pattern should include implementations for multiple vendors. **All vendors 
 - **LangChain**: Framework for LLM applications
 - **Spring AI**: Java/Spring integration for AI
 - **Google ADK**: Google AI Development Kit
-- **Claude Skills**: Anthropic's skills/extensions
-- **Xariv**: AI platform integration
+- **Claude Skills**: Anthropic's skills/extensions (including this project's research monitoring skills)
 
 **Cost-Effective Options** (shown as alternatives, not requirements):
 - **Ollama**: Local LLM support (cost-effective option for development/testing)

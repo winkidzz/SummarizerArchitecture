@@ -59,11 +59,6 @@ Generates multiple query variations and fuses results
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

@@ -1,44 +1,253 @@
+# AI Summarization Reference Architecture - Dependencies
+
+# ============================================================================
+# Core AI/ML Libraries - Full Vendor Support
+# ============================================================================
+
+# Anthropic Claude API
+anthropic>=0.39.0
+
+# OpenAI API (including Azure OpenAI)
+openai>=1.54.0
+
+# Google Vertex AI
+google-cloud-aiplatform>=1.70.0
+
+# AWS Bedrock
+boto3>=1.35.0
+
+# ============================================================================
+# Vector Databases and Embeddings
+# ============================================================================
+
+# ChromaDB - Embedded vector database for research papers and RAG
+chromadb>=0.5.0
+
+# Sentence Transformers - Embeddings
+sentence-transformers>=3.3.0
+
+# ============================================================================
+# RAG Frameworks
+# ============================================================================
+
+# LlamaIndex - RAG framework
+llama-index>=0.12.0
+
+# LangChain - LLM application framework
+langchain>=0.3.0
+langchain-anthropic>=0.3.0
+langchain-google-vertexai>=2.0.0
+langchain-community>=0.3.0
+
+# ============================================================================
+# Reranking and Advanced Retrieval
+# ============================================================================
+
+# BM25 for keyword search
+rank-bm25>=0.2.2
+
+# Cross-encoder reranking (via sentence-transformers)
+# Note: sentence-transformers includes CrossEncoder
+
+# ============================================================================
 # Document Processing
+# ============================================================================
+
+# Docling - Advanced document processing (PDF, DOCX, PPTX)
 docling>=2.0.0
 
-# Vector Database (Embedded File-Based)
-chromadb>=0.4.0
+# PDF processing
+pypdf>=5.1.0
 
-# Embeddings
-sentence-transformers>=2.2.0
-# Alternative: openai (if using OpenAI embeddings)
-# openai>=1.0.0
+# DOCX processing
+python-docx>=1.1.0
 
-# Google ADK Agent Library (Primary Querying)
-# google-adk>=1.0.0  # Uncomment when available
-# Note: Install from Google Cloud or official source when available
+# PPTX processing
+python-pptx>=1.0.0
 
-# Ollama (Local LLM for Specialized Tasks)
-ollama>=0.1.0
+# Unstructured data processing
+unstructured>=0.16.0
 
-# Web Search
+# ============================================================================
+# Healthcare/Medical NLP
+# ============================================================================
+
+# spaCy - Core NLP library
+spacy>=3.8.0
+
+# scispaCy - Medical/scientific NLP
+scispacy>=0.5.0
+
+# MedCAT - Medical concept extraction
+medcat>=1.12.0
+
+# ============================================================================
+# Data Processing and Machine Learning
+# ============================================================================
+
+# NumPy - Numerical computing
+numpy>=2.0.0
+
+# Pandas - Data manipulation
+pandas>=2.2.0
+
+# scikit-learn - Machine learning (clustering for RAPTOR RAG)
+scikit-learn>=1.6.0
+
+# SciPy - Scientific computing
+scipy>=1.14.0
+
+# ============================================================================
+# Web Scraping and Research Monitoring
+# ============================================================================
+
+# Requests - HTTP library
+requests>=2.32.0
+
+# BeautifulSoup4 - HTML parsing
+beautifulsoup4>=4.12.0
+
+# Feed Parser - RSS feed parsing
+feedparser>=6.0.11
+
+# Playwright - Browser automation for dynamic content
+playwright>=1.48.0
+
+# DuckDuckGo Search - Web search
 duckduckgo-search>=4.0.0
-# Alternative web search options:
-# googlesearch-python>=1.2.0
-# serpapi>=0.1.5
 
-# Google Cloud (Healthcare Data Access)
-google-cloud-bigquery>=3.0.0
-google-cloud-spanner>=3.0.0
-google-cloud-pubsub>=2.0.0
-google-cloud-healthcare>=1.0.0
+# ============================================================================
+# API and Web Services
+# ============================================================================
 
-# FHIR Support
-fhir.resources>=7.0.0
+# FastAPI - API framework
+fastapi>=0.115.0
 
-# Utilities
-python-dotenv>=1.0.0
+# Uvicorn - ASGI server
+uvicorn>=0.32.0
+
+# Pydantic - Data validation
 pydantic>=2.0.0
+
+# Python Dotenv - Environment variables
+python-dotenv>=1.0.0
+
+# ============================================================================
+# Cloud Platform SDKs
+# ============================================================================
+
+# Google Cloud Healthcare API
+google-cloud-healthcare>=1.14.0
+
+# Google Cloud Storage
+google-cloud-storage>=2.18.0
+
+# BigQuery
+google-cloud-bigquery>=3.26.0
+
+# Google Cloud Pub/Sub
+google-cloud-pubsub>=2.0.0
+
+# Google Cloud Spanner
+google-cloud-spanner>=3.0.0
+
+# Azure Blob Storage
+azure-storage-blob>=12.23.0
+
+# Azure Identity
+azure-identity>=1.19.0
+
+# ============================================================================
+# Healthcare Standards (FHIR, HL7)
+# ============================================================================
+
+# FHIR R4 models
+fhir.resources>=7.1.0
+
+# HL7 v2.x parsing
+hl7apy>=1.3.4
+
+# ============================================================================
+# Testing and Quality Assurance
+# ============================================================================
+
+# Pytest - Testing framework
+pytest>=8.3.0
+
+# Pytest Asyncio - Async testing
+pytest-asyncio>=0.24.0
+
+# Black - Code formatting
+black>=24.10.0
+
+# Flake8 - Code linting
+flake8>=7.1.0
+
+# MyPy - Type checking
+mypy>=1.13.0
+
+# ============================================================================
+# Monitoring and Logging
+# ============================================================================
+
+# Prometheus Client - Metrics
+prometheus-client>=0.21.0
+
+# StructLog - Structured logging
+structlog>=24.4.0
+
+# ============================================================================
+# Utilities
+# ============================================================================
+
+# tqdm - Progress bars
+tqdm>=4.67.0
+
+# Python Dateutil - Date utilities
+python-dateutil>=2.9.0
+
+# PyYAML - YAML parsing
+pyyaml>=6.0.2
+
+# Click - CLI framework
+click>=8.1.7
+
+# Typing Extensions
 typing-extensions>=4.8.0
 
-# Development
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-black>=23.0.0
-mypy>=1.5.0
+# ============================================================================
+# Development Tools
+# ============================================================================
+
+# IPython - Enhanced Python shell
+ipython>=8.29.0
+
+# Jupyter - Jupyter notebooks
+jupyter>=1.1.0
+
+# JupyterLab
+jupyterlab>=4.3.0
+
+# ============================================================================
+# Optional: Local LLM Support
+# ============================================================================
+
+# Ollama - Local LLM support (cost-effective alternative)
+ollama>=0.1.0
+
+# ============================================================================
+# Claude Skills - Research Monitor Dependencies
+# ============================================================================
+
+# All required dependencies for research_monitor.py and pattern_validator.py
+# are included above in their respective sections:
+#
+# - chromadb (Vector Database)
+# - sentence-transformers (Embeddings)
+# - requests (arXiv API)
+# - beautifulsoup4 (Web scraping)
+# - feedparser (RSS feeds)
+# - playwright (Dynamic content)
+# - scikit-learn (Clustering for RAPTOR validation)
+# - pytest (Code validation)
 

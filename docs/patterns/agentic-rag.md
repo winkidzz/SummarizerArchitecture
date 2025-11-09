@@ -59,11 +59,6 @@ Agent-based retrieval and generation with tool use
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

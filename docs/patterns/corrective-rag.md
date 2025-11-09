@@ -59,11 +59,6 @@ Self-correcting retrieval with feedback loops
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

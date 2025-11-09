@@ -30,7 +30,7 @@ You are working on the **AI Summarization Reference Architecture** project - a c
 
 **All Vendors Supported** (no restrictions):
 - **Cloud Platforms**: Gemini (Vertex AI), Anthropic (Claude), Azure OpenAI, AWS Bedrock, GCP Vertex AI
-- **Frameworks**: LangChain, Spring AI, Google ADK, Claude Skills, Xariv
+- **Frameworks**: LangChain, Spring AI, Google ADK, Claude Skills
 - **Cost-Effective Options**: Ollama, local models (shown as alternatives)
 - **Techniques**: RAG patterns, agentic AI, latest generation techniques
 - **Healthcare Focus**: Medical document summarization, clinical notes, patient records

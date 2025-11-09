@@ -183,7 +183,7 @@ Example scripts are available in the `examples/` directory. These scripts serve 
 
 ## Technology Stack
 
-- **AI Vendors**: Xariv, Gemini, Anthropic
+- **AI Vendors**: Gemini, Anthropic, Azure OpenAI, AWS Bedrock
 - **Frameworks**: LangChain, Spring AI, Google ADK
 - **Document Processing**: Docling
 - **Vector Database**: ChromaDB (embedded)

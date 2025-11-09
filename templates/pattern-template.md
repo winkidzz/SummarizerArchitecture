@@ -59,11 +59,6 @@ Brief description of the pattern and its purpose.
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

@@ -59,11 +59,6 @@ Compresses retrieved context to fit within token limits
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

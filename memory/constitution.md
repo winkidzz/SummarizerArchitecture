@@ -24,7 +24,7 @@ This project is an **AI Summarization Reference Architecture** - a living, evolv
 - **No Vendor Restrictions**: Patterns support ALL vendors and platforms:
   - Cloud platforms: Gemini (Google Cloud), Anthropic (Claude), Azure OpenAI, AWS Bedrock
   - Enterprise platforms: GCP Vertex AI, AWS SageMaker, Azure AI Services
-  - Frameworks: LangChain, Spring AI, Google ADK, Claude Skills, Xariv
+  - Frameworks: LangChain, Spring AI, Google ADK, Claude Skills
   - Local/Free options: Ollama, local models (shown as cost-effective alternatives, not requirements)
 - **Healthcare Focus**: Patterns are designed for healthcare summarization use cases but applicable broadly
 - **Vendor Flexibility**: Document implementations for multiple vendors to enable comparison
@@ -75,7 +75,6 @@ Patterns documented support ALL of these vendors (no restrictions):
 - **Spring AI**: Java/Spring integration for AI
 - **Google ADK**: Google AI Development Kit
 - **Claude Skills**: Anthropic's skills/extensions
-- **Xariv**: AI platform integration
 
 **Local/Free Options** (shown as cost-effective alternatives):
 - **Ollama**: Local LLM platform (cost-effective option)

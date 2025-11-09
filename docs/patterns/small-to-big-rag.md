@@ -59,11 +59,6 @@ Progressive context expansion from small to large chunks
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

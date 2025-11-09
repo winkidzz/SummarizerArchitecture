@@ -59,11 +59,6 @@ Adaptively selects retrieval strategy based on query complexity
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

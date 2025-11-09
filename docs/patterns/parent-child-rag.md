@@ -59,11 +59,6 @@ Hierarchical document chunking with parent and child relationships
 // Code example here
 ```
 
-### Xariv Implementation
-```python
-# Code example here
-```
-
 ### Google ADK Implementation
 ```python
 # Code example here

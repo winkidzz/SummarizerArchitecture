@@ -8,6 +8,7 @@ This directory contains the documentation for the AI Summarization Reference Arc
 - [Architecture Framework](./architecture-framework.md) - Well-Architected Framework principles applied to RAG systems
 - [Deployment Guide](./deployment-guide.md) - Deployment archetypes and guidance
 - [Testing Guide](./testing-guide.md) - Testing approach and best practices
+- [Security Best Practices](./security-best-practices.md) - Healthcare-specific security guidance
 - [Healthcare Development Lifecycle](./healthcare-development-lifecycle.md) - Complete checklist from ideation to production with RACI matrices
 - [Technical Tools & Frameworks](./technical-tools-framework.md) - Comprehensive catalog of tools organized by Well-Architected Framework pillars
 - [Project Planning & Delivery](./project-planning-delivery.md) - Project planning, delivery strategies, and resource management by phase
@@ -18,12 +19,15 @@ This directory contains the documentation for the AI Summarization Reference Arc
 - [AI Design Patterns](./ai-design-patterns/README.md) - Comprehensive catalog of AI design patterns (beyond RAG)
 - [AI Design Pattern Index](./ai-design-patterns/pattern-index.md) - Quick selection guide for AI design patterns
 - [AI Development Techniques](./ai-development-techniques.md) - Comprehensive catalog of AI/ML techniques, methodologies, and frameworks
-- [Use Cases](./use-cases/) - Use case-specific guidance
-- [Vendor Guides](./vendor-guides/) - Vendor-specific implementation guides
+- [Use Cases](./use-cases/README.md) - Use case-specific guidance
+- [Vendor Guides](./vendor-guides/README.md) - Vendor-specific implementation guides
 
 ### Setup and Configuration
 - [Document Store Setup](./document-store-setup.md) - Document store setup and usage
 - [Agent Setup Guide](./agent-setup-guide.md) - Google ADK and Ollama setup
+- [Troubleshooting Guide](./troubleshooting-guide.md) - Common issues and solutions
+- [Glossary](./glossary.md) - Terminology and definitions
+- [Project Review](./project-review.md) - Comprehensive project review and gap analysis
 
 ## Documentation Structure
 
@@ -47,13 +51,14 @@ Contains use case-specific documentation that helps you:
 
 ### `vendor-guides/`
 Contains vendor-specific implementation guides for:
-- Gemini (Google)
+- Vertex AI (Gemini)
 - Anthropic (Claude)
+- Azure OpenAI
+- AWS Bedrock
 - LangChain
 - Spring AI
-- Xariv
 - Google ADK
-- Claude Skills
+- Ollama
 
 ## Well-Architected Framework
 

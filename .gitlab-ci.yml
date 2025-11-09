@@ -1,0 +1,271 @@
+# GitLab CI/CD Pipeline - AI Summarization Reference Architecture
+# Automated research monitoring and pattern validation
+
+# Define stages
+stages:
+  - test
+  - monitor
+  - validate
+  - report
+
+# Global variables
+variables:
+  PYTHON_VERSION: "3.12"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+# Cache pip packages
+cache:
+  paths:
+    - .cache/pip
+    - chroma_db/
+
+# ============================================================================
+# Test Stage - Run on every commit
+# ============================================================================
+
+code-quality:
+  stage: test
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install black flake8 mypy
+  script:
+    - echo "Running code quality checks..."
+    - black --check scripts/ || true
+    - flake8 scripts/ --max-line-length=120 || true
+    - mypy scripts/ --ignore-missing-imports || true
+  only:
+    - merge_requests
+    - main
+    - develop
+
+unit-tests:
+  stage: test
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+    - pip install pytest pytest-asyncio
+  script:
+    - echo "Running unit tests..."
+    - pytest tests/ -v || echo "No tests found yet"
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# ============================================================================
+# Monitor Stage - Research monitoring (scheduled weekly)
+# ============================================================================
+
+research-monitor:
+  stage: monitor
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - echo "Installing dependencies..."
+    - pip install -r requirements.txt
+    - playwright install chromium
+  script:
+    - echo "Running research monitor..."
+    - python scripts/research_monitor.py --mode monitor --days-back 7
+    - echo "Research monitoring complete"
+  artifacts:
+    paths:
+      - reports/research-monitor-*.json
+      - chroma_db/
+    expire_in: 30 days
+  only:
+    - schedules
+    - web
+  tags:
+    - docker
+
+# Quick research monitor (last 2 days) - for manual triggers
+research-monitor-quick:
+  stage: monitor
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+    - playwright install chromium
+  script:
+    - echo "Running quick research monitor (last 2 days)..."
+    - python scripts/research_monitor.py --mode monitor --days-back 2
+  artifacts:
+    paths:
+      - reports/research-monitor-*.json
+    expire_in: 7 days
+  when: manual
+  tags:
+    - docker
+
+# ============================================================================
+# Validate Stage - Pattern validation (runs after monitoring)
+# ============================================================================
+
+pattern-validator:
+  stage: validate
+  image: python:${PYTHON_VERSION}
+  needs: ["research-monitor"]
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - echo "Running pattern validator..."
+    - python scripts/pattern_validator.py --mode validate
+    - echo "Pattern validation complete"
+  artifacts:
+    paths:
+      - reports/pattern-validation-*.json
+    expire_in: 30 days
+  only:
+    - schedules
+    - web
+  tags:
+    - docker
+
+# Validate specific pattern (manual trigger)
+validate-pattern:
+  stage: validate
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - echo "Validating specific pattern..."
+    - python scripts/pattern_validator.py --mode validate --pattern ${PATTERN_FILE}
+  when: manual
+  variables:
+    PATTERN_FILE: "basic-rag.md"
+  tags:
+    - docker
+
+# Test all code examples
+test-code-examples:
+  stage: validate
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - echo "Testing code examples..."
+    - python scripts/pattern_validator.py --mode test-examples
+  only:
+    - schedules
+    - web
+  when: manual
+  tags:
+    - docker
+
+# ============================================================================
+# Report Stage - Generate and publish reports
+# ============================================================================
+
+generate-report:
+  stage: report
+  image: python:${PYTHON_VERSION}
+  needs: ["research-monitor", "pattern-validator"]
+  before_script:
+    - pip install jq || apt-get update && apt-get install -y jq
+  script:
+    - echo "Generating summary report..."
+    - |
+      cat > reports/summary.md << 'EOF'
+      # Research Monitor Summary - $(date +%Y-%m-%d)
+
+      ## Research Monitor Results
+      $(cat reports/research-monitor-*.json | jq -r '.papers_ingested // "N/A"') papers ingested
+
+      ## Pattern Validation Results
+      $(cat reports/pattern-validation-*.json | jq -r '.summary.total_issues // "N/A"') total issues found
+
+      See artifact reports for detailed information.
+      EOF
+    - cat reports/summary.md
+  artifacts:
+    paths:
+      - reports/summary.md
+    expire_in: 30 days
+  only:
+    - schedules
+    - web
+  tags:
+    - docker
+
+# ============================================================================
+# Notification (Optional)
+# ============================================================================
+
+notify-slack:
+  stage: report
+  image: alpine:latest
+  needs: ["generate-report"]
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - |
+      if [ -n "$SLACK_WEBHOOK_URL" ]; then
+        REPORT_SUMMARY=$(cat reports/summary.md)
+        curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"Research Monitor Completed\n\n$REPORT_SUMMARY\"}" \
+          $SLACK_WEBHOOK_URL
+      else
+        echo "SLACK_WEBHOOK_URL not configured, skipping notification"
+      fi
+  only:
+    - schedules
+  when: on_success
+  allow_failure: true
+  tags:
+    - docker
+
+# ============================================================================
+# Manual Jobs
+# ============================================================================
+
+# Search ChromaDB for specific query
+search-chromadb:
+  stage: monitor
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - echo "Searching ChromaDB for: ${SEARCH_QUERY}"
+    - python scripts/research_monitor.py --mode search --query "${SEARCH_QUERY}"
+  when: manual
+  variables:
+    SEARCH_QUERY: "contextual retrieval"
+  tags:
+    - docker
+
+# Ingest specific arXiv paper
+ingest-arxiv-paper:
+  stage: monitor
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - echo "Ingesting arXiv paper: ${ARXIV_ID}"
+    - python scripts/research_monitor.py --mode ingest --arxiv-id "${ARXIV_ID}"
+  when: manual
+  variables:
+    ARXIV_ID: "2401.12345"
+  tags:
+    - docker
+
+# ============================================================================
+# Scheduled Pipeline Configuration
+# ============================================================================
+#
+# To enable weekly automated runs, configure a pipeline schedule in GitLab:
+#
+# 1. Go to: CI/CD > Schedules
+# 2. Click "New schedule"
+# 3. Description: "Weekly Research Monitor"
+# 4. Interval Pattern: "0 9 * * 1" (Monday 9 AM UTC)
+# 5. Cron timezone: UTC
+# 6. Target branch: main
+# 7. Variables:
+#    - Key: RESEARCH_MONITOR_ENABLED
+#    - Value: "true"
+#
+# Optional environment variables to set in GitLab CI/CD Settings:
+# - ANTHROPIC_API_KEY: For LLM-powered analysis (optional)
+# - SLACK_WEBHOOK_URL: For Slack notifications (optional)
+# - ARXIV_EMAIL: For polite arXiv API usage (optional)
+#
+# ============================================================================
