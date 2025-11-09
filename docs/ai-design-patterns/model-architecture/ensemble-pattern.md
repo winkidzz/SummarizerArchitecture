@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+The Ensemble Pattern combines predictions from multiple models to improve overall accuracy and robustness. By aggregating diverse models' outputs through voting, averaging, or stacking, this pattern reduces individual model biases and variance. Common ensemble techniques include bagging (Bootstrap Aggregating), boosting, and stacking. In healthcare AI summarization, ensembles can combine specialized models for different document types or clinical domains.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **High-stakes decisions**: When accuracy is critical (e.g., clinical decision support, patient safety alerts)
+- **Diverse data sources**: Medical records with varied formats (FHIR, HL7, unstructured notes)
+- **Complementary models**: Different models excel at different aspects (e.g., one for diagnosis extraction, another for treatment recommendations)
+- **Reducing bias**: Mitigating individual model limitations through consensus
+- **Improving robustness**: When single models show high variance or overfitting
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Real-time constraints**: Ensembles multiply inference latency and computational costs
+- **Limited resources**: Running multiple models requires 2-10x more compute and memory
+- **Simple problems**: Single well-tuned model may suffice for straightforward summarization tasks
+- **Interpretability required**: Ensemble decisions are harder to explain than single model outputs
+- **Rapid iteration needed**: Maintaining and updating multiple models increases complexity
 
 ## Architecture
 

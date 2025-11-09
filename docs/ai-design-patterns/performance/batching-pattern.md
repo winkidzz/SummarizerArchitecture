@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Batching groups multiple requests together to process simultaneously, amortizing overhead and improving GPU utilization. For healthcare AI, this processes multiple patient summaries in a single LLM call or embeds batches of clinical notes together, maximizing throughput for batch processing workflows.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **High throughput**: Processing thousands of documents per hour
+- **GPU utilization**: Single requests underutilize GPU; batching improves efficiency
+- **Cost optimization**: Batch API pricing lower than per-request pricing
+- **Latency tolerance**: Can wait to accumulate batch before processing
+- **Parallel processing**: Operations independent and can be batched
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Real-time requirements**: Users waiting for individual request results
+- **Low volume**: Too few requests to form efficient batches
+- **Memory constraints**: Batches too large for available GPU memory
+- **Variable-size inputs**: Batching efficiency lost due to padding overhead
+- **Sequential dependencies**: Requests depend on each other; can't batch
 
 ## Architecture
 

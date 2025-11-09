@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Canary Deployment gradually rolls out new model versions to increasing percentages of traffic, monitoring for issues at each stage before full deployment. Named after canaries in coal mines, this pattern detects problems early with minimal impact, crucial for safety-critical healthcare applications.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **High-risk changes**: Major model architecture or training data changes
+- **Large user base**: Issues affect many users; gradual rollout reduces blast radius
+- **Monitoring infrastructure**: Can detect degradation quickly
+- **Rollback capability**: Can revert to previous version if canary fails
+- **Production validation**: Need to verify model behavior in real clinical workflows
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Low-risk updates**: Minor improvements with high confidence
+- **Small user base**: All users are canaries anyway
+- **No monitoring**: Can't detect if canary is failing
+- **Instant rollout needed**: Critical fix required immediately
+- **Consistent traffic**: Not enough traffic variation to test at different scales
 
 ## Architecture
 

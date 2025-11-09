@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Alerting Pattern notifies operators when monitored metrics exceed thresholds or anomalies are detected, enabling rapid response to system failures or model degradation. For healthcare AI, this means paging on-call engineers if summarization API goes down or model accuracy drops below safety thresholds.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Critical systems**: Failures impact patient care or safety
+- **24/7 operations**: System must be available around the clock
+- **Rapid response needed**: Quick action can prevent or minimize impact
+- **Monitoring in place**: Already collecting metrics to alert on
+- **Clear thresholds**: Know what metric values indicate problems
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **No response capability**: Can't act on alerts anyway
+- **Batch systems**: Delays of hours/days acceptable
+- **Alert fatigue**: Too many false positives; team ignores alerts
+- **Manual monitoring**: Someone always watching dashboards
+- **Research phase**: Experimental systems without users to impact
 
 ## Architecture
 

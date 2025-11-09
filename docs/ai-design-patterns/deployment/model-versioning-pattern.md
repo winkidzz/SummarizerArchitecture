@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Versioning tracks and manages different versions of ML models throughout their lifecycle, enabling reproducibility, rollbacks, and A/B testing. In healthcare AI, this ensures audit trails for regulatory compliance and allows safe deployment of improved summarization models while maintaining ability to revert if issues arise.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Regulatory compliance**: Healthcare regulations require model versioning audit trails
+- **Multiple environments**: Different model versions in dev, staging, production
+- **Gradual rollouts**: Deploy new versions to subset of users first
+- **Reproducibility**: Need to reproduce historical predictions exactly
+- **Rollback capability**: Must revert to previous version if problems detected
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Single version**: Only ever one model version in production
+- **Disposable models**: Models replaced completely rather than versioned
+- **No compliance needs**: No regulatory or audit requirements
+- **Experimental phase**: Still in research; versioning overhead premature
+- **Simple updates**: Model changes don't affect predictions significantly
 
 ## Architecture
 

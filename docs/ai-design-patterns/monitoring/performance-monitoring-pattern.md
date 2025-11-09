@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Performance Monitoring tracks system-level metrics like latency, throughput, resource utilization, and uptime to ensure ML systems meet SLAs. For healthcare AI, this monitors API response times, GPU utilization, and system availability to ensure clinical workflows aren't disrupted by slow or failing summarization services.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Production systems**: Serving real clinical users with SLA requirements
+- **Real-time applications**: Latency affects user experience
+- **Resource optimization**: Need to right-size infrastructure and reduce costs
+- **Capacity planning**: Understanding usage patterns to plan scaling
+- **Incident response**: Quickly identify and diagnose system issues
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Batch processing**: No latency requirements
+- **Research phase**: Experimental systems without users
+- **Single user**: Performance issues don't affect others
+- **Over-provisioned**: Have far more resources than needed; performance not a concern
+- **Simple systems**: Complexity doesn't justify monitoring overhead
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Differential Privacy adds calibrated noise to training or outputs, providing mathematical privacy guarantees that individual patient records cannot be inferred from model behavior. This enables publishing healthcare AI models or aggregated statistics while provably protecting individual privacy.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Privacy guarantees**: Need mathematical proof of privacy protection
+- **Releasing models**: Publishing models trained on sensitive data
+- **Aggregated statistics**: Sharing population-level insights from PHI
+- **Regulatory compliance**: Meeting strong privacy requirements (GDPR)
+- **Research data sharing**: Enabling research while protecting subjects
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Accuracy critical**: Noise reduces model accuracy unacceptably
+- **Small datasets**: Privacy-utility tradeoff poor for small samples
+- **Data doesn't leave**: Model and predictions stay within secure environment
+- **Weaker guarantees sufficient**: Other privacy techniques adequate
+- **Complex implementation**: Lack expertise to implement correctly
 
 ## Architecture
 

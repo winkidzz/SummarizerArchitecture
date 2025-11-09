@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Active Learning selectively chooses the most informative examples for labeling, reducing annotation costs by focusing human effort where it provides maximum value. The model identifies uncertain or representative samples for expert review, improving efficiently with minimal labeled data. Particularly valuable in healthcare where expert annotation is expensive.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Limited annotation budget**: Medical experts' time is expensive and scarce
+- **Large unlabeled dataset**: Have abundant raw data but few labels
+- **Iterative improvement**: Can continuously improve model with new labels
+- **Uncertainty quantification**: Model can identify its own weak points
+- **Quality over quantity**: Few high-value labels better than many random labels
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Abundant labels**: Already have sufficient labeled data
+- **Batch labeling**: Must label all data upfront rather than iteratively
+- **Poor initial model**: Active learning requires reasonable starting model
+- **No feedback loop**: Can't incorporate new labels into model iteratively
+- **Uniform distribution**: All samples equally informative
 
 ## Architecture
 

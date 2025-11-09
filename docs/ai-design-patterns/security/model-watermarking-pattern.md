@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Watermarking embeds hidden markers into ML models to prove ownership, detect unauthorized use, and trace model leaks. For healthcare AI, this protects proprietary medical summarization models from theft and enables detecting if models are being used without proper licensing or safety oversight.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Proprietary models**: Valuable models you've invested significantly in developing
+- **Model distribution**: Deploying models to third parties or edge devices
+- **Intellectual property**: Need to prove model ownership or detect theft
+- **Licensing**: Enforcing usage terms or detecting unauthorized deployment
+- **Insider threats**: Concerned about employees stealing models
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Open source**: Openly sharing models; watermarking unnecessary
+- **Controlled deployment**: Models only in your controlled infrastructure
+- **Low value**: Model not valuable enough to justify protection effort
+- **Performance impact**: Watermarking might degrade model accuracy
+- **Detection unnecessary**: Other means of preventing model theft
 
 ## Architecture
 

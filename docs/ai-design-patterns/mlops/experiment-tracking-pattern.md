@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Experiment Tracking systematically records ML experiments with parameters, metrics, artifacts, and results, enabling reproducibility and comparison. For healthcare AI, this documents model development decisions, supports regulatory filings with evidence of systematic development, and helps teams understand what has been tried.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Many experiments**: Running dozens to hundreds of training experiments
+- **Hyperparameter tuning**: Testing different model configurations
+- **Team collaboration**: Sharing experiment results across team members
+- **Reproducibility**: Need to reproduce exact experimental conditions
+- **Decision documentation**: Regulatory filings require evidence of systematic development
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Few experiments**: Running 1-5 experiments; manual tracking sufficient
+- **Stable model**: Not experimenting; using established model
+- **Solo researcher**: Informal notes work for single person
+- **No comparison needed**: Each experiment independent; not comparing results
+- **Simple models**: Fast experiments that don't justify tracking overhead
 
 ## Architecture
 

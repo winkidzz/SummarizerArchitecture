@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Event-Driven Architecture uses asynchronous events to trigger actions and communicate between components, enabling loose coupling and reactive workflows. For healthcare AI, this processes new patient admissions, lab results, or clinical notes as events trigger summarization pipelines, updating dashboards in real-time.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Reactive workflows**: Actions triggered by events (new patient data, lab results)
+- **Loose coupling**: Components communicate without direct dependencies
+- **Asynchronous processing**: Operations don't need immediate responses
+- **Real-time updates**: Pushing updates to dashboards as events occur
+- **Scalability**: Event-driven systems scale well with load
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Synchronous requirements**: Need immediate responses; can't wait for async events
+- **Simple workflows**: Direct function calls simpler than event infrastructure
+- **Debugging difficulty**: Event-driven systems harder to debug and test
+- **Ordering requirements**: Complex event ordering hard to guarantee
+- **Small scale**: Event infrastructure overhead not justified
 
 ## Architecture
 

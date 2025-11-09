@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Quantization reduces model precision from 32-bit floating point to 16-bit, 8-bit, or even 4-bit integers, decreasing memory usage and speeding up inference with minimal accuracy loss. Enables running large healthcare LLMs on consumer GPUs or faster API responses at lower cost.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Memory constraints**: Model too large for available GPU memory
+- **Inference speed**: Need faster predictions
+- **Cost reduction**: Lower precision reduces cloud API costs
+- **Edge deployment**: Deploy large models on limited hardware
+- **Minimal accuracy loss**: Quantization doesn't significantly hurt clinical accuracy
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Accuracy degradation**: Precision reduction hurts clinical performance
+- **Already optimized**: Model already quantized or highly efficient
+- **Hardware limitations**: Target hardware doesn't support quantized operations efficiently
+- **Training**: Quantization-aware training required but not feasible
+- **Numerical instability**: Model sensitive to precision reduction
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+A/B Testing Pattern compares two model versions by routing traffic to each and measuring performance metrics, enabling data-driven decisions about model updates. For healthcare summarization, this might compare a new model's clinical accuracy or physician satisfaction against the current production model.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Model comparison**: Uncertain which of two models performs better in production
+- **Risk mitigation**: Test new model on small traffic percentage before full rollout
+- **Metric validation**: Real-world metrics differ from offline evaluation
+- **User feedback**: Measure physician satisfaction or clinical workflow impact
+- **Incremental rollout**: Gradually shift traffic to new model version
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Clear winner**: Offline metrics already show dramatic improvement
+- **Low traffic**: Insufficient volume for statistical significance
+- **No metrics**: Can't measure what defines 'better' in production
+- **Urgent deployment**: Critical fix needed immediately
+- **Identical models**: Versions produce same results; no need to test
 
 ## Architecture
 

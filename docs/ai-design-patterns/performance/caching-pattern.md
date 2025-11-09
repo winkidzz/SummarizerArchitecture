@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Caching stores frequently accessed results (embeddings, summaries, retrieval results) to avoid recomputation, dramatically reducing latency and costs for repeated queries. For healthcare AI, this caches summaries of standard protocols, common medication information, or frequently requested patient record sections.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Repeated queries**: Same or similar requests occur frequently
+- **Expensive operations**: LLM inference, embeddings, or database queries costly to recompute
+- **Static content**: Results don't change frequently (medical literature summaries)
+- **Latency sensitive**: Cache hits provide instant responses
+- **Cost optimization**: Reducing redundant API calls saves significant money
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Unique queries**: Every request different; cache hit rate near zero
+- **Rapidly changing data**: Cached results become stale too quickly
+- **Storage constraints**: Cache storage more expensive than recomputation
+- **Privacy concerns**: Caching patient data raises security/compliance issues
+- **Simple operations**: Cached operations so fast recomputation negligible
 
 ## Architecture
 

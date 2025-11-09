@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Secure Multi-Party Computation (MPC) enables multiple parties to jointly compute functions over their private data without revealing inputs to each other. Multiple hospitals can collaboratively train healthcare AI models with each institution's data remaining private and never leaving their premises.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Multi-party collaboration**: Multiple institutions want to pool data without sharing
+- **Privacy regulations**: HIPAA prohibits centralizing data
+- **Mutual distrust**: Parties want benefits of collaboration but don't fully trust each other
+- **Data cannot move**: Legal or technical constraints prevent data centralization
+- **Regulatory compliance**: Required to demonstrate data never exposed
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Two parties**: Simpler techniques like federated learning sufficient
+- **Trust exists**: Parties willing to share data with trusted third party
+- **Performance critical**: MPC adds significant computational overhead
+- **Complex models**: Cryptographic protocols may not support needed operations
+- **Implementation complexity**: Require specialized expertise
 
 ## Architecture
 

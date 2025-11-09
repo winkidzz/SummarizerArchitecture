@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Service Mesh provides infrastructure layer for service-to-service communication, handling load balancing, encryption, observability, and resilience without application code changes. For healthcare AI microservices, this manages secure communication between summarization components with automatic retries, circuit breaking, and distributed tracing.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Many microservices**: Dozens of services with complex communication patterns
+- **Security requirements**: Need mutual TLS, encryption for all service communication
+- **Observability**: Distributed tracing and metrics across services
+- **Resilience**: Automatic retries, circuit breaking, timeout management
+- **Traffic management**: Canary deployments, A/B testing at infrastructure level
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Few services**: Small number of services; mesh overhead not justified
+- **Simple architecture**: Direct service calls work fine
+- **Performance critical**: Mesh proxy adds latency
+- **Small team**: Lack expertise to operate service mesh
+- **Non-Kubernetes**: Most service meshes designed for Kubernetes environments
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Workflow Orchestration coordinates complex ML pipelines with dependencies between data processing, training, evaluation, and deployment steps. For healthcare AI, this manages end-to-end workflows from EHR data extraction through model training to deployment, ensuring steps execute in correct order with proper error handling.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Complex pipelines**: Many interdependent steps (data extraction, preprocessing, training, validation, deployment)
+- **Scheduled workflows**: Regular execution (nightly retraining, weekly data updates)
+- **Resource management**: Need to allocate GPU, memory efficiently across steps
+- **Error handling**: Retry logic, alerts, and recovery for failed steps
+- **Team coordination**: Multiple people maintaining different pipeline components
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Simple workflows**: Linear script handles everything
+- **Ad-hoc execution**: Running steps manually as needed
+- **Single step**: Only one operation to perform
+- **Notebook-based**: Interactive analysis in Jupyter notebooks
+- **No dependencies**: Steps can run independently without orchestration
 
 ## Architecture
 

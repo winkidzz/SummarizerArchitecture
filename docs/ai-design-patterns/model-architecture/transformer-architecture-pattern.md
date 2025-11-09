@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Transformer Architecture uses self-attention mechanisms to process sequences in parallel, enabling models to capture long-range dependencies efficiently. Modern LLMs (Claude, GPT-4, Gemini) are built on Transformer architecture, making this the foundation for healthcare AI summarization. Transformers excel at understanding context across entire documents and generating coherent summaries.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Language understanding**: Transformers power all modern LLMs for medical text processing
+- **Long-range dependencies**: Connecting information across documents (e.g., linking diagnosis to treatment outcome)
+- **Parallel processing**: Need fast training/inference on long sequences
+- **State-of-the-art performance**: Transformers currently dominate NLP benchmarks
+- **Pre-trained models**: Leverage foundation models like Claude, GPT-4, Gemini
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Extremely long sequences**: Context windows have limits (though 200K-2M tokens now available)
+- **Resource constraints**: Transformers require significant compute and memory
+- **Simple tasks**: Traditional ML may suffice for basic classification
+- **Real-time embedded**: Edge devices may not support large Transformer models
+- **Cost sensitive**: Transformer inference can be expensive at scale
 
 ## Architecture
 

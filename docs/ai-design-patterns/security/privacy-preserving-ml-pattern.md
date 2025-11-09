@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Privacy-Preserving ML enables learning from sensitive data while protecting individual privacy through techniques like differential privacy, federated learning, and secure computation. Essential for healthcare AI to comply with HIPAA while training on patient data across institutions without centralizing PHI.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Sensitive data**: Training on protected health information (PHI)
+- **Privacy regulations**: HIPAA, GDPR require privacy protections
+- **Multi-party data**: Multiple hospitals collaborating without sharing raw data
+- **Privacy risk**: Re-identification or data leakage could harm patients
+- **Consent constraints**: Patients consented to analysis but not data sharing
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **De-identified data**: Data already anonymized sufficiently
+- **Public data**: Training on publicly available medical literature
+- **Single institution**: Data doesn't leave organization; privacy already controlled
+- **Performance critical**: Privacy techniques reduce accuracy unacceptably
+- **No sensitive attributes**: Data doesn't contain personal information
 
 ## Architecture
 

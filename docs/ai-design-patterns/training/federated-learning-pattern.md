@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Federated Learning trains models across distributed datasets without centralizing data, preserving privacy by keeping sensitive information at source. Models train locally on each institution's data, sharing only model updates rather than raw patient records. Critical for healthcare where PHI cannot leave hospital systems due to HIPAA regulations.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Privacy regulations**: HIPAA, GDPR prohibit centralizing patient data
+- **Multi-institution collaboration**: Multiple hospitals want to collaborate without sharing data
+- **Data cannot move**: Technical, legal, or ethical constraints prevent data centralization
+- **Heterogeneous data**: Each site has unique patient populations and data characteristics
+- **Distributed deployment**: Models will be used locally at each institution
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Centralization possible**: Data can legally and practically be centralized
+- **Communication constrained**: Network bandwidth insufficient for model updates
+- **Small number of sites**: Overhead not justified for 1-2 institutions
+- **Homogeneous data needed**: Require consistent data distribution
+- **Performance critical**: Federated learning typically slower than centralized
 
 ## Architecture
 

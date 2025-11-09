@@ -1,0 +1,1141 @@
+{
+  "model-architecture/ensemble-pattern.md": {
+    "overview": "The Ensemble Pattern combines predictions from multiple models to improve overall accuracy and robustness. By aggregating diverse models' outputs through voting, averaging, or stacking, this pattern reduces individual model biases and variance. Common ensemble techniques include bagging (Bootstrap Aggregating), boosting, and stacking. In healthcare AI summarization, ensembles can combine specialized models for different document types or clinical domains.",
+    "when_to_use": [
+      "**High-stakes decisions**: When accuracy is critical (e.g., clinical decision support, patient safety alerts)",
+      "**Diverse data sources**: Medical records with varied formats (FHIR, HL7, unstructured notes)",
+      "**Complementary models**: Different models excel at different aspects (e.g., one for diagnosis extraction, another for treatment recommendations)",
+      "**Reducing bias**: Mitigating individual model limitations through consensus",
+      "**Improving robustness**: When single models show high variance or overfitting"
+    ],
+    "when_not_to_use": [
+      "**Real-time constraints**: Ensembles multiply inference latency and computational costs",
+      "**Limited resources**: Running multiple models requires 2-10x more compute and memory",
+      "**Simple problems**: Single well-tuned model may suffice for straightforward summarization tasks",
+      "**Interpretability required**: Ensemble decisions are harder to explain than single model outputs",
+      "**Rapid iteration needed**: Maintaining and updating multiple models increases complexity"
+    ]
+  },
+  "model-architecture/transfer-learning-pattern.md": {
+    "overview": "Transfer Learning leverages knowledge from pre-trained models to accelerate learning on new, related tasks. Instead of training from scratch, this pattern fine-tunes models trained on large general datasets for specific healthcare domains. Foundation models like Claude, GPT-4, and Gemini use transfer learning principles, where general language understanding is adapted to medical summarization through prompt engineering or fine-tuning.",
+    "when_to_use": [
+      "**Limited labeled data**: Healthcare datasets are often small due to privacy constraints",
+      "**Domain adaptation**: Adapting general language models to medical terminology and clinical workflows",
+      "**Fast development**: Leveraging pre-trained models reduces training time from months to hours/days",
+      "**Cost optimization**: Fine-tuning is cheaper than training large models from scratch",
+      "**Proven architecture**: Using battle-tested model architectures (Transformers, BERT, GPT)"
+    ],
+    "when_not_to_use": [
+      "**Highly specialized domains**: When source and target domains are too different (rare in healthcare AI)",
+      "**Privacy concerns**: Pre-trained models may have seen sensitive training data",
+      "**Performance critical**: Sometimes domain-specific models outperform transferred models",
+      "**Complete control needed**: When you need to understand every aspect of model behavior",
+      "**Regulatory requirements**: Some healthcare regulations may require training provenance"
+    ]
+  },
+  "model-architecture/multi-task-learning-pattern.md": {
+    "overview": "Multi-Task Learning trains a single model to perform multiple related tasks simultaneously, sharing representations across tasks. In healthcare AI, this could mean a model that extracts diagnoses, medications, and procedures from clinical notes in one pass, improving efficiency and leveraging shared medical knowledge across tasks.",
+    "when_to_use": [
+      "**Related tasks**: Multiple tasks share common underlying structure (e.g., extracting different medical entities)",
+      "**Limited data per task**: Tasks have small datasets individually but benefit from shared learning",
+      "**Resource constraints**: Single model is more efficient than multiple specialized models",
+      "**Improved generalization**: Shared representations can improve performance on all tasks",
+      "**Consistent outputs**: Need synchronized predictions across related tasks"
+    ],
+    "when_not_to_use": [
+      "**Unrelated tasks**: Tasks don't share meaningful structure or knowledge",
+      "**Conflicting objectives**: Task requirements work against each other",
+      "**Different scales**: Tasks operate on vastly different data scales or distributions",
+      "**Specialized performance**: Need maximum accuracy on a single primary task",
+      "**Independent deployment**: Tasks need to be deployed or updated separately"
+    ]
+  },
+  "model-architecture/modular-architecture-pattern.md": {
+    "overview": "Modular Architecture decomposes the AI system into independent, interchangeable components with well-defined interfaces. Each module handles a specific function (e.g., document loading, chunking, embedding, retrieval, generation), enabling flexible composition, testing, and replacement of individual components without affecting the entire system.",
+    "when_to_use": [
+      "**Complex systems**: Large AI pipelines with multiple distinct stages",
+      "**Team collaboration**: Different teams can work on separate modules independently",
+      "**Flexibility needed**: Ability to swap components (e.g., change embedding model without rewriting retrieval logic)",
+      "**Testing requirements**: Each module can be tested in isolation",
+      "**Vendor flexibility**: Ability to switch between different LLM providers or vector databases"
+    ],
+    "when_not_to_use": [
+      "**Simple applications**: Single-purpose tools don't benefit from modularity overhead",
+      "**Tight coupling required**: Components need deep integration for performance",
+      "**Rapid prototyping**: Early-stage development where architecture isn't stable",
+      "**Performance critical**: Module boundaries can add latency",
+      "**Small team**: Overhead of defining and maintaining interfaces isn't justified"
+    ]
+  },
+  "model-architecture/hierarchical-model-pattern.md": {
+    "overview": "Hierarchical Model Pattern organizes models in layers where higher-level models aggregate and refine outputs from lower-level models. In medical summarization, this could involve document-level models feeding into patient-level models, which inform population-level insights, creating a hierarchy of abstraction and aggregation.",
+    "when_to_use": [
+      "**Multi-scale analysis**: Need to operate at different levels of abstraction (note → patient → cohort)",
+      "**Progressive refinement**: Each level adds context and refinement to lower levels",
+      "**Divide and conquer**: Complex problem naturally decomposes into hierarchical sub-problems",
+      "**Scalability**: Process large volumes by hierarchical aggregation",
+      "**Explainability**: Trace decisions through hierarchical levels"
+    ],
+    "when_not_to_use": [
+      "**Flat structure**: Problem doesn't have natural hierarchical organization",
+      "**Latency sensitive**: Multiple model layers increase inference time",
+      "**Simple aggregation**: Basic averaging or voting suffices",
+      "**Single-level output**: Only need results at one level of abstraction",
+      "**Error propagation**: Mistakes at lower levels compound at higher levels"
+    ]
+  },
+  "model-architecture/attention-mechanism-pattern.md": {
+    "overview": "Attention Mechanism enables models to dynamically focus on relevant parts of input when generating outputs. In healthcare summarization, attention helps models identify and weight important clinical findings, diagnoses, or temporal patterns in patient records, improving both accuracy and interpretability by showing which parts of input influenced the summary.",
+    "when_to_use": [
+      "**Long documents**: Patient records with hundreds of notes where only some are relevant",
+      "**Variable importance**: Different input parts have different relevance to the task",
+      "**Interpretability**: Need to explain which inputs influenced model decisions",
+      "**Context integration**: Combining information from multiple document sections",
+      "**Sequence modeling**: Tasks involving temporal or sequential relationships"
+    ],
+    "when_not_to_use": [
+      "**Short inputs**: Attention overhead not justified for small inputs",
+      "**Uniform importance**: All input parts equally relevant",
+      "**Computational constraints**: Attention adds significant compute (O(n²) for self-attention)",
+      "**Fixed-size inputs**: CNNs or simpler architectures may suffice",
+      "**Black-box acceptable**: Don't need to explain model focus"
+    ]
+  },
+  "model-architecture/transformer-architecture-pattern.md": {
+    "overview": "Transformer Architecture uses self-attention mechanisms to process sequences in parallel, enabling models to capture long-range dependencies efficiently. Modern LLMs (Claude, GPT-4, Gemini) are built on Transformer architecture, making this the foundation for healthcare AI summarization. Transformers excel at understanding context across entire documents and generating coherent summaries.",
+    "when_to_use": [
+      "**Language understanding**: Transformers power all modern LLMs for medical text processing",
+      "**Long-range dependencies**: Connecting information across documents (e.g., linking diagnosis to treatment outcome)",
+      "**Parallel processing**: Need fast training/inference on long sequences",
+      "**State-of-the-art performance**: Transformers currently dominate NLP benchmarks",
+      "**Pre-trained models**: Leverage foundation models like Claude, GPT-4, Gemini"
+    ],
+    "when_not_to_use": [
+      "**Extremely long sequences**: Context windows have limits (though 200K-2M tokens now available)",
+      "**Resource constraints**: Transformers require significant compute and memory",
+      "**Simple tasks**: Traditional ML may suffice for basic classification",
+      "**Real-time embedded**: Edge devices may not support large Transformer models",
+      "**Cost sensitive**: Transformer inference can be expensive at scale"
+    ]
+  },
+  "training/curriculum-learning-pattern.md": {
+    "overview": "Curriculum Learning trains models on progressively more difficult examples, similar to human education. Starting with simple cases and gradually introducing complexity helps models learn more effectively and generalize better. In healthcare, this might mean training first on straightforward discharge summaries before tackling complex multi-morbidity cases.",
+    "when_to_use": [
+      "**Complex domains**: Healthcare terminology and clinical reasoning have steep learning curves",
+      "**Data with natural difficulty progression**: Cases range from simple to complex",
+      "**Improved convergence**: Standard training struggles to learn effectively",
+      "**Sample efficiency**: Need to learn from limited labeled examples",
+      "**Transfer learning**: Pre-training on simpler tasks before target task"
+    ],
+    "when_not_to_use": [
+      "**Uniform difficulty**: All examples have similar complexity",
+      "**No clear curriculum**: Difficult to define what makes an example 'easy' or 'hard'",
+      "**Time constraints**: Designing curriculum adds development overhead",
+      "**Random sampling works**: Standard training already achieves good results",
+      "**Simple tasks**: Task doesn't benefit from progressive learning"
+    ]
+  },
+  "training/active-learning-pattern.md": {
+    "overview": "Active Learning selectively chooses the most informative examples for labeling, reducing annotation costs by focusing human effort where it provides maximum value. The model identifies uncertain or representative samples for expert review, improving efficiently with minimal labeled data. Particularly valuable in healthcare where expert annotation is expensive.",
+    "when_to_use": [
+      "**Limited annotation budget**: Medical experts' time is expensive and scarce",
+      "**Large unlabeled dataset**: Have abundant raw data but few labels",
+      "**Iterative improvement**: Can continuously improve model with new labels",
+      "**Uncertainty quantification**: Model can identify its own weak points",
+      "**Quality over quantity**: Few high-value labels better than many random labels"
+    ],
+    "when_not_to_use": [
+      "**Abundant labels**: Already have sufficient labeled data",
+      "**Batch labeling**: Must label all data upfront rather than iteratively",
+      "**Poor initial model**: Active learning requires reasonable starting model",
+      "**No feedback loop**: Can't incorporate new labels into model iteratively",
+      "**Uniform distribution**: All samples equally informative"
+    ]
+  },
+  "training/federated-learning-pattern.md": {
+    "overview": "Federated Learning trains models across distributed datasets without centralizing data, preserving privacy by keeping sensitive information at source. Models train locally on each institution's data, sharing only model updates rather than raw patient records. Critical for healthcare where PHI cannot leave hospital systems due to HIPAA regulations.",
+    "when_to_use": [
+      "**Privacy regulations**: HIPAA, GDPR prohibit centralizing patient data",
+      "**Multi-institution collaboration**: Multiple hospitals want to collaborate without sharing data",
+      "**Data cannot move**: Technical, legal, or ethical constraints prevent data centralization",
+      "**Heterogeneous data**: Each site has unique patient populations and data characteristics",
+      "**Distributed deployment**: Models will be used locally at each institution"
+    ],
+    "when_not_to_use": [
+      "**Centralization possible**: Data can legally and practically be centralized",
+      "**Communication constrained**: Network bandwidth insufficient for model updates",
+      "**Small number of sites**: Overhead not justified for 1-2 institutions",
+      "**Homogeneous data needed**: Require consistent data distribution",
+      "**Performance critical**: Federated learning typically slower than centralized"
+    ]
+  },
+  "training/self-supervised-learning-pattern.md": {
+    "overview": "Self-Supervised Learning creates supervisory signals from unlabeled data itself, learning representations without manual annotations. Models predict masked portions of text, next sentences, or other self-created tasks. Foundation models like Claude and GPT use self-supervised pre-training on massive corpora before fine-tuning for specific tasks.",
+    "when_to_use": [
+      "**Massive unlabeled data**: Abundant medical literature, clinical notes without labels",
+      "**Pre-training foundation models**: Building general medical language understanding",
+      "**Limited labeled data**: Labels scarce but raw text plentiful",
+      "**Representation learning**: Need general-purpose features for downstream tasks",
+      "**Transfer learning**: Pre-train on unlabeled data, fine-tune on small labeled set"
+    ],
+    "when_not_to_use": [
+      "**Abundant labels**: Supervised learning more direct when labels available",
+      "**Specific task**: Self-supervision may not learn task-relevant features",
+      "**Computational constraints**: Self-supervised pre-training requires significant compute",
+      "**Small datasets**: Benefits diminish with limited unlabeled data",
+      "**Time-to-market**: Pre-training adds development time"
+    ]
+  },
+  "training/few-shot-learning-pattern.md": {
+    "overview": "Few-Shot Learning enables models to learn new tasks from just a few examples, leveraging prior knowledge to generalize quickly. Large language models like Claude can perform tasks with 1-10 examples in the prompt (in-context learning). Valuable in healthcare for rare conditions or new clinical scenarios where data is scarce.",
+    "when_to_use": [
+      "**Rare conditions**: Few examples available (orphan diseases, rare complications)",
+      "**New tasks**: Need to adapt quickly to novel summarization requirements",
+      "**Rapid deployment**: No time for extensive data collection and training",
+      "**Personalization**: Customize to specific physician preferences with few examples",
+      "**Foundation models**: Leverage LLMs' in-context learning capabilities"
+    ],
+    "when_not_to_use": [
+      "**Abundant data**: Traditional supervised learning more effective",
+      "**Performance critical**: Few-shot typically underperforms full training",
+      "**No foundation model**: Few-shot learning requires strong pre-trained model",
+      "**Consistent task**: Same task repeatedly; worth collecting more data",
+      "**Fine-tuning possible**: If you can fine-tune, it often outperforms few-shot"
+    ]
+  },
+  "training/meta-learning-pattern.md": {
+    "overview": "Meta-Learning (learning to learn) trains models to quickly adapt to new tasks by learning from experience with many related tasks. The model learns general learning strategies rather than task-specific solutions. Useful for healthcare AI that must adapt to different hospitals, specialties, or clinical workflows.",
+    "when_to_use": [
+      "**Many related tasks**: Multiple similar tasks (different specialties, institutions)",
+      "**Fast adaptation**: Need to quickly customize to new clinical contexts",
+      "**Few examples per task**: Limited data for each new task but many tasks overall",
+      "**Task distribution**: New tasks come from same distribution as training tasks",
+      "**Personalization at scale**: Adapt to individual users or institutions efficiently"
+    ],
+    "when_not_to_use": [
+      "**Single task**: Only solving one specific problem",
+      "**Unrelated tasks**: Tasks too different for shared meta-learning",
+      "**Abundant data per task**: Each task has sufficient data for standard training",
+      "**Simple transfer learning**: Basic fine-tuning suffices",
+      "**Computational constraints**: Meta-learning requires training on many tasks"
+    ]
+  },
+  "training/continual-learning-pattern.md": {
+    "overview": "Continual Learning enables models to learn from new data over time without forgetting previously learned knowledge (catastrophic forgetting). As medical knowledge evolves and new treatments emerge, models must update while preserving existing capabilities. Critical for production healthcare AI systems that must stay current.",
+    "when_to_use": [
+      "**Evolving knowledge**: Medical guidelines and best practices change regularly",
+      "**Streaming data**: Continuous flow of new clinical cases and outcomes",
+      "**Model longevity**: System must remain accurate over months/years",
+      "**Can't retrain from scratch**: Retraining on all historical data impractical",
+      "**Preserve existing knowledge**: Must maintain performance on existing tasks while learning new ones"
+    ],
+    "when_not_to_use": [
+      "**Static domain**: Medical knowledge doesn't change significantly",
+      "**Periodic retraining**: Can retrain from scratch regularly",
+      "**Short lifecycle**: Model replaced frequently rather than updated",
+      "**No forgetting concern**: New data doesn't interfere with old knowledge",
+      "**Batch updates**: Can accumulate data and retrain periodically"
+    ]
+  },
+  "deployment/model-serving-pattern.md": {
+    "overview": "Model Serving Pattern provides production infrastructure to host and serve ML models via APIs, handling request/response cycles, load balancing, and scaling. In healthcare, this enables clinical applications to query summarization models in real-time, supporting features like instant discharge summary generation or live clinical decision support.",
+    "when_to_use": [
+      "**Production deployment**: Models need to serve real user requests",
+      "**API access**: Applications need programmatic access to model predictions",
+      "**Multiple clients**: Many applications or users accessing the same model",
+      "**Scalability**: Traffic varies and infrastructure must scale automatically",
+      "**Version management**: Need to deploy and manage multiple model versions"
+    ],
+    "when_not_to_use": [
+      "**Batch processing only**: All predictions can be pre-computed offline",
+      "**Single user**: Only one researcher using model interactively",
+      "**Embedded models**: Model runs on-device rather than via API",
+      "**Development phase**: Still experimenting; production infrastructure premature",
+      "**Static predictions**: Results don't change and can be cached indefinitely"
+    ]
+  },
+  "deployment/batch-prediction-pattern.md": {
+    "overview": "Batch Inference processes large volumes of data offline in scheduled batches rather than real-time requests. For healthcare summarization, this might mean nightly processing of all new patient admissions or monthly summarization of clinical trial data, optimizing for throughput over latency.",
+    "when_to_use": [
+      "**Large-scale processing**: Thousands of documents to process regularly",
+      "**Non-urgent timelines**: Results needed within hours/days, not seconds",
+      "**Cost optimization**: Batch processing often cheaper than real-time serving",
+      "**Resource efficiency**: Can use spot instances or off-peak compute",
+      "**Scheduled workflows**: Regular processing schedules (nightly, weekly)"
+    ],
+    "when_not_to_use": [
+      "**Real-time requirements**: Users need immediate results",
+      "**Interactive applications**: Results displayed to users waiting",
+      "**Unpredictable timing**: Requests arrive randomly rather than in batches",
+      "**Low volume**: Too few requests to justify batch infrastructure",
+      "**Streaming data**: Continuous data flow better suited to stream processing"
+    ]
+  },
+  "deployment/real-time-prediction-pattern.md": {
+    "overview": "Real-Time Inference delivers predictions with minimal latency, typically under 100ms-1s, enabling interactive user experiences. In healthcare, this supports applications like live clinical note summarization as physicians document, or instant patient history summaries during emergency admissions.",
+    "when_to_use": [
+      "**Interactive UIs**: Users expect immediate feedback (<1s response)",
+      "**Clinical workflows**: Physicians need results during patient encounters",
+      "**Emergency scenarios**: Time-critical medical decisions require fast summaries",
+      "**User experience**: Latency directly impacts application usability",
+      "**Synchronous operations**: Downstream processes wait for predictions"
+    ],
+    "when_not_to_use": [
+      "**Batch suitable**: Predictions can wait hours/days",
+      "**High cost sensitivity**: Real-time infrastructure more expensive than batch",
+      "**Complex models**: Model too large/slow for real-time constraints",
+      "**Low QPS**: Request volume doesn't justify always-on infrastructure",
+      "**Acceptable delays**: Users tolerate 5-30 second waits"
+    ]
+  },
+  "deployment/edge-deployment-pattern.md": {
+    "overview": "Edge Deployment runs models on local devices (phones, tablets, medical devices) rather than cloud servers, enabling offline operation, reducing latency, and keeping sensitive data on-device. For healthcare, this allows clinical summaries on tablets in areas with poor connectivity or ultra-private processing of patient data.",
+    "when_to_use": [
+      "**Offline requirements**: Must work without internet connectivity",
+      "**Ultra-low latency**: Network round-trip unacceptable",
+      "**Privacy constraints**: Data cannot leave device due to regulations",
+      "**Edge devices available**: Target devices have sufficient compute (modern tablets, workstations)",
+      "**Network costs**: Reducing cloud API calls saves significant money"
+    ],
+    "when_not_to_use": [
+      "**Large models**: Model too big for edge device memory/compute",
+      "**Frequent updates**: Model changes too often to push to all devices",
+      "**Heterogeneous devices**: Too many different device types to support",
+      "**Cloud advantages**: Need massive compute or latest model versions",
+      "**Connected environments**: Reliable high-speed internet always available"
+    ]
+  },
+  "deployment/model-versioning-pattern.md": {
+    "overview": "Model Versioning tracks and manages different versions of ML models throughout their lifecycle, enabling reproducibility, rollbacks, and A/B testing. In healthcare AI, this ensures audit trails for regulatory compliance and allows safe deployment of improved summarization models while maintaining ability to revert if issues arise.",
+    "when_to_use": [
+      "**Regulatory compliance**: Healthcare regulations require model versioning audit trails",
+      "**Multiple environments**: Different model versions in dev, staging, production",
+      "**Gradual rollouts**: Deploy new versions to subset of users first",
+      "**Reproducibility**: Need to reproduce historical predictions exactly",
+      "**Rollback capability**: Must revert to previous version if problems detected"
+    ],
+    "when_not_to_use": [
+      "**Single version**: Only ever one model version in production",
+      "**Disposable models**: Models replaced completely rather than versioned",
+      "**No compliance needs**: No regulatory or audit requirements",
+      "**Experimental phase**: Still in research; versioning overhead premature",
+      "**Simple updates**: Model changes don't affect predictions significantly"
+    ]
+  },
+  "deployment/ab-testing-pattern.md": {
+    "overview": "A/B Testing Pattern compares two model versions by routing traffic to each and measuring performance metrics, enabling data-driven decisions about model updates. For healthcare summarization, this might compare a new model's clinical accuracy or physician satisfaction against the current production model.",
+    "when_to_use": [
+      "**Model comparison**: Uncertain which of two models performs better in production",
+      "**Risk mitigation**: Test new model on small traffic percentage before full rollout",
+      "**Metric validation**: Real-world metrics differ from offline evaluation",
+      "**User feedback**: Measure physician satisfaction or clinical workflow impact",
+      "**Incremental rollout**: Gradually shift traffic to new model version"
+    ],
+    "when_not_to_use": [
+      "**Clear winner**: Offline metrics already show dramatic improvement",
+      "**Low traffic**: Insufficient volume for statistical significance",
+      "**No metrics**: Can't measure what defines 'better' in production",
+      "**Urgent deployment**: Critical fix needed immediately",
+      "**Identical models**: Versions produce same results; no need to test"
+    ]
+  },
+  "deployment/canary-deployment-pattern.md": {
+    "overview": "Canary Deployment gradually rolls out new model versions to increasing percentages of traffic, monitoring for issues at each stage before full deployment. Named after canaries in coal mines, this pattern detects problems early with minimal impact, crucial for safety-critical healthcare applications.",
+    "when_to_use": [
+      "**High-risk changes**: Major model architecture or training data changes",
+      "**Large user base**: Issues affect many users; gradual rollout reduces blast radius",
+      "**Monitoring infrastructure**: Can detect degradation quickly",
+      "**Rollback capability**: Can revert to previous version if canary fails",
+      "**Production validation**: Need to verify model behavior in real clinical workflows"
+    ],
+    "when_not_to_use": [
+      "**Low-risk updates**: Minor improvements with high confidence",
+      "**Small user base**: All users are canaries anyway",
+      "**No monitoring**: Can't detect if canary is failing",
+      "**Instant rollout needed**: Critical fix required immediately",
+      "**Consistent traffic**: Not enough traffic variation to test at different scales"
+    ]
+  },
+  "deployment/blue-green-deployment-pattern.md": {
+    "overview": "Blue-Green Deployment maintains two identical production environments (blue and green), allowing instant switching between them. Deploy new model to green environment, test thoroughly, then switch traffic from blue to green. If issues arise, instantly switch back to blue. Minimizes downtime and risk for healthcare AI systems.",
+    "when_to_use": [
+      "**Zero-downtime requirement**: Healthcare systems can't afford deployment downtime",
+      "**Instant rollback**: Need ability to revert immediately if issues detected",
+      "**Full testing**: Can test new version in production-like environment before switch",
+      "**Database migrations**: Coordinate model and data schema changes",
+      "**High availability**: Must maintain service during deployments"
+    ],
+    "when_not_to_use": [
+      "**Resource constraints**: Can't afford duplicate production infrastructure",
+      "**Stateful systems**: Blue/green environments can't easily share state",
+      "**Gradual rollout needed**: Want to test on subset of users (use canary instead)",
+      "**Frequent deployments**: Too expensive to maintain duplicate environments",
+      "**Development phase**: Overkill for experimental systems"
+    ]
+  },
+  "data/feature-store-pattern.md": {
+    "overview": "Feature Store centralizes storage and serving of ML features, ensuring consistency between training and inference, enabling feature reuse across models, and managing feature versioning. In healthcare, this might store computed features like patient risk scores, medication adherence metrics, or clinical concept embeddings.",
+    "when_to_use": [
+      "**Feature reuse**: Multiple models share common features (demographics, lab values)",
+      "**Training/serving consistency**: Avoid skew between offline training and online inference",
+      "**Feature versioning**: Track feature definitions over time",
+      "**Team collaboration**: Multiple teams building models from shared features",
+      "**Complex features**: Expensive-to-compute features need caching and reuse"
+    ],
+    "when_not_to_use": [
+      "**Simple models**: Raw data sufficient; no engineered features",
+      "**Single model**: Only one model; no feature sharing needed",
+      "**Batch-only**: All features computed offline; no online serving",
+      "**Small team**: Overhead not justified for 1-2 data scientists",
+      "**Prototype phase**: Still exploring what features matter"
+    ]
+  },
+  "data/data-pipeline-pattern.md": {
+    "overview": "Data Pipeline Pattern orchestrates automated workflows for data ingestion, transformation, validation, and loading (ETL/ELT). For healthcare AI, this means automated pipelines that extract clinical notes from EHRs, transform to standard formats (FHIR), validate quality, and load into training datasets or vector databases.",
+    "when_to_use": [
+      "**Regular data updates**: New clinical data arrives continuously or on schedule",
+      "**Complex transformations**: Multi-step processing (extraction, cleaning, normalization)",
+      "**Data quality**: Need validation and error handling",
+      "**Reproducibility**: Must recreate datasets consistently",
+      "**Scale**: Processing thousands to millions of documents"
+    ],
+    "when_not_to_use": [
+      "**One-time load**: Static dataset loaded once",
+      "**Manual process**: Data preparation requires human judgment at each step",
+      "**Simple copy**: Just moving data without transformation",
+      "**Ad-hoc analysis**: Exploratory work; automation premature",
+      "**Small scale**: A few files processed manually as needed"
+    ]
+  },
+  "data/data-validation-pattern.md": {
+    "overview": "Data Validation Pattern systematically checks data quality, schema compliance, and statistical properties before training or inference. For healthcare, this validates clinical data completeness, detects outliers in vitals or lab results, and ensures PHI de-identification before model training.",
+    "when_to_use": [
+      "**Data quality critical**: Poor data leads to dangerous medical predictions",
+      "**Multiple data sources**: Integrating EHR, labs, imaging with varying quality",
+      "**Compliance requirements**: HIPAA requires validation of de-identification",
+      "**Production pipelines**: Automated data flows need automated validation",
+      "**Schema evolution**: Data formats change; need to detect mismatches"
+    ],
+    "when_not_to_use": [
+      "**Trusted source**: Single high-quality data source with guaranteed quality",
+      "**Exploration phase**: Still understanding data; premature to codify validation rules",
+      "**Manual review**: Human experts review all data anyway",
+      "**Simple data**: Data structure too simple to fail validation",
+      "**One-time use**: Dataset used once; validation overhead not justified"
+    ]
+  },
+  "data/data-versioning-pattern.md": {
+    "overview": "Data Versioning tracks datasets over time, enabling reproducibility, rollback, and understanding how data changes affect model performance. For healthcare AI, this provides audit trails of training data (regulatory requirement) and enables reproducing model behavior for investigation of clinical incidents.",
+    "when_to_use": [
+      "**Regulatory compliance**: Healthcare regulations require data provenance",
+      "**Reproducibility**: Must recreate exact training conditions",
+      "**Data evolution**: Datasets change over time; need to track versions",
+      "**Model debugging**: Understanding what data produced what model behavior",
+      "**Experimentation**: Comparing model performance across dataset versions"
+    ],
+    "when_not_to_use": [
+      "**Static dataset**: Data never changes",
+      "**Disposable experiments**: Results not used for production decisions",
+      "**Storage constraints**: Can't afford to store multiple dataset versions",
+      "**Simple snapshots**: Basic file backups sufficient",
+      "**No compliance**: No regulatory requirements for data tracking"
+    ]
+  },
+  "data/data-lineage-pattern.md": {
+    "overview": "Data Lineage Pattern tracks data's origin, transformations, and dependencies throughout its lifecycle, answering 'where did this data come from?' and 'what used this data?'. Critical for healthcare AI compliance, enabling tracing model predictions back through features to source clinical records.",
+    "when_to_use": [
+      "**Regulatory compliance**: FDA, HIPAA require understanding data provenance",
+      "**Impact analysis**: Need to know what's affected by data source changes",
+      "**Data quality debugging**: Tracing issues back to source systems",
+      "**Audit trails**: Explaining why model made specific prediction",
+      "**Complex pipelines**: Many transformation steps; hard to track mentally"
+    ],
+    "when_not_to_use": [
+      "**Simple pipeline**: One-step transformation; lineage obvious",
+      "**No compliance needs**: No regulatory requirements",
+      "**Throwaway analysis**: Exploratory work with no downstream impact",
+      "**Small team**: Everyone knows data flows informally",
+      "**Static data**: Data sources and transformations never change"
+    ]
+  },
+  "data/feature-engineering-pattern.md": {
+    "overview": "Feature Engineering creates informative input features from raw data through domain knowledge and statistical techniques. For healthcare summarization, this might include extracting temporal patterns from lab results, creating patient complexity scores, or encoding medication interaction features that help models generate better clinical summaries.",
+    "when_to_use": [
+      "**Domain knowledge**: Medical expertise can guide feature creation (risk scores, severity indices)",
+      "**Structured data**: Tabular EHR data benefits from feature engineering",
+      "**Traditional ML**: Tree-based models and classical ML need engineered features",
+      "**Performance boost**: Engineered features improve model accuracy significantly",
+      "**Interpretability**: Hand-crafted features more explainable than learned representations"
+    ],
+    "when_not_to_use": [
+      "**Deep learning**: Neural networks learn features automatically from raw data",
+      "**Unstructured text**: LLMs work directly on raw text without feature engineering",
+      "**No domain expertise**: Don't understand domain well enough to engineer features",
+      "**Time constraints**: Feature engineering is time-intensive",
+      "**Automated feature learning**: AutoML or representation learning performs better"
+    ]
+  },
+  "data/data-augmentation-pattern.md": {
+    "overview": "Data Augmentation artificially expands training datasets by creating modified versions of existing examples, improving model robustness and generalization. For healthcare text, this might include paraphrasing clinical notes, adding medical synonyms, or introducing realistic perturbations to clinical scenarios.",
+    "when_to_use": [
+      "**Limited training data**: Small labeled datasets due to annotation costs or rare conditions",
+      "**Imbalanced classes**: Rare diagnoses or outcomes need oversampling",
+      "**Robustness**: Model should handle variations in writing style, terminology",
+      "**Overfitting**: Model memorizes training data; augmentation improves generalization",
+      "**Known invariances**: Know what variations shouldn't affect predictions (medical synonyms)"
+    ],
+    "when_not_to_use": [
+      "**Abundant data**: Already have sufficient diverse training examples",
+      "**Domain constraints**: Medical accuracy requires exact original text",
+      "**Augmentation artifacts**: Synthetic data introduces unrealistic patterns",
+      "**Regulatory concerns**: Augmented data may not meet training data requirements",
+      "**No clear augmentations**: Don't know what variations are realistic and safe"
+    ]
+  },
+  "mlops/cicd-for-ml-pattern.md": {
+    "overview": "CI/CD for ML extends software continuous integration/deployment to machine learning, automating model training, testing, validation, and deployment pipelines. For healthcare AI, this enables safe, auditable, and reproducible model updates with automated checks for accuracy, bias, and compliance before production deployment.",
+    "when_to_use": [
+      "**Frequent model updates**: Regular retraining as new clinical data arrives",
+      "**Reproducibility**: Need consistent, automated model building process",
+      "**Quality gates**: Automated testing before deployment (accuracy, bias, safety checks)",
+      "**Team collaboration**: Multiple data scientists working on models",
+      "**Regulatory compliance**: Audit trails of model development and deployment"
+    ],
+    "when_not_to_use": [
+      "**Research phase**: Exploratory work; automation premature",
+      "**Infrequent updates**: Model updated once per year; manual process acceptable",
+      "**Simple models**: Training takes seconds; automation overhead not justified",
+      "**Single developer**: Solo data scientist; informal process works",
+      "**No infrastructure**: Lack CI/CD platform or expertise to set up"
+    ]
+  },
+  "mlops/model-registry-pattern.md": {
+    "overview": "Model Registry provides centralized storage and metadata management for trained models, tracking versions, performance metrics, training data, and deployment status. For healthcare AI, this creates required audit trails, enables model comparison, and manages the lifecycle from experimentation to production to retirement.",
+    "when_to_use": [
+      "**Multiple models**: Managing many model versions or experiments",
+      "**Team collaboration**: Shared model repository for data science teams",
+      "**Model lifecycle**: Tracking models from training through production to retirement",
+      "**Compliance**: Regulatory requirements for model documentation and provenance",
+      "**Governance**: Need approval workflows and access control for model deployment"
+    ],
+    "when_not_to_use": [
+      "**Single model**: Only one model in use; registry overhead not needed",
+      "**Informal tracking**: Spreadsheets or wikis sufficient for small teams",
+      "**Research only**: Not deploying models to production",
+      "**No compliance needs**: No regulatory requirements for model tracking",
+      "**Simple versioning**: File naming conventions adequate"
+    ]
+  },
+  "mlops/experiment-tracking-pattern.md": {
+    "overview": "Experiment Tracking systematically records ML experiments with parameters, metrics, artifacts, and results, enabling reproducibility and comparison. For healthcare AI, this documents model development decisions, supports regulatory filings with evidence of systematic development, and helps teams understand what has been tried.",
+    "when_to_use": [
+      "**Many experiments**: Running dozens to hundreds of training experiments",
+      "**Hyperparameter tuning**: Testing different model configurations",
+      "**Team collaboration**: Sharing experiment results across team members",
+      "**Reproducibility**: Need to reproduce exact experimental conditions",
+      "**Decision documentation**: Regulatory filings require evidence of systematic development"
+    ],
+    "when_not_to_use": [
+      "**Few experiments**: Running 1-5 experiments; manual tracking sufficient",
+      "**Stable model**: Not experimenting; using established model",
+      "**Solo researcher**: Informal notes work for single person",
+      "**No comparison needed**: Each experiment independent; not comparing results",
+      "**Simple models**: Fast experiments that don't justify tracking overhead"
+    ]
+  },
+  "mlops/model-monitoring-pattern.md": {
+    "overview": "Model Monitoring tracks production model performance, data quality, and system health in real-time, alerting when degradation occurs. For healthcare AI, this detects when summarization quality drops, input data distribution shifts, or system failures occur, enabling rapid response to protect patient care.",
+    "when_to_use": [
+      "**Production models**: Models serving real clinical workflows",
+      "**Critical applications**: Model failures impact patient care or safety",
+      "**Changing data**: Input distributions shift over time (new diseases, treatment protocols)",
+      "**SLA requirements**: Must maintain accuracy and uptime guarantees",
+      "**Compliance**: Regulatory requirements for ongoing model performance monitoring"
+    ],
+    "when_not_to_use": [
+      "**Offline models**: Batch processing where delays are acceptable",
+      "**Research phase**: Experimental models not in production",
+      "**Static domain**: Input data and model behavior stable indefinitely",
+      "**Manual review**: Humans review all outputs anyway; catch issues manually",
+      "**Low stakes**: Model errors have minimal impact"
+    ]
+  },
+  "mlops/model-retraining-pattern.md": {
+    "overview": "Automated Retraining systematically updates models with new data on a schedule or triggered by performance degradation, keeping models current as medical knowledge and clinical practices evolve. This ensures healthcare AI stays accurate as new treatments emerge and patient populations change.",
+    "when_to_use": [
+      "**Evolving domain**: Medical knowledge and practices change regularly",
+      "**Continuous data**: New clinical data arrives that should improve model",
+      "**Performance monitoring**: Can detect when retraining is needed",
+      "**Reproducible pipeline**: Automated training pipeline already established",
+      "**Regulatory approval**: Have process for validating and deploying retrained models"
+    ],
+    "when_not_to_use": [
+      "**Stable domain**: Medical knowledge in this area doesn't change",
+      "**Static dataset**: No new training data available",
+      "**Manual validation**: Each model version requires extensive manual review",
+      "**Resource constraints**: Retraining computationally expensive or slow",
+      "**Rapid deployment risk**: Automated retraining could deploy problematic models"
+    ]
+  },
+  "mlops/pipeline-orchestration-pattern.md": {
+    "overview": "Workflow Orchestration coordinates complex ML pipelines with dependencies between data processing, training, evaluation, and deployment steps. For healthcare AI, this manages end-to-end workflows from EHR data extraction through model training to deployment, ensuring steps execute in correct order with proper error handling.",
+    "when_to_use": [
+      "**Complex pipelines**: Many interdependent steps (data extraction, preprocessing, training, validation, deployment)",
+      "**Scheduled workflows**: Regular execution (nightly retraining, weekly data updates)",
+      "**Resource management**: Need to allocate GPU, memory efficiently across steps",
+      "**Error handling**: Retry logic, alerts, and recovery for failed steps",
+      "**Team coordination**: Multiple people maintaining different pipeline components"
+    ],
+    "when_not_to_use": [
+      "**Simple workflows**: Linear script handles everything",
+      "**Ad-hoc execution**: Running steps manually as needed",
+      "**Single step**: Only one operation to perform",
+      "**Notebook-based**: Interactive analysis in Jupyter notebooks",
+      "**No dependencies**: Steps can run independently without orchestration"
+    ]
+  },
+  "monitoring/drift-detection-pattern.md": {
+    "overview": "Drift Detection monitors how input data (data drift) or model predictions (concept drift) change over time relative to training distributions. For healthcare AI, this detects when patient populations change, new medical terminology emerges, or EHR systems modify data formats, signaling when model retraining is needed.",
+    "when_to_use": [
+      "**Evolving data**: Patient demographics, medical terminology, treatment protocols change",
+      "**Long-lived models**: Models in production for months/years",
+      "**Upstream changes**: EHR systems, data sources may change without notice",
+      "**Performance monitoring**: Detect degradation before accuracy drops",
+      "**Regulatory compliance**: Required to demonstrate ongoing model validity"
+    ],
+    "when_not_to_use": [
+      "**Stable domain**: Input data distribution doesn't change",
+      "**Short-lived models**: Model replaced frequently anyway",
+      "**Continuous retraining**: Model retrained so often drift doesn't accumulate",
+      "**No baseline**: Can't establish training distribution to compare against",
+      "**Batch predictions**: All predictions reviewed; drift doesn't matter"
+    ]
+  },
+  "monitoring/anomaly-detection-pattern.md": {
+    "overview": "Anomaly Detection identifies unusual patterns in inputs or outputs that deviate from normal behavior, flagging potential data quality issues, system failures, or adversarial inputs. For healthcare, this catches corrupted clinical data, impossible vital signs, or suspicious input patterns before they cause incorrect summaries.",
+    "when_to_use": [
+      "**Data quality**: Need to detect corrupted or invalid clinical data",
+      "**System failures**: Identify upstream data pipeline failures",
+      "**Security**: Detect adversarial or malicious inputs",
+      "**Safety critical**: Unusual inputs might cause dangerous predictions",
+      "**Unknown unknowns**: Can't enumerate all possible failure modes"
+    ],
+    "when_not_to_use": [
+      "**Known error modes**: Can validate against specific rules instead",
+      "**High false positives**: Anomaly detection may flag too many false alarms",
+      "**Rapid changes**: What's 'normal' changes too quickly to establish baselines",
+      "**All data reviewed**: Humans review all inputs/outputs anyway",
+      "**Simple validation**: Basic range checks and schema validation sufficient"
+    ]
+  },
+  "monitoring/performance-monitoring-pattern.md": {
+    "overview": "Performance Monitoring tracks system-level metrics like latency, throughput, resource utilization, and uptime to ensure ML systems meet SLAs. For healthcare AI, this monitors API response times, GPU utilization, and system availability to ensure clinical workflows aren't disrupted by slow or failing summarization services.",
+    "when_to_use": [
+      "**Production systems**: Serving real clinical users with SLA requirements",
+      "**Real-time applications**: Latency affects user experience",
+      "**Resource optimization**: Need to right-size infrastructure and reduce costs",
+      "**Capacity planning**: Understanding usage patterns to plan scaling",
+      "**Incident response**: Quickly identify and diagnose system issues"
+    ],
+    "when_not_to_use": [
+      "**Batch processing**: No latency requirements",
+      "**Research phase**: Experimental systems without users",
+      "**Single user**: Performance issues don't affect others",
+      "**Over-provisioned**: Have far more resources than needed; performance not a concern",
+      "**Simple systems**: Complexity doesn't justify monitoring overhead"
+    ]
+  },
+  "monitoring/data-quality-monitoring-pattern.md": {
+    "overview": "Data Quality Monitoring continuously validates input data completeness, accuracy, consistency, and timeliness. For healthcare AI, this ensures clinical data meets quality standards before summarization, catching issues like missing diagnoses, invalid medication codes, or delayed lab result uploads that could degrade summary quality.",
+    "when_to_use": [
+      "**Multiple data sources**: Integrating EHR, labs, imaging with varying quality",
+      "**Production pipelines**: Automated data flows need continuous validation",
+      "**Upstream dependencies**: Data quality depends on external systems you don't control",
+      "**Compliance requirements**: Healthcare regulations mandate data quality standards",
+      "**Quality degradation**: Data quality known to vary over time"
+    ],
+    "when_not_to_use": [
+      "**Single trusted source**: High-quality data from controlled source",
+      "**Manual review**: Humans validate all data anyway",
+      "**Static data**: Historical dataset that doesn't change",
+      "**Research phase**: Exploratory analysis where perfect data quality not required",
+      "**Simple data**: Data structure too simple to have quality issues"
+    ]
+  },
+  "monitoring/model-performance-tracking-pattern.md": {
+    "overview": "Model Performance Monitoring tracks ML-specific metrics like accuracy, precision, recall, and F1 score in production, comparing against baselines to detect degradation. For healthcare summarization, this monitors clinical accuracy of summaries, physician feedback ratings, and whether key medical concepts are being captured correctly.",
+    "when_to_use": [
+      "**Production models**: Models making real clinical predictions",
+      "**Ground truth available**: Can collect labels for production data (physician feedback)",
+      "**Performance critical**: Model accuracy directly impacts patient care",
+      "**Regulatory compliance**: Must demonstrate ongoing model performance",
+      "**Baseline established**: Have performance benchmarks to compare against"
+    ],
+    "when_not_to_use": [
+      "**No ground truth**: Can't collect labels for production predictions",
+      "**Offline evaluation sufficient**: Model performance stable; frequent monitoring unnecessary",
+      "**Manual review**: All predictions reviewed by experts anyway",
+      "**Research phase**: Experimental model not in production",
+      "**Low stakes**: Model errors have minimal impact"
+    ]
+  },
+  "monitoring/alerting-pattern.md": {
+    "overview": "Alerting Pattern notifies operators when monitored metrics exceed thresholds or anomalies are detected, enabling rapid response to system failures or model degradation. For healthcare AI, this means paging on-call engineers if summarization API goes down or model accuracy drops below safety thresholds.",
+    "when_to_use": [
+      "**Critical systems**: Failures impact patient care or safety",
+      "**24/7 operations**: System must be available around the clock",
+      "**Rapid response needed**: Quick action can prevent or minimize impact",
+      "**Monitoring in place**: Already collecting metrics to alert on",
+      "**Clear thresholds**: Know what metric values indicate problems"
+    ],
+    "when_not_to_use": [
+      "**No response capability**: Can't act on alerts anyway",
+      "**Batch systems**: Delays of hours/days acceptable",
+      "**Alert fatigue**: Too many false positives; team ignores alerts",
+      "**Manual monitoring**: Someone always watching dashboards",
+      "**Research phase**: Experimental systems without users to impact"
+    ]
+  },
+  "security/adversarial-defense-pattern.md": {
+    "overview": "Adversarial Defense protects ML models against malicious inputs designed to cause incorrect predictions. For healthcare AI, this guards against manipulated clinical notes intended to generate false summaries, or prompt injection attacks trying to extract training data or override safety constraints.",
+    "when_to_use": [
+      "**User-supplied inputs**: Accepting clinical text from potentially untrusted sources",
+      "**High-stakes decisions**: Adversarial attacks could harm patients",
+      "**Public-facing**: Systems accessible to external users or attackers",
+      "**Automated decisions**: Model outputs used without human review",
+      "**Known attack vectors**: Specific adversarial threats identified"
+    ],
+    "when_not_to_use": [
+      "**Trusted inputs only**: All data from verified, controlled sources",
+      "**Human review**: Experts review all model outputs",
+      "**Low-value target**: System not attractive to attackers",
+      "**Research phase**: Security hardening premature for experimental systems",
+      "**Detection sufficient**: Can detect attacks without preventing them"
+    ]
+  },
+  "security/privacy-preserving-ml-pattern.md": {
+    "overview": "Privacy-Preserving ML enables learning from sensitive data while protecting individual privacy through techniques like differential privacy, federated learning, and secure computation. Essential for healthcare AI to comply with HIPAA while training on patient data across institutions without centralizing PHI.",
+    "when_to_use": [
+      "**Sensitive data**: Training on protected health information (PHI)",
+      "**Privacy regulations**: HIPAA, GDPR require privacy protections",
+      "**Multi-party data**: Multiple hospitals collaborating without sharing raw data",
+      "**Privacy risk**: Re-identification or data leakage could harm patients",
+      "**Consent constraints**: Patients consented to analysis but not data sharing"
+    ],
+    "when_not_to_use": [
+      "**De-identified data**: Data already anonymized sufficiently",
+      "**Public data**: Training on publicly available medical literature",
+      "**Single institution**: Data doesn't leave organization; privacy already controlled",
+      "**Performance critical**: Privacy techniques reduce accuracy unacceptably",
+      "**No sensitive attributes**: Data doesn't contain personal information"
+    ]
+  },
+  "security/differential-privacy-pattern.md": {
+    "overview": "Differential Privacy adds calibrated noise to training or outputs, providing mathematical privacy guarantees that individual patient records cannot be inferred from model behavior. This enables publishing healthcare AI models or aggregated statistics while provably protecting individual privacy.",
+    "when_to_use": [
+      "**Privacy guarantees**: Need mathematical proof of privacy protection",
+      "**Releasing models**: Publishing models trained on sensitive data",
+      "**Aggregated statistics**: Sharing population-level insights from PHI",
+      "**Regulatory compliance**: Meeting strong privacy requirements (GDPR)",
+      "**Research data sharing**: Enabling research while protecting subjects"
+    ],
+    "when_not_to_use": [
+      "**Accuracy critical**: Noise reduces model accuracy unacceptably",
+      "**Small datasets**: Privacy-utility tradeoff poor for small samples",
+      "**Data doesn't leave**: Model and predictions stay within secure environment",
+      "**Weaker guarantees sufficient**: Other privacy techniques adequate",
+      "**Complex implementation**: Lack expertise to implement correctly"
+    ]
+  },
+  "security/homomorphic-encryption-pattern.md": {
+    "overview": "Homomorphic Encryption allows computations on encrypted data without decrypting it, enabling ML inference on sensitive patient data while it remains encrypted end-to-end. Healthcare providers can send encrypted clinical notes for summarization without cloud services ever seeing plaintext PHI.",
+    "when_to_use": [
+      "**Zero trust**: Cannot trust cloud provider or model operator with plaintext data",
+      "**Regulatory constraints**: Regulations prohibit sending unencrypted PHI to cloud",
+      "**Shared infrastructure**: Using third-party ML services with patient data",
+      "**Compliance**: Meeting strictest data protection requirements",
+      "**International**: Data residency laws prevent moving data across borders"
+    ],
+    "when_not_to_use": [
+      "**Performance critical**: Homomorphic encryption adds 100-1000x overhead",
+      "**Trusted environment**: Cloud provider already HIPAA-compliant with BAA",
+      "**Training**: Current homomorphic techniques mainly support inference, not training",
+      "**Complex models**: Large neural networks may be impractical",
+      "**Complexity**: Lack expertise or tooling to implement"
+    ]
+  },
+  "security/secure-mpc-pattern.md": {
+    "overview": "Secure Multi-Party Computation (MPC) enables multiple parties to jointly compute functions over their private data without revealing inputs to each other. Multiple hospitals can collaboratively train healthcare AI models with each institution's data remaining private and never leaving their premises.",
+    "when_to_use": [
+      "**Multi-party collaboration**: Multiple institutions want to pool data without sharing",
+      "**Privacy regulations**: HIPAA prohibits centralizing data",
+      "**Mutual distrust**: Parties want benefits of collaboration but don't fully trust each other",
+      "**Data cannot move**: Legal or technical constraints prevent data centralization",
+      "**Regulatory compliance**: Required to demonstrate data never exposed"
+    ],
+    "when_not_to_use": [
+      "**Two parties**: Simpler techniques like federated learning sufficient",
+      "**Trust exists**: Parties willing to share data with trusted third party",
+      "**Performance critical**: MPC adds significant computational overhead",
+      "**Complex models**: Cryptographic protocols may not support needed operations",
+      "**Implementation complexity**: Require specialized expertise"
+    ]
+  },
+  "security/model-watermarking-pattern.md": {
+    "overview": "Model Watermarking embeds hidden markers into ML models to prove ownership, detect unauthorized use, and trace model leaks. For healthcare AI, this protects proprietary medical summarization models from theft and enables detecting if models are being used without proper licensing or safety oversight.",
+    "when_to_use": [
+      "**Proprietary models**: Valuable models you've invested significantly in developing",
+      "**Model distribution**: Deploying models to third parties or edge devices",
+      "**Intellectual property**: Need to prove model ownership or detect theft",
+      "**Licensing**: Enforcing usage terms or detecting unauthorized deployment",
+      "**Insider threats**: Concerned about employees stealing models"
+    ],
+    "when_not_to_use": [
+      "**Open source**: Openly sharing models; watermarking unnecessary",
+      "**Controlled deployment**: Models only in your controlled infrastructure",
+      "**Low value**: Model not valuable enough to justify protection effort",
+      "**Performance impact**: Watermarking might degrade model accuracy",
+      "**Detection unnecessary**: Other means of preventing model theft"
+    ]
+  },
+  "explainability/xai-pattern.md": {
+    "overview": "Explainable AI (XAI) provides human-understandable explanations of model predictions, helping clinicians understand why a summary included certain information or what input features drove specific outputs. Critical for clinical trust, regulatory compliance, and identifying model failures in healthcare applications.",
+    "when_to_use": [
+      "**Clinical decision support**: Physicians need to understand and trust model outputs",
+      "**Regulatory requirements**: FDA, EU AI Act require explainability for high-risk medical AI",
+      "**Model debugging**: Understanding why model makes mistakes",
+      "**Building trust**: Clinicians skeptical of black-box AI",
+      "**Error analysis**: Identifying systematic model failures or biases"
+    ],
+    "when_not_to_use": [
+      "**Low stakes**: Non-critical applications where trust is less important",
+      "**Expert users**: Users understand model internals already",
+      "**Performance critical**: Explanation generation too slow for use case",
+      "**No audience**: Nobody will actually use explanations",
+      "**Inherently interpretable**: Simple models (linear, decision trees) already transparent"
+    ]
+  },
+  "explainability/feature-importance-pattern.md": {
+    "overview": "Feature Importance ranks input features by their contribution to model predictions, showing which clinical variables (lab values, diagnoses, medications) most influence summarization outputs. Helps clinicians understand what drives model behavior and identify if models rely on spurious correlations.",
+    "when_to_use": [
+      "**Feature selection**: Identifying most relevant clinical variables",
+      "**Model validation**: Ensuring model uses clinically meaningful features",
+      "**Domain understanding**: Learning what factors drive outcomes",
+      "**Debugging**: Identifying if model relies on spurious correlations or data leakage",
+      "**Communication**: Explaining model to non-technical stakeholders"
+    ],
+    "when_not_to_use": [
+      "**Unstructured data**: Text or images where 'features' aren't clearly defined",
+      "**Deep learning**: Feature importance ambiguous for learned representations",
+      "**Instance-level explanations**: Need to explain specific predictions, not global behavior",
+      "**No structured features**: Working with raw data without engineered features",
+      "**Complex interactions**: Feature importance misses interaction effects"
+    ]
+  },
+  "explainability/shap-lime-pattern.md": {
+    "overview": "SHAP (SHapley Additive exPlanations) and LIME (Local Interpretable Model-agnostic Explanations) provide local explanations for individual predictions by approximating model behavior near specific inputs. For healthcare, this explains why a specific patient's summary included certain elements based on their particular clinical history.",
+    "when_to_use": [
+      "**Instance-level explanations**: Need to explain specific predictions to clinicians",
+      "**Model-agnostic**: Works with any model type (black-box compatible)",
+      "**Debugging specific cases**: Investigating why model failed on particular patient",
+      "**Clinical review**: Helping physicians validate or challenge model outputs",
+      "**Regulatory**: Explaining individual AI-assisted clinical decisions"
+    ],
+    "when_not_to_use": [
+      "**Global understanding**: Need overall model behavior, not individual predictions",
+      "**Real-time constraints**: SHAP/LIME too slow for production latency requirements",
+      "**Simple models**: Inherently interpretable models don't need approximation",
+      "**High-dimensional data**: Explanations become overwhelming with thousands of features",
+      "**No local fidelity**: Model behavior too complex for local approximation"
+    ]
+  },
+  "explainability/attention-visualization-pattern.md": {
+    "overview": "Attention Visualization displays which input tokens or regions the model focused on when generating outputs, showing clinicians which parts of patient records influenced summary generation. Particularly valuable for Transformer-based LLMs, providing intuitive visual explanations of model reasoning.",
+    "when_to_use": [
+      "**Transformer models**: LLMs and other attention-based architectures",
+      "**Text/sequence data**: Explaining which words or sentences influenced output",
+      "**Clinician review**: Helping doctors see what clinical information model emphasized",
+      "**Quality assurance**: Verifying model attends to relevant information",
+      "**Model debugging**: Understanding attention patterns to identify issues"
+    ],
+    "when_not_to_use": [
+      "**Non-attention models**: Models without attention mechanisms",
+      "**Tabular data**: Structured data where attention visualization less intuitive",
+      "**Complex reasoning**: Attention patterns don't always reflect true reasoning",
+      "**Misleading**: Attention weights can be difficult to interpret correctly",
+      "**Alternative explanations better**: SHAP or feature importance more appropriate"
+    ]
+  },
+  "explainability/model-interpretability-pattern.md": {
+    "overview": "Interpretable Models uses inherently transparent model architectures (linear models, decision trees, rule-based systems) where reasoning is directly understandable without post-hoc explanation techniques. For simpler healthcare tasks, this provides complete transparency into clinical decision logic.",
+    "when_to_use": [
+      "**Regulatory compliance**: Regulations require fully transparent models",
+      "**Complete transparency**: Need to understand every aspect of model reasoning",
+      "**Simple tasks**: Problem solvable with interpretable models without large accuracy loss",
+      "**Clinical guidelines**: Encoding established medical guidelines as rules",
+      "**Debugging**: Need to manually inspect and modify decision logic"
+    ],
+    "when_not_to_use": [
+      "**Complex tasks**: Problem requires deep learning or complex models",
+      "**Performance gap**: Interpretable models significantly less accurate",
+      "**Unstructured data**: Text/images where deep learning excels",
+      "**Modern LLMs**: Using foundation models that are inherently black-box",
+      "**Explanation sufficient**: Post-hoc explainability adequate; full transparency not required"
+    ]
+  },
+  "explainability/counterfactual-explanation-pattern.md": {
+    "overview": "Counterfactual Explanations show minimal changes to inputs that would alter model predictions, answering 'what would need to change for a different outcome?'. For healthcare, this might show what lab value changes would result in different risk assessments or what additional symptoms would change diagnostic summaries.",
+    "when_to_use": [
+      "**Actionable insights**: Helping clinicians understand what interventions might change outcomes",
+      "**Model debugging**: Finding decision boundaries and edge cases",
+      "**Fairness analysis**: Understanding if small changes produce unexpected prediction shifts",
+      "**User understanding**: Counterfactuals often more intuitive than feature importance",
+      "**Clinical scenarios**: Exploring 'what if' questions about patient outcomes"
+    ],
+    "when_not_to_use": [
+      "**No causal interpretation**: Changes aren't actually actionable interventions",
+      "**Computational cost**: Generating counterfactuals too expensive",
+      "**Ambiguous changes**: Many possible counterfactuals; unclear which to show",
+      "**Unrealistic scenarios**: Generated counterfactuals clinically implausible",
+      "**Other explanations better**: Feature importance or attention more appropriate"
+    ]
+  },
+  "performance/model-optimization-pattern.md": {
+    "overview": "Model Optimization improves inference speed, reduces memory footprint, and lowers computational costs through techniques like quantization, pruning, and knowledge distillation. For healthcare AI, this enables deploying large language models on cost-effective infrastructure or edge devices while maintaining clinical accuracy.",
+    "when_to_use": [
+      "**Latency requirements**: Need faster inference for real-time clinical workflows",
+      "**Cost reduction**: Cloud API costs too high for production scale",
+      "**Edge deployment**: Must run models on devices with limited compute/memory",
+      "**High throughput**: Processing thousands of summaries per hour",
+      "**Resource constraints**: GPU memory or compute limited"
+    ],
+    "when_not_to_use": [
+      "**Accuracy critical**: Optimization might reduce clinical accuracy unacceptably",
+      "**Sufficient performance**: Current speed and cost acceptable",
+      "**Complexity**: Optimization effort not justified by benefits",
+      "**Research phase**: Premature optimization for experimental models",
+      "**Small scale**: Low request volume; optimization unnecessary"
+    ]
+  },
+  "performance/quantization-pattern.md": {
+    "overview": "Quantization reduces model precision from 32-bit floating point to 16-bit, 8-bit, or even 4-bit integers, decreasing memory usage and speeding up inference with minimal accuracy loss. Enables running large healthcare LLMs on consumer GPUs or faster API responses at lower cost.",
+    "when_to_use": [
+      "**Memory constraints**: Model too large for available GPU memory",
+      "**Inference speed**: Need faster predictions",
+      "**Cost reduction**: Lower precision reduces cloud API costs",
+      "**Edge deployment**: Deploy large models on limited hardware",
+      "**Minimal accuracy loss**: Quantization doesn't significantly hurt clinical accuracy"
+    ],
+    "when_not_to_use": [
+      "**Accuracy degradation**: Precision reduction hurts clinical performance",
+      "**Already optimized**: Model already quantized or highly efficient",
+      "**Hardware limitations**: Target hardware doesn't support quantized operations efficiently",
+      "**Training**: Quantization-aware training required but not feasible",
+      "**Numerical instability**: Model sensitive to precision reduction"
+    ]
+  },
+  "performance/pruning-pattern.md": {
+    "overview": "Pruning removes unnecessary weights, neurons, or entire layers from neural networks, creating smaller, faster models with minimal accuracy loss. For healthcare AI, this reduces the size of fine-tuned medical LLMs while preserving clinical knowledge, enabling faster inference and lower deployment costs.",
+    "when_to_use": [
+      "**Model size reduction**: Model too large for deployment constraints",
+      "**Inference speed**: Fewer parameters mean faster predictions",
+      "**Over-parameterized models**: Large models with redundant capacity",
+      "**Resource constraints**: Limited memory or compute for deployment",
+      "**Minimal accuracy loss**: Pruning doesn't significantly impact clinical performance"
+    ],
+    "when_not_to_use": [
+      "**Compact models**: Model already minimal size for task",
+      "**Accuracy critical**: Cannot tolerate any performance degradation",
+      "**Training overhead**: Pruning requires retraining or fine-tuning",
+      "**Structured pruning limitations**: Hardware doesn't benefit from unstructured pruning",
+      "**Complexity**: Implementation and validation effort not justified"
+    ]
+  },
+  "performance/knowledge-distillation-pattern.md": {
+    "overview": "Knowledge Distillation trains a smaller 'student' model to mimic a larger 'teacher' model's behavior, achieving similar accuracy with lower computational cost. For healthcare, this creates efficient clinical summarization models that match GPT-4/Claude performance but run faster and cheaper for production deployment.",
+    "when_to_use": [
+      "**Large teacher model**: Have high-quality model that's too expensive to deploy",
+      "**Latency requirements**: Need faster inference than teacher provides",
+      "**Cost reduction**: Teacher model API costs too high for scale",
+      "**Edge deployment**: Teacher too large for edge devices",
+      "**Better student**: Student model can learn from teacher's knowledge more than from raw data"
+    ],
+    "when_not_to_use": [
+      "**No teacher**: Don't have larger model to distill from",
+      "**Small accuracy gap**: Teacher and student perform similarly anyway",
+      "**Teacher not better**: Teacher doesn't outperform student trained directly",
+      "**Training costs**: Distillation training more expensive than benefits",
+      "**Simple task**: Direct training on task data sufficient"
+    ]
+  },
+  "performance/caching-pattern.md": {
+    "overview": "Caching stores frequently accessed results (embeddings, summaries, retrieval results) to avoid recomputation, dramatically reducing latency and costs for repeated queries. For healthcare AI, this caches summaries of standard protocols, common medication information, or frequently requested patient record sections.",
+    "when_to_use": [
+      "**Repeated queries**: Same or similar requests occur frequently",
+      "**Expensive operations**: LLM inference, embeddings, or database queries costly to recompute",
+      "**Static content**: Results don't change frequently (medical literature summaries)",
+      "**Latency sensitive**: Cache hits provide instant responses",
+      "**Cost optimization**: Reducing redundant API calls saves significant money"
+    ],
+    "when_not_to_use": [
+      "**Unique queries**: Every request different; cache hit rate near zero",
+      "**Rapidly changing data**: Cached results become stale too quickly",
+      "**Storage constraints**: Cache storage more expensive than recomputation",
+      "**Privacy concerns**: Caching patient data raises security/compliance issues",
+      "**Simple operations**: Cached operations so fast recomputation negligible"
+    ]
+  },
+  "performance/batching-pattern.md": {
+    "overview": "Batching groups multiple requests together to process simultaneously, amortizing overhead and improving GPU utilization. For healthcare AI, this processes multiple patient summaries in a single LLM call or embeds batches of clinical notes together, maximizing throughput for batch processing workflows.",
+    "when_to_use": [
+      "**High throughput**: Processing thousands of documents per hour",
+      "**GPU utilization**: Single requests underutilize GPU; batching improves efficiency",
+      "**Cost optimization**: Batch API pricing lower than per-request pricing",
+      "**Latency tolerance**: Can wait to accumulate batch before processing",
+      "**Parallel processing**: Operations independent and can be batched"
+    ],
+    "when_not_to_use": [
+      "**Real-time requirements**: Users waiting for individual request results",
+      "**Low volume**: Too few requests to form efficient batches",
+      "**Memory constraints**: Batches too large for available GPU memory",
+      "**Variable-size inputs**: Batching efficiency lost due to padding overhead",
+      "**Sequential dependencies**: Requests depend on each other; can't batch"
+    ]
+  },
+  "performance/async-processing-pattern.md": {
+    "overview": "Async Processing handles requests asynchronously, immediately returning a job ID and later providing results, allowing systems to process long-running summarization tasks without blocking. For healthcare, this enables overnight batch summarization of thousands of patient records or background processing of research cohort analyses.",
+    "when_to_use": [
+      "**Long-running tasks**: Summarization takes seconds to minutes per request",
+      "**Non-blocking UIs**: Users continue working while results generate",
+      "**Batch jobs**: Processing thousands of documents asynchronously",
+      "**Resource pooling**: Queue requests to efficiently use limited resources",
+      "**Variable latency**: Processing time varies widely between requests"
+    ],
+    "when_not_to_use": [
+      "**Fast operations**: Requests complete in milliseconds; async overhead unnecessary",
+      "**Synchronous UIs**: Users must wait for results before proceeding",
+      "**Simple implementation**: Complexity of async not justified",
+      "**Debugging difficulty**: Async makes testing and debugging harder",
+      "**No queueing needed**: Resources abundant; no need to queue requests"
+    ]
+  },
+  "integration/api-gateway-pattern.md": {
+    "overview": "API Gateway provides a single entry point for multiple backend services, handling routing, authentication, rate limiting, and protocol translation. For healthcare AI, this manages access to summarization models, enforces usage quotas, validates HIPAA compliance, and routes requests to appropriate model versions.",
+    "when_to_use": [
+      "**Multiple services**: Routing to different models or backend services",
+      "**Cross-cutting concerns**: Authentication, rate limiting, logging across all APIs",
+      "**Legacy integration**: Translating between modern APIs and legacy EHR systems",
+      "**Usage governance**: Enforcing quotas, SLAs, and access policies",
+      "**API versioning**: Managing multiple API versions and deprecation"
+    ],
+    "when_not_to_use": [
+      "**Single service**: Only one backend; no routing needed",
+      "**Simple architecture**: Adding gateway increases complexity unnecessarily",
+      "**Latency critical**: Gateway adds network hop and processing overhead",
+      "**Small scale**: Overhead not justified for low-traffic systems",
+      "**Direct integration**: Clients can call services directly"
+    ]
+  },
+  "integration/microservices-pattern.md": {
+    "overview": "Microservices decomposes applications into small, independent services that communicate via APIs, enabling teams to develop, deploy, and scale components independently. For healthcare AI, this separates document processing, embedding, retrieval, summarization, and storage as independent services.",
+    "when_to_use": [
+      "**Large teams**: Multiple teams working on different components",
+      "**Independent scaling**: Different components have different scaling needs",
+      "**Technology diversity**: Different services use different tech stacks or models",
+      "**Independent deployment**: Deploy updates to components without affecting others",
+      "**Complex domain**: Large application benefits from decomposition"
+    ],
+    "when_not_to_use": [
+      "**Small application**: Monolith simpler for small systems",
+      "**Tight coupling**: Components deeply interdependent; hard to separate",
+      "**Small team**: Overhead of managing multiple services not justified",
+      "**Distributed complexity**: Network latency and failure handling too complex",
+      "**Transaction requirements**: Need ACID transactions across components"
+    ]
+  },
+  "integration/event-driven-pattern.md": {
+    "overview": "Event-Driven Architecture uses asynchronous events to trigger actions and communicate between components, enabling loose coupling and reactive workflows. For healthcare AI, this processes new patient admissions, lab results, or clinical notes as events trigger summarization pipelines, updating dashboards in real-time.",
+    "when_to_use": [
+      "**Reactive workflows**: Actions triggered by events (new patient data, lab results)",
+      "**Loose coupling**: Components communicate without direct dependencies",
+      "**Asynchronous processing**: Operations don't need immediate responses",
+      "**Real-time updates**: Pushing updates to dashboards as events occur",
+      "**Scalability**: Event-driven systems scale well with load"
+    ],
+    "when_not_to_use": [
+      "**Synchronous requirements**: Need immediate responses; can't wait for async events",
+      "**Simple workflows**: Direct function calls simpler than event infrastructure",
+      "**Debugging difficulty**: Event-driven systems harder to debug and test",
+      "**Ordering requirements**: Complex event ordering hard to guarantee",
+      "**Small scale**: Event infrastructure overhead not justified"
+    ]
+  },
+  "integration/service-mesh-pattern.md": {
+    "overview": "Service Mesh provides infrastructure layer for service-to-service communication, handling load balancing, encryption, observability, and resilience without application code changes. For healthcare AI microservices, this manages secure communication between summarization components with automatic retries, circuit breaking, and distributed tracing.",
+    "when_to_use": [
+      "**Many microservices**: Dozens of services with complex communication patterns",
+      "**Security requirements**: Need mutual TLS, encryption for all service communication",
+      "**Observability**: Distributed tracing and metrics across services",
+      "**Resilience**: Automatic retries, circuit breaking, timeout management",
+      "**Traffic management**: Canary deployments, A/B testing at infrastructure level"
+    ],
+    "when_not_to_use": [
+      "**Few services**: Small number of services; mesh overhead not justified",
+      "**Simple architecture**: Direct service calls work fine",
+      "**Performance critical**: Mesh proxy adds latency",
+      "**Small team**: Lack expertise to operate service mesh",
+      "**Non-Kubernetes**: Most service meshes designed for Kubernetes environments"
+    ]
+  },
+  "integration/api-first-pattern.md": {
+    "overview": "API-First Design treats APIs as first-class products, designing and documenting them before implementation, ensuring consistent developer experience. For healthcare AI, this means well-designed summarization APIs that healthcare developers can easily integrate into EHR systems, with clear contracts and comprehensive documentation.",
+    "when_to_use": [
+      "**External developers**: APIs consumed by third-party developers or partners",
+      "**Multiple clients**: Web, mobile, EHR integrations all using same API",
+      "**Contract-first**: Frontend and backend teams work in parallel",
+      "**API as product**: API is primary interface to your healthcare AI capabilities",
+      "**Standards compliance**: Adhering to FHIR or other healthcare API standards"
+    ],
+    "when_not_to_use": [
+      "**Internal only**: APIs only used by same team that builds them",
+      "**Rapid iteration**: API design still highly experimental",
+      "**Simple integration**: Single client; formal API design overkill",
+      "**Legacy systems**: Working with existing APIs that can't be redesigned",
+      "**Time constraints**: Need working system immediately; can't invest in API design"
+    ]
+  },
+  "integration/graphql-pattern.md": {
+    "overview": "GraphQL provides flexible query language allowing clients to request exactly the data they need, avoiding over/under-fetching. For healthcare AI, this lets EHR interfaces query patient summaries with precisely the fields needed (diagnoses, medications, recent notes) in a single request, reducing API calls and improving performance.",
+    "when_to_use": [
+      "**Flexible data needs**: Different clients need different subsets of data",
+      "**Multiple resources**: Queries span multiple related entities (patients, visits, summaries)",
+      "**Mobile/bandwidth constrained**: Minimizing data transfer important",
+      "**Rapid iteration**: Frontend teams can add fields without backend changes",
+      "**Aggregation**: Combining data from multiple microservices"
+    ],
+    "when_not_to_use": [
+      "**Simple queries**: REST sufficient for straightforward data access",
+      "**File uploads**: REST better suited for document/file uploads",
+      "**Caching requirements**: GraphQL caching more complex than REST",
+      "**Learning curve**: Team lacks GraphQL expertise",
+      "**Legacy integration**: Existing REST APIs can't be replaced"
+    ]
+  },
+  "mlops/model-governance-pattern.md": {
+    "overview": "Model Governance establishes policies, processes, and controls for managing ML models throughout their lifecycle, ensuring compliance, accountability, and risk management. For healthcare AI, this includes approval workflows, documentation requirements, access controls, and audit trails to meet FDA, HIPAA, and institutional requirements for medical AI systems.",
+    "when_to_use": [
+      "**Regulatory compliance**: Healthcare AI requires FDA clearance, HIPAA compliance, or institutional review",
+      "**Enterprise deployment**: Large organizations need governance for model deployment and updates",
+      "**High-risk applications**: Clinical decision support or patient-facing AI requires oversight",
+      "**Multiple stakeholders**: Clinical, legal, IT, and data science teams need coordination",
+      "**Audit requirements**: Must demonstrate model development, validation, and monitoring processes"
+    ],
+    "when_not_to_use": [
+      "**Research phase**: Exploratory work where formal governance premature",
+      "**Low-risk applications**: Non-clinical tools with minimal patient impact",
+      "**Small team**: Solo developers where formal governance overhead not justified",
+      "**Rapid prototyping**: Early development where governance slows iteration",
+      "**No compliance needs**: No regulatory or institutional governance requirements"
+    ]
+  }
+}

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+SHAP (SHapley Additive exPlanations) and LIME (Local Interpretable Model-agnostic Explanations) provide local explanations for individual predictions by approximating model behavior near specific inputs. For healthcare, this explains why a specific patient's summary included certain elements based on their particular clinical history.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Instance-level explanations**: Need to explain specific predictions to clinicians
+- **Model-agnostic**: Works with any model type (black-box compatible)
+- **Debugging specific cases**: Investigating why model failed on particular patient
+- **Clinical review**: Helping physicians validate or challenge model outputs
+- **Regulatory**: Explaining individual AI-assisted clinical decisions
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Global understanding**: Need overall model behavior, not individual predictions
+- **Real-time constraints**: SHAP/LIME too slow for production latency requirements
+- **Simple models**: Inherently interpretable models don't need approximation
+- **High-dimensional data**: Explanations become overwhelming with thousands of features
+- **No local fidelity**: Model behavior too complex for local approximation
 
 ## Architecture
 

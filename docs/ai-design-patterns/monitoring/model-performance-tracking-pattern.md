@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Performance Monitoring tracks ML-specific metrics like accuracy, precision, recall, and F1 score in production, comparing against baselines to detect degradation. For healthcare summarization, this monitors clinical accuracy of summaries, physician feedback ratings, and whether key medical concepts are being captured correctly.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Production models**: Models making real clinical predictions
+- **Ground truth available**: Can collect labels for production data (physician feedback)
+- **Performance critical**: Model accuracy directly impacts patient care
+- **Regulatory compliance**: Must demonstrate ongoing model performance
+- **Baseline established**: Have performance benchmarks to compare against
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **No ground truth**: Can't collect labels for production predictions
+- **Offline evaluation sufficient**: Model performance stable; frequent monitoring unnecessary
+- **Manual review**: All predictions reviewed by experts anyway
+- **Research phase**: Experimental model not in production
+- **Low stakes**: Model errors have minimal impact
 
 ## Architecture
 

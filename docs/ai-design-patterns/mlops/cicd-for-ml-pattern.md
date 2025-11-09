@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+CI/CD for ML extends software continuous integration/deployment to machine learning, automating model training, testing, validation, and deployment pipelines. For healthcare AI, this enables safe, auditable, and reproducible model updates with automated checks for accuracy, bias, and compliance before production deployment.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Frequent model updates**: Regular retraining as new clinical data arrives
+- **Reproducibility**: Need consistent, automated model building process
+- **Quality gates**: Automated testing before deployment (accuracy, bias, safety checks)
+- **Team collaboration**: Multiple data scientists working on models
+- **Regulatory compliance**: Audit trails of model development and deployment
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Research phase**: Exploratory work; automation premature
+- **Infrequent updates**: Model updated once per year; manual process acceptable
+- **Simple models**: Training takes seconds; automation overhead not justified
+- **Single developer**: Solo data scientist; informal process works
+- **No infrastructure**: Lack CI/CD platform or expertise to set up
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Modular Architecture decomposes the AI system into independent, interchangeable components with well-defined interfaces. Each module handles a specific function (e.g., document loading, chunking, embedding, retrieval, generation), enabling flexible composition, testing, and replacement of individual components without affecting the entire system.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Complex systems**: Large AI pipelines with multiple distinct stages
+- **Team collaboration**: Different teams can work on separate modules independently
+- **Flexibility needed**: Ability to swap components (e.g., change embedding model without rewriting retrieval logic)
+- **Testing requirements**: Each module can be tested in isolation
+- **Vendor flexibility**: Ability to switch between different LLM providers or vector databases
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Simple applications**: Single-purpose tools don't benefit from modularity overhead
+- **Tight coupling required**: Components need deep integration for performance
+- **Rapid prototyping**: Early-stage development where architecture isn't stable
+- **Performance critical**: Module boundaries can add latency
+- **Small team**: Overhead of defining and maintaining interfaces isn't justified
 
 ## Architecture
 

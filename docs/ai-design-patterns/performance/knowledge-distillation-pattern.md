@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Knowledge Distillation trains a smaller 'student' model to mimic a larger 'teacher' model's behavior, achieving similar accuracy with lower computational cost. For healthcare, this creates efficient clinical summarization models that match GPT-4/Claude performance but run faster and cheaper for production deployment.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Large teacher model**: Have high-quality model that's too expensive to deploy
+- **Latency requirements**: Need faster inference than teacher provides
+- **Cost reduction**: Teacher model API costs too high for scale
+- **Edge deployment**: Teacher too large for edge devices
+- **Better student**: Student model can learn from teacher's knowledge more than from raw data
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **No teacher**: Don't have larger model to distill from
+- **Small accuracy gap**: Teacher and student perform similarly anyway
+- **Teacher not better**: Teacher doesn't outperform student trained directly
+- **Training costs**: Distillation training more expensive than benefits
+- **Simple task**: Direct training on task data sufficient
 
 ## Architecture
 

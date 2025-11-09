@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Feature Importance ranks input features by their contribution to model predictions, showing which clinical variables (lab values, diagnoses, medications) most influence summarization outputs. Helps clinicians understand what drives model behavior and identify if models rely on spurious correlations.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Feature selection**: Identifying most relevant clinical variables
+- **Model validation**: Ensuring model uses clinically meaningful features
+- **Domain understanding**: Learning what factors drive outcomes
+- **Debugging**: Identifying if model relies on spurious correlations or data leakage
+- **Communication**: Explaining model to non-technical stakeholders
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Unstructured data**: Text or images where 'features' aren't clearly defined
+- **Deep learning**: Feature importance ambiguous for learned representations
+- **Instance-level explanations**: Need to explain specific predictions, not global behavior
+- **No structured features**: Working with raw data without engineered features
+- **Complex interactions**: Feature importance misses interaction effects
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Explainable AI (XAI) provides human-understandable explanations of model predictions, helping clinicians understand why a summary included certain information or what input features drove specific outputs. Critical for clinical trust, regulatory compliance, and identifying model failures in healthcare applications.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Clinical decision support**: Physicians need to understand and trust model outputs
+- **Regulatory requirements**: FDA, EU AI Act require explainability for high-risk medical AI
+- **Model debugging**: Understanding why model makes mistakes
+- **Building trust**: Clinicians skeptical of black-box AI
+- **Error analysis**: Identifying systematic model failures or biases
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Low stakes**: Non-critical applications where trust is less important
+- **Expert users**: Users understand model internals already
+- **Performance critical**: Explanation generation too slow for use case
+- **No audience**: Nobody will actually use explanations
+- **Inherently interpretable**: Simple models (linear, decision trees) already transparent
 
 ## Architecture
 

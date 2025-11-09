@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Async Processing handles requests asynchronously, immediately returning a job ID and later providing results, allowing systems to process long-running summarization tasks without blocking. For healthcare, this enables overnight batch summarization of thousands of patient records or background processing of research cohort analyses.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Long-running tasks**: Summarization takes seconds to minutes per request
+- **Non-blocking UIs**: Users continue working while results generate
+- **Batch jobs**: Processing thousands of documents asynchronously
+- **Resource pooling**: Queue requests to efficiently use limited resources
+- **Variable latency**: Processing time varies widely between requests
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Fast operations**: Requests complete in milliseconds; async overhead unnecessary
+- **Synchronous UIs**: Users must wait for results before proceeding
+- **Simple implementation**: Complexity of async not justified
+- **Debugging difficulty**: Async makes testing and debugging harder
+- **No queueing needed**: Resources abundant; no need to queue requests
 
 ## Architecture
 

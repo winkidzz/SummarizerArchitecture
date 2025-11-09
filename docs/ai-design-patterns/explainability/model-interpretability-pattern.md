@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Interpretable Models uses inherently transparent model architectures (linear models, decision trees, rule-based systems) where reasoning is directly understandable without post-hoc explanation techniques. For simpler healthcare tasks, this provides complete transparency into clinical decision logic.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Regulatory compliance**: Regulations require fully transparent models
+- **Complete transparency**: Need to understand every aspect of model reasoning
+- **Simple tasks**: Problem solvable with interpretable models without large accuracy loss
+- **Clinical guidelines**: Encoding established medical guidelines as rules
+- **Debugging**: Need to manually inspect and modify decision logic
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Complex tasks**: Problem requires deep learning or complex models
+- **Performance gap**: Interpretable models significantly less accurate
+- **Unstructured data**: Text/images where deep learning excels
+- **Modern LLMs**: Using foundation models that are inherently black-box
+- **Explanation sufficient**: Post-hoc explainability adequate; full transparency not required
 
 ## Architecture
 

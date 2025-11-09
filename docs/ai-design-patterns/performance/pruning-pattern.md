@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Pruning removes unnecessary weights, neurons, or entire layers from neural networks, creating smaller, faster models with minimal accuracy loss. For healthcare AI, this reduces the size of fine-tuned medical LLMs while preserving clinical knowledge, enabling faster inference and lower deployment costs.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Model size reduction**: Model too large for deployment constraints
+- **Inference speed**: Fewer parameters mean faster predictions
+- **Over-parameterized models**: Large models with redundant capacity
+- **Resource constraints**: Limited memory or compute for deployment
+- **Minimal accuracy loss**: Pruning doesn't significantly impact clinical performance
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Compact models**: Model already minimal size for task
+- **Accuracy critical**: Cannot tolerate any performance degradation
+- **Training overhead**: Pruning requires retraining or fine-tuning
+- **Structured pruning limitations**: Hardware doesn't benefit from unstructured pruning
+- **Complexity**: Implementation and validation effort not justified
 
 ## Architecture
 

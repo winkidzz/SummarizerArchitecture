@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Self-Supervised Learning creates supervisory signals from unlabeled data itself, learning representations without manual annotations. Models predict masked portions of text, next sentences, or other self-created tasks. Foundation models like Claude and GPT use self-supervised pre-training on massive corpora before fine-tuning for specific tasks.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Massive unlabeled data**: Abundant medical literature, clinical notes without labels
+- **Pre-training foundation models**: Building general medical language understanding
+- **Limited labeled data**: Labels scarce but raw text plentiful
+- **Representation learning**: Need general-purpose features for downstream tasks
+- **Transfer learning**: Pre-train on unlabeled data, fine-tune on small labeled set
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Abundant labels**: Supervised learning more direct when labels available
+- **Specific task**: Self-supervision may not learn task-relevant features
+- **Computational constraints**: Self-supervised pre-training requires significant compute
+- **Small datasets**: Benefits diminish with limited unlabeled data
+- **Time-to-market**: Pre-training adds development time
 
 ## Architecture
 

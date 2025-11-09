@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Multi-Task Learning trains a single model to perform multiple related tasks simultaneously, sharing representations across tasks. In healthcare AI, this could mean a model that extracts diagnoses, medications, and procedures from clinical notes in one pass, improving efficiency and leveraging shared medical knowledge across tasks.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Related tasks**: Multiple tasks share common underlying structure (e.g., extracting different medical entities)
+- **Limited data per task**: Tasks have small datasets individually but benefit from shared learning
+- **Resource constraints**: Single model is more efficient than multiple specialized models
+- **Improved generalization**: Shared representations can improve performance on all tasks
+- **Consistent outputs**: Need synchronized predictions across related tasks
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Unrelated tasks**: Tasks don't share meaningful structure or knowledge
+- **Conflicting objectives**: Task requirements work against each other
+- **Different scales**: Tasks operate on vastly different data scales or distributions
+- **Specialized performance**: Need maximum accuracy on a single primary task
+- **Independent deployment**: Tasks need to be deployed or updated separately
 
 ## Architecture
 

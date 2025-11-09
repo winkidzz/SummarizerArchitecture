@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Drift Detection monitors how input data (data drift) or model predictions (concept drift) change over time relative to training distributions. For healthcare AI, this detects when patient populations change, new medical terminology emerges, or EHR systems modify data formats, signaling when model retraining is needed.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Evolving data**: Patient demographics, medical terminology, treatment protocols change
+- **Long-lived models**: Models in production for months/years
+- **Upstream changes**: EHR systems, data sources may change without notice
+- **Performance monitoring**: Detect degradation before accuracy drops
+- **Regulatory compliance**: Required to demonstrate ongoing model validity
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Stable domain**: Input data distribution doesn't change
+- **Short-lived models**: Model replaced frequently anyway
+- **Continuous retraining**: Model retrained so often drift doesn't accumulate
+- **No baseline**: Can't establish training distribution to compare against
+- **Batch predictions**: All predictions reviewed; drift doesn't matter
 
 ## Architecture
 

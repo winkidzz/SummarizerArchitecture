@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Attention Visualization displays which input tokens or regions the model focused on when generating outputs, showing clinicians which parts of patient records influenced summary generation. Particularly valuable for Transformer-based LLMs, providing intuitive visual explanations of model reasoning.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Transformer models**: LLMs and other attention-based architectures
+- **Text/sequence data**: Explaining which words or sentences influenced output
+- **Clinician review**: Helping doctors see what clinical information model emphasized
+- **Quality assurance**: Verifying model attends to relevant information
+- **Model debugging**: Understanding attention patterns to identify issues
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Non-attention models**: Models without attention mechanisms
+- **Tabular data**: Structured data where attention visualization less intuitive
+- **Complex reasoning**: Attention patterns don't always reflect true reasoning
+- **Misleading**: Attention weights can be difficult to interpret correctly
+- **Alternative explanations better**: SHAP or feature importance more appropriate
 
 ## Architecture
 

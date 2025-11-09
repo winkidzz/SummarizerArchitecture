@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Transfer Learning leverages knowledge from pre-trained models to accelerate learning on new, related tasks. Instead of training from scratch, this pattern fine-tunes models trained on large general datasets for specific healthcare domains. Foundation models like Claude, GPT-4, and Gemini use transfer learning principles, where general language understanding is adapted to medical summarization through prompt engineering or fine-tuning.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Limited labeled data**: Healthcare datasets are often small due to privacy constraints
+- **Domain adaptation**: Adapting general language models to medical terminology and clinical workflows
+- **Fast development**: Leveraging pre-trained models reduces training time from months to hours/days
+- **Cost optimization**: Fine-tuning is cheaper than training large models from scratch
+- **Proven architecture**: Using battle-tested model architectures (Transformers, BERT, GPT)
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Highly specialized domains**: When source and target domains are too different (rare in healthcare AI)
+- **Privacy concerns**: Pre-trained models may have seen sensitive training data
+- **Performance critical**: Sometimes domain-specific models outperform transferred models
+- **Complete control needed**: When you need to understand every aspect of model behavior
+- **Regulatory requirements**: Some healthcare regulations may require training provenance
 
 ## Architecture
 

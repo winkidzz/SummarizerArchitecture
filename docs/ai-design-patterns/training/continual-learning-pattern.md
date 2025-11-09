@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Continual Learning enables models to learn from new data over time without forgetting previously learned knowledge (catastrophic forgetting). As medical knowledge evolves and new treatments emerge, models must update while preserving existing capabilities. Critical for production healthcare AI systems that must stay current.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Evolving knowledge**: Medical guidelines and best practices change regularly
+- **Streaming data**: Continuous flow of new clinical cases and outcomes
+- **Model longevity**: System must remain accurate over months/years
+- **Can't retrain from scratch**: Retraining on all historical data impractical
+- **Preserve existing knowledge**: Must maintain performance on existing tasks while learning new ones
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Static domain**: Medical knowledge doesn't change significantly
+- **Periodic retraining**: Can retrain from scratch regularly
+- **Short lifecycle**: Model replaced frequently rather than updated
+- **No forgetting concern**: New data doesn't interfere with old knowledge
+- **Batch updates**: Can accumulate data and retrain periodically
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Homomorphic Encryption allows computations on encrypted data without decrypting it, enabling ML inference on sensitive patient data while it remains encrypted end-to-end. Healthcare providers can send encrypted clinical notes for summarization without cloud services ever seeing plaintext PHI.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Zero trust**: Cannot trust cloud provider or model operator with plaintext data
+- **Regulatory constraints**: Regulations prohibit sending unencrypted PHI to cloud
+- **Shared infrastructure**: Using third-party ML services with patient data
+- **Compliance**: Meeting strictest data protection requirements
+- **International**: Data residency laws prevent moving data across borders
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Performance critical**: Homomorphic encryption adds 100-1000x overhead
+- **Trusted environment**: Cloud provider already HIPAA-compliant with BAA
+- **Training**: Current homomorphic techniques mainly support inference, not training
+- **Complex models**: Large neural networks may be impractical
+- **Complexity**: Lack expertise or tooling to implement
 
 ## Architecture
 

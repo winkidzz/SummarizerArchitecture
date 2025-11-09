@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Microservices decomposes applications into small, independent services that communicate via APIs, enabling teams to develop, deploy, and scale components independently. For healthcare AI, this separates document processing, embedding, retrieval, summarization, and storage as independent services.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Large teams**: Multiple teams working on different components
+- **Independent scaling**: Different components have different scaling needs
+- **Technology diversity**: Different services use different tech stacks or models
+- **Independent deployment**: Deploy updates to components without affecting others
+- **Complex domain**: Large application benefits from decomposition
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Small application**: Monolith simpler for small systems
+- **Tight coupling**: Components deeply interdependent; hard to separate
+- **Small team**: Overhead of managing multiple services not justified
+- **Distributed complexity**: Network latency and failure handling too complex
+- **Transaction requirements**: Need ACID transactions across components
 
 ## Architecture
 

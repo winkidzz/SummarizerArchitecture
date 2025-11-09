@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+GraphQL provides flexible query language allowing clients to request exactly the data they need, avoiding over/under-fetching. For healthcare AI, this lets EHR interfaces query patient summaries with precisely the fields needed (diagnoses, medications, recent notes) in a single request, reducing API calls and improving performance.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Flexible data needs**: Different clients need different subsets of data
+- **Multiple resources**: Queries span multiple related entities (patients, visits, summaries)
+- **Mobile/bandwidth constrained**: Minimizing data transfer important
+- **Rapid iteration**: Frontend teams can add fields without backend changes
+- **Aggregation**: Combining data from multiple microservices
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Simple queries**: REST sufficient for straightforward data access
+- **File uploads**: REST better suited for document/file uploads
+- **Caching requirements**: GraphQL caching more complex than REST
+- **Learning curve**: Team lacks GraphQL expertise
+- **Legacy integration**: Existing REST APIs can't be replaced
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Governance establishes policies, processes, and controls for managing ML models throughout their lifecycle, ensuring compliance, accountability, and risk management. For healthcare AI, this includes approval workflows, documentation requirements, access controls, and audit trails to meet FDA, HIPAA, and institutional requirements for medical AI systems.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Regulatory compliance**: Healthcare AI requires FDA clearance, HIPAA compliance, or institutional review
+- **Enterprise deployment**: Large organizations need governance for model deployment and updates
+- **High-risk applications**: Clinical decision support or patient-facing AI requires oversight
+- **Multiple stakeholders**: Clinical, legal, IT, and data science teams need coordination
+- **Audit requirements**: Must demonstrate model development, validation, and monitoring processes
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Research phase**: Exploratory work where formal governance premature
+- **Low-risk applications**: Non-clinical tools with minimal patient impact
+- **Small team**: Solo developers where formal governance overhead not justified
+- **Rapid prototyping**: Early development where governance slows iteration
+- **No compliance needs**: No regulatory or institutional governance requirements
 
 ## Architecture
 

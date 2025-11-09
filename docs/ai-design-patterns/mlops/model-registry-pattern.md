@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Registry provides centralized storage and metadata management for trained models, tracking versions, performance metrics, training data, and deployment status. For healthcare AI, this creates required audit trails, enables model comparison, and manages the lifecycle from experimentation to production to retirement.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Multiple models**: Managing many model versions or experiments
+- **Team collaboration**: Shared model repository for data science teams
+- **Model lifecycle**: Tracking models from training through production to retirement
+- **Compliance**: Regulatory requirements for model documentation and provenance
+- **Governance**: Need approval workflows and access control for model deployment
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Single model**: Only one model in use; registry overhead not needed
+- **Informal tracking**: Spreadsheets or wikis sufficient for small teams
+- **Research only**: Not deploying models to production
+- **No compliance needs**: No regulatory requirements for model tracking
+- **Simple versioning**: File naming conventions adequate
 
 ## Architecture
 

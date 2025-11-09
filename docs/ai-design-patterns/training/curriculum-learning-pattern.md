@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Curriculum Learning trains models on progressively more difficult examples, similar to human education. Starting with simple cases and gradually introducing complexity helps models learn more effectively and generalize better. In healthcare, this might mean training first on straightforward discharge summaries before tackling complex multi-morbidity cases.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Complex domains**: Healthcare terminology and clinical reasoning have steep learning curves
+- **Data with natural difficulty progression**: Cases range from simple to complex
+- **Improved convergence**: Standard training struggles to learn effectively
+- **Sample efficiency**: Need to learn from limited labeled examples
+- **Transfer learning**: Pre-training on simpler tasks before target task
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Uniform difficulty**: All examples have similar complexity
+- **No clear curriculum**: Difficult to define what makes an example 'easy' or 'hard'
+- **Time constraints**: Designing curriculum adds development overhead
+- **Random sampling works**: Standard training already achieves good results
+- **Simple tasks**: Task doesn't benefit from progressive learning
 
 ## Architecture
 

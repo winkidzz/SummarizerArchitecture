@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Automated Retraining systematically updates models with new data on a schedule or triggered by performance degradation, keeping models current as medical knowledge and clinical practices evolve. This ensures healthcare AI stays accurate as new treatments emerge and patient populations change.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Evolving domain**: Medical knowledge and practices change regularly
+- **Continuous data**: New clinical data arrives that should improve model
+- **Performance monitoring**: Can detect when retraining is needed
+- **Reproducible pipeline**: Automated training pipeline already established
+- **Regulatory approval**: Have process for validating and deploying retrained models
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Stable domain**: Medical knowledge in this area doesn't change
+- **Static dataset**: No new training data available
+- **Manual validation**: Each model version requires extensive manual review
+- **Resource constraints**: Retraining computationally expensive or slow
+- **Rapid deployment risk**: Automated retraining could deploy problematic models
 
 ## Architecture
 

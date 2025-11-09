@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Few-Shot Learning enables models to learn new tasks from just a few examples, leveraging prior knowledge to generalize quickly. Large language models like Claude can perform tasks with 1-10 examples in the prompt (in-context learning). Valuable in healthcare for rare conditions or new clinical scenarios where data is scarce.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Rare conditions**: Few examples available (orphan diseases, rare complications)
+- **New tasks**: Need to adapt quickly to novel summarization requirements
+- **Rapid deployment**: No time for extensive data collection and training
+- **Personalization**: Customize to specific physician preferences with few examples
+- **Foundation models**: Leverage LLMs' in-context learning capabilities
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Abundant data**: Traditional supervised learning more effective
+- **Performance critical**: Few-shot typically underperforms full training
+- **No foundation model**: Few-shot learning requires strong pre-trained model
+- **Consistent task**: Same task repeatedly; worth collecting more data
+- **Fine-tuning possible**: If you can fine-tune, it often outperforms few-shot
 
 ## Architecture
 

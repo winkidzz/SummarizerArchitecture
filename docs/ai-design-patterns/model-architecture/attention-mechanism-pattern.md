@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Attention Mechanism enables models to dynamically focus on relevant parts of input when generating outputs. In healthcare summarization, attention helps models identify and weight important clinical findings, diagnoses, or temporal patterns in patient records, improving both accuracy and interpretability by showing which parts of input influenced the summary.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Long documents**: Patient records with hundreds of notes where only some are relevant
+- **Variable importance**: Different input parts have different relevance to the task
+- **Interpretability**: Need to explain which inputs influenced model decisions
+- **Context integration**: Combining information from multiple document sections
+- **Sequence modeling**: Tasks involving temporal or sequential relationships
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Short inputs**: Attention overhead not justified for small inputs
+- **Uniform importance**: All input parts equally relevant
+- **Computational constraints**: Attention adds significant compute (O(n²) for self-attention)
+- **Fixed-size inputs**: CNNs or simpler architectures may suffice
+- **Black-box acceptable**: Don't need to explain model focus
 
 ## Architecture
 

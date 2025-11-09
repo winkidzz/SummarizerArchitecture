@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+API-First Design treats APIs as first-class products, designing and documenting them before implementation, ensuring consistent developer experience. For healthcare AI, this means well-designed summarization APIs that healthcare developers can easily integrate into EHR systems, with clear contracts and comprehensive documentation.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **External developers**: APIs consumed by third-party developers or partners
+- **Multiple clients**: Web, mobile, EHR integrations all using same API
+- **Contract-first**: Frontend and backend teams work in parallel
+- **API as product**: API is primary interface to your healthcare AI capabilities
+- **Standards compliance**: Adhering to FHIR or other healthcare API standards
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Internal only**: APIs only used by same team that builds them
+- **Rapid iteration**: API design still highly experimental
+- **Simple integration**: Single client; formal API design overkill
+- **Legacy systems**: Working with existing APIs that can't be redesigned
+- **Time constraints**: Need working system immediately; can't invest in API design
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Adversarial Defense protects ML models against malicious inputs designed to cause incorrect predictions. For healthcare AI, this guards against manipulated clinical notes intended to generate false summaries, or prompt injection attacks trying to extract training data or override safety constraints.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **User-supplied inputs**: Accepting clinical text from potentially untrusted sources
+- **High-stakes decisions**: Adversarial attacks could harm patients
+- **Public-facing**: Systems accessible to external users or attackers
+- **Automated decisions**: Model outputs used without human review
+- **Known attack vectors**: Specific adversarial threats identified
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Trusted inputs only**: All data from verified, controlled sources
+- **Human review**: Experts review all model outputs
+- **Low-value target**: System not attractive to attackers
+- **Research phase**: Security hardening premature for experimental systems
+- **Detection sufficient**: Can detect attacks without preventing them
 
 ## Architecture
 

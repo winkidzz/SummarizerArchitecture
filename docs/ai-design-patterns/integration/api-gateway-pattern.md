@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+API Gateway provides a single entry point for multiple backend services, handling routing, authentication, rate limiting, and protocol translation. For healthcare AI, this manages access to summarization models, enforces usage quotas, validates HIPAA compliance, and routes requests to appropriate model versions.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Multiple services**: Routing to different models or backend services
+- **Cross-cutting concerns**: Authentication, rate limiting, logging across all APIs
+- **Legacy integration**: Translating between modern APIs and legacy EHR systems
+- **Usage governance**: Enforcing quotas, SLAs, and access policies
+- **API versioning**: Managing multiple API versions and deprecation
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Single service**: Only one backend; no routing needed
+- **Simple architecture**: Adding gateway increases complexity unnecessarily
+- **Latency critical**: Gateway adds network hop and processing overhead
+- **Small scale**: Overhead not justified for low-traffic systems
+- **Direct integration**: Clients can call services directly
 
 ## Architecture
 

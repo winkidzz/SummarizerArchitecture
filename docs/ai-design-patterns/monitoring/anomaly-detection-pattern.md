@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Anomaly Detection identifies unusual patterns in inputs or outputs that deviate from normal behavior, flagging potential data quality issues, system failures, or adversarial inputs. For healthcare, this catches corrupted clinical data, impossible vital signs, or suspicious input patterns before they cause incorrect summaries.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Data quality**: Need to detect corrupted or invalid clinical data
+- **System failures**: Identify upstream data pipeline failures
+- **Security**: Detect adversarial or malicious inputs
+- **Safety critical**: Unusual inputs might cause dangerous predictions
+- **Unknown unknowns**: Can't enumerate all possible failure modes
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Known error modes**: Can validate against specific rules instead
+- **High false positives**: Anomaly detection may flag too many false alarms
+- **Rapid changes**: What's 'normal' changes too quickly to establish baselines
+- **All data reviewed**: Humans review all inputs/outputs anyway
+- **Simple validation**: Basic range checks and schema validation sufficient
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Data Quality Monitoring continuously validates input data completeness, accuracy, consistency, and timeliness. For healthcare AI, this ensures clinical data meets quality standards before summarization, catching issues like missing diagnoses, invalid medication codes, or delayed lab result uploads that could degrade summary quality.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Multiple data sources**: Integrating EHR, labs, imaging with varying quality
+- **Production pipelines**: Automated data flows need continuous validation
+- **Upstream dependencies**: Data quality depends on external systems you don't control
+- **Compliance requirements**: Healthcare regulations mandate data quality standards
+- **Quality degradation**: Data quality known to vary over time
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Single trusted source**: High-quality data from controlled source
+- **Manual review**: Humans validate all data anyway
+- **Static data**: Historical dataset that doesn't change
+- **Research phase**: Exploratory analysis where perfect data quality not required
+- **Simple data**: Data structure too simple to have quality issues
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Real-Time Inference delivers predictions with minimal latency, typically under 100ms-1s, enabling interactive user experiences. In healthcare, this supports applications like live clinical note summarization as physicians document, or instant patient history summaries during emergency admissions.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Interactive UIs**: Users expect immediate feedback (<1s response)
+- **Clinical workflows**: Physicians need results during patient encounters
+- **Emergency scenarios**: Time-critical medical decisions require fast summaries
+- **User experience**: Latency directly impacts application usability
+- **Synchronous operations**: Downstream processes wait for predictions
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Batch suitable**: Predictions can wait hours/days
+- **High cost sensitivity**: Real-time infrastructure more expensive than batch
+- **Complex models**: Model too large/slow for real-time constraints
+- **Low QPS**: Request volume doesn't justify always-on infrastructure
+- **Acceptable delays**: Users tolerate 5-30 second waits
 
 ## Architecture
 

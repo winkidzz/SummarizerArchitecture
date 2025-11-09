@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Optimization improves inference speed, reduces memory footprint, and lowers computational costs through techniques like quantization, pruning, and knowledge distillation. For healthcare AI, this enables deploying large language models on cost-effective infrastructure or edge devices while maintaining clinical accuracy.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Latency requirements**: Need faster inference for real-time clinical workflows
+- **Cost reduction**: Cloud API costs too high for production scale
+- **Edge deployment**: Must run models on devices with limited compute/memory
+- **High throughput**: Processing thousands of summaries per hour
+- **Resource constraints**: GPU memory or compute limited
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Accuracy critical**: Optimization might reduce clinical accuracy unacceptably
+- **Sufficient performance**: Current speed and cost acceptable
+- **Complexity**: Optimization effort not justified by benefits
+- **Research phase**: Premature optimization for experimental models
+- **Small scale**: Low request volume; optimization unnecessary
 
 ## Architecture
 

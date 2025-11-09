@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Counterfactual Explanations show minimal changes to inputs that would alter model predictions, answering 'what would need to change for a different outcome?'. For healthcare, this might show what lab value changes would result in different risk assessments or what additional symptoms would change diagnostic summaries.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Actionable insights**: Helping clinicians understand what interventions might change outcomes
+- **Model debugging**: Finding decision boundaries and edge cases
+- **Fairness analysis**: Understanding if small changes produce unexpected prediction shifts
+- **User understanding**: Counterfactuals often more intuitive than feature importance
+- **Clinical scenarios**: Exploring 'what if' questions about patient outcomes
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **No causal interpretation**: Changes aren't actually actionable interventions
+- **Computational cost**: Generating counterfactuals too expensive
+- **Ambiguous changes**: Many possible counterfactuals; unclear which to show
+- **Unrealistic scenarios**: Generated counterfactuals clinically implausible
+- **Other explanations better**: Feature importance or attention more appropriate
 
 ## Architecture
 

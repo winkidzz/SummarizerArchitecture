@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Monitoring tracks production model performance, data quality, and system health in real-time, alerting when degradation occurs. For healthcare AI, this detects when summarization quality drops, input data distribution shifts, or system failures occur, enabling rapid response to protect patient care.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Production models**: Models serving real clinical workflows
+- **Critical applications**: Model failures impact patient care or safety
+- **Changing data**: Input distributions shift over time (new diseases, treatment protocols)
+- **SLA requirements**: Must maintain accuracy and uptime guarantees
+- **Compliance**: Regulatory requirements for ongoing model performance monitoring
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Offline models**: Batch processing where delays are acceptable
+- **Research phase**: Experimental models not in production
+- **Static domain**: Input data and model behavior stable indefinitely
+- **Manual review**: Humans review all outputs anyway; catch issues manually
+- **Low stakes**: Model errors have minimal impact
 
 ## Architecture
 

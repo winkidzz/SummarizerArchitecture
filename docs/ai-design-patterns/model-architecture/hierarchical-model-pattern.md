@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Hierarchical Model Pattern organizes models in layers where higher-level models aggregate and refine outputs from lower-level models. In medical summarization, this could involve document-level models feeding into patient-level models, which inform population-level insights, creating a hierarchy of abstraction and aggregation.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Multi-scale analysis**: Need to operate at different levels of abstraction (note → patient → cohort)
+- **Progressive refinement**: Each level adds context and refinement to lower levels
+- **Divide and conquer**: Complex problem naturally decomposes into hierarchical sub-problems
+- **Scalability**: Process large volumes by hierarchical aggregation
+- **Explainability**: Trace decisions through hierarchical levels
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Flat structure**: Problem doesn't have natural hierarchical organization
+- **Latency sensitive**: Multiple model layers increase inference time
+- **Simple aggregation**: Basic averaging or voting suffices
+- **Single-level output**: Only need results at one level of abstraction
+- **Error propagation**: Mistakes at lower levels compound at higher levels
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Model Serving Pattern provides production infrastructure to host and serve ML models via APIs, handling request/response cycles, load balancing, and scaling. In healthcare, this enables clinical applications to query summarization models in real-time, supporting features like instant discharge summary generation or live clinical decision support.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Production deployment**: Models need to serve real user requests
+- **API access**: Applications need programmatic access to model predictions
+- **Multiple clients**: Many applications or users accessing the same model
+- **Scalability**: Traffic varies and infrastructure must scale automatically
+- **Version management**: Need to deploy and manage multiple model versions
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Batch processing only**: All predictions can be pre-computed offline
+- **Single user**: Only one researcher using model interactively
+- **Embedded models**: Model runs on-device rather than via API
+- **Development phase**: Still experimenting; production infrastructure premature
+- **Static predictions**: Results don't change and can be cached indefinitely
 
 ## Architecture
 

@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Edge Deployment runs models on local devices (phones, tablets, medical devices) rather than cloud servers, enabling offline operation, reducing latency, and keeping sensitive data on-device. For healthcare, this allows clinical summaries on tablets in areas with poor connectivity or ultra-private processing of patient data.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Offline requirements**: Must work without internet connectivity
+- **Ultra-low latency**: Network round-trip unacceptable
+- **Privacy constraints**: Data cannot leave device due to regulations
+- **Edge devices available**: Target devices have sufficient compute (modern tablets, workstations)
+- **Network costs**: Reducing cloud API calls saves significant money
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Large models**: Model too big for edge device memory/compute
+- **Frequent updates**: Model changes too often to push to all devices
+- **Heterogeneous devices**: Too many different device types to support
+- **Cloud advantages**: Need massive compute or latest model versions
+- **Connected environments**: Reliable high-speed internet always available
 
 ## Architecture
 

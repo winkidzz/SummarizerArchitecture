@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Batch Inference processes large volumes of data offline in scheduled batches rather than real-time requests. For healthcare summarization, this might mean nightly processing of all new patient admissions or monthly summarization of clinical trial data, optimizing for throughput over latency.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Large-scale processing**: Thousands of documents to process regularly
+- **Non-urgent timelines**: Results needed within hours/days, not seconds
+- **Cost optimization**: Batch processing often cheaper than real-time serving
+- **Resource efficiency**: Can use spot instances or off-peak compute
+- **Scheduled workflows**: Regular processing schedules (nightly, weekly)
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Real-time requirements**: Users need immediate results
+- **Interactive applications**: Results displayed to users waiting
+- **Unpredictable timing**: Requests arrive randomly rather than in batches
+- **Low volume**: Too few requests to justify batch infrastructure
+- **Streaming data**: Continuous data flow better suited to stream processing
 
 ## Architecture
 

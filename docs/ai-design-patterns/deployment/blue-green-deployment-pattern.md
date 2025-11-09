@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Blue-Green Deployment maintains two identical production environments (blue and green), allowing instant switching between them. Deploy new model to green environment, test thoroughly, then switch traffic from blue to green. If issues arise, instantly switch back to blue. Minimizes downtime and risk for healthcare AI systems.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Zero-downtime requirement**: Healthcare systems can't afford deployment downtime
+- **Instant rollback**: Need ability to revert immediately if issues detected
+- **Full testing**: Can test new version in production-like environment before switch
+- **Database migrations**: Coordinate model and data schema changes
+- **High availability**: Must maintain service during deployments
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Resource constraints**: Can't afford duplicate production infrastructure
+- **Stateful systems**: Blue/green environments can't easily share state
+- **Gradual rollout needed**: Want to test on subset of users (use canary instead)
+- **Frequent deployments**: Too expensive to maintain duplicate environments
+- **Development phase**: Overkill for experimental systems
 
 ## Architecture
 

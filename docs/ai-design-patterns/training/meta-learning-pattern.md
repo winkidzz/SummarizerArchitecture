@@ -2,19 +2,23 @@
 
 ## Overview
 
-[Brief description of the pattern, its purpose, and when it's commonly used]
+Meta-Learning (learning to learn) trains models to quickly adapt to new tasks by learning from experience with many related tasks. The model learns general learning strategies rather than task-specific solutions. Useful for healthcare AI that must adapt to different hospitals, specialties, or clinical workflows.
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+- **Many related tasks**: Multiple similar tasks (different specialties, institutions)
+- **Fast adaptation**: Need to quickly customize to new clinical contexts
+- **Few examples per task**: Limited data for each new task but many tasks overall
+- **Task distribution**: New tasks come from same distribution as training tasks
+- **Personalization at scale**: Adapt to individual users or institutions efficiently
 
 ## When Not to Use
 
-- [Anti-pattern or alternative scenario 1]
-- [Anti-pattern or alternative scenario 2]
-- [Anti-pattern or alternative scenario 3]
+- **Single task**: Only solving one specific problem
+- **Unrelated tasks**: Tasks too different for shared meta-learning
+- **Abundant data per task**: Each task has sufficient data for standard training
+- **Simple transfer learning**: Basic fine-tuning suffices
+- **Computational constraints**: Meta-learning requires training on many tasks
 
 ## Architecture
 
