@@ -29,7 +29,11 @@
       "Bash(export OLLAMA_MODEL=\"gemma3:4b\")",
       "Bash(timeout 60 python3:*)",
       "Bash(PORT=8090 python3:*)",
-      "Bash(xargs kill -9)"
+      "Bash(xargs kill -9)",
+      "Bash(git mv:*)",
+      "Bash(git push:*)",
+      "Bash(git rm:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []
