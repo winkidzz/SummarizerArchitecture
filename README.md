@@ -96,6 +96,42 @@ results = orchestrator.query_patterns(
 )
 ```
 
+### 4. Launch the Google ADK Web UI (Recommended!)
+
+**Query patterns through an interactive web interface!**
+
+The project includes a fully configured Google ADK agent that provides:
+- 🌐 Web-based chat interface at http://127.0.0.1:8000
+- 🤖 AI agent powered by Gemini 2.5 Flash
+- 🔍 Semantic search across all patterns, guides, and use cases
+- 📊 Intelligent responses with source citations
+
+**One-command launch:**
+```bash
+./scripts/quick_start_adk.sh
+```
+
+This script checks all prerequisites, guides you through setup, and launches the web UI.
+
+**Manual launch (if you prefer):**
+```bash
+# Set your Google AI API key (get from: https://aistudio.google.com/app/apikey)
+export GOOGLE_API_KEY='your-key-here'
+
+# Generate the ADK agent configuration
+python3 scripts/setup_adk_agent.py
+
+# Launch the web UI
+./scripts/start_adk_default_ui.sh
+
+# Or use CLI mode:
+adk run .adk/agents/chromadb_agent
+```
+
+**📖 Complete Guide:** See [docs/ADK_QUICKSTART.md](docs/ADK_QUICKSTART.md) for detailed instructions, troubleshooting, and advanced usage.
+
+**📋 Technical Reference:** See [scripts/ADK_SETUP.md](scripts/ADK_SETUP.md) for the full checklist and customization options.
+
 ## Project Structure
 
 ```

@@ -4,7 +4,7 @@ architecture patterns and documentation.
 """
 
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 import logging
 
 try:
@@ -34,7 +34,7 @@ class VectorStore:
 
     def __init__(
         self,
-        persist_directory: str | Path = "./data/chroma_db",
+        persist_directory: Union[str, Path] = "./data/chroma_db",
         collection_name: str = "architecture_patterns",
         embedding_model: Optional[str] = None,
     ):
@@ -79,12 +79,27 @@ class VectorStore:
             ),
         )
         
-        # Get or create collection
-        self.collection = self.client.get_or_create_collection(
-            name=self.collection_name,
-            embedding_function=embedding_fn,
-            metadata={"description": "Architecture patterns and documentation"},
-        )
+        # Check if collection exists and handle embedding function conflict
+        try:
+            # Try to get existing collection first
+            existing_collection = self.client.get_collection(
+                name=self.collection_name,
+            )
+            # Collection exists - use its existing embedding function
+            self.collection = existing_collection
+            logger.info(
+                f"Using existing collection '{self.collection_name}' with its current embedding function"
+            )
+        except Exception:
+            # Collection doesn't exist - create it with the specified embedding function
+            self.collection = self.client.create_collection(
+                name=self.collection_name,
+                embedding_function=embedding_fn,
+                metadata={"description": "Architecture patterns and documentation"},
+            )
+            logger.info(
+                f"Created new collection '{self.collection_name}' with embedding function"
+            )
         
         logger.info(
             f"VectorStore initialized: {self.persist_directory}, "

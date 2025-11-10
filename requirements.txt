@@ -39,6 +39,9 @@ langchain-anthropic>=0.3.0
 langchain-google-vertexai>=2.0.0
 langchain-community>=0.3.0
 
+# Google Agent Development Kit
+google-adk>=1.18.0
+
 # ============================================================================
 # Reranking and Advanced Retrieval
 # ============================================================================
@@ -250,4 +253,3 @@ ollama>=0.1.0
 # - playwright (Dynamic content)
 # - scikit-learn (Clustering for RAPTOR validation)
 # - pytest (Code validation)
-

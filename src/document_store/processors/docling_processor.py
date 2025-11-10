@@ -4,7 +4,7 @@ into structured data suitable for RAG systems.
 """
 
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 import logging
 
 try:
@@ -38,7 +38,7 @@ class DoclingProcessor:
 
     def process_document(
         self,
-        source: str | Path,
+        source: Union[str, Path],
         output_format: str = "markdown",
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
@@ -94,7 +94,7 @@ class DoclingProcessor:
 
     def process_directory(
         self,
-        directory: str | Path,
+        directory: Union[str, Path],
         output_format: str = "markdown",
         file_extensions: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:

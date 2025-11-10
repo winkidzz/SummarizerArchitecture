@@ -54,6 +54,18 @@ The project uses a two-tier agent approach:
 
 **Note**: Google ADK package structure may vary. Adjust imports based on actual package.
 
+#### Repo Quickstart
+
+1. **Install dependencies**: `pip install -r requirements.txt` (this now pulls `google-adk>=1.18.0`).
+2. **Set credentials**: `export GOOGLE_API_KEY="..."` (or add it to `.env`).
+3. **Generate/update the agent**: `python scripts/setup_adk_agent.py`.
+   - Customise with `--persist-directory`, `--collection-name`, `--model`, or pass `--instruction-file` for bespoke prompts.
+   - The script writes `.adk/agents/chromadb_agent/agent.py`, which ADK auto-discovers.
+4. **Launch the UI** (optional): `scripts/start_adk_default_ui.sh` wraps `adk web --host --port .adk/agents`.
+5. **CLI usage**: `adk run .adk/agents/chromadb_agent` for a REPL experience.
+
+Refer to `scripts/ADK_SETUP.md` for a concise checklist covering environment variables, troubleshooting, and tips for the Angular-based ADK Web project.
+
 ### Features
 
 - **Agent-based Querying**: Intelligent, context-aware querying
@@ -288,4 +300,3 @@ See example scripts:
 3. Test agent integrations
 4. Customize models for your use case
 5. Integrate into your RAG systems
-

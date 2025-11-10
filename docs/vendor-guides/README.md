@@ -13,7 +13,7 @@ This directory contains vendor-specific implementation guides for healthcare sum
 ### Frameworks
 - [LangChain](./langchain-guide.md) - Multi-vendor framework
 - [Spring AI](./spring-ai-guide.md) - Java/Spring integration
-- [Google ADK](./google-adk-guide.md) - Agent Development Kit
+- [Google ADK](./google-adk.md) - Agent Development Kit
 
 ### Cost-Effective Options
 - [Ollama](./ollama-guide.md) - Local LLM platform
@@ -62,4 +62,3 @@ When adding vendor guides:
 3. Document healthcare-specific features
 4. Provide troubleshooting guidance
 5. Keep examples current with latest APIs
-
