@@ -1,93 +1,46 @@
-# Documentation Index
+# Documentation - Moved
 
-This directory contains the documentation for the AI Summarization Reference Architecture project.
+**Note**: The documentation structure has been reorganized. Please see the new locations below.
 
-## Core Documentation
+## New Structure
 
-### Architecture Framework
-- [Architecture Framework](./architecture-framework.md) - Well-Architected Framework principles applied to RAG systems
-- [Deployment Guide](./deployment-guide.md) - Deployment archetypes and guidance
-- [Testing Guide](./testing-guide.md) - Testing approach and best practices
-- [Security Best Practices](./security-best-practices.md) - Healthcare-specific security guidance
-- [Healthcare Development Lifecycle](./healthcare-development-lifecycle.md) - Complete checklist from ideation to production with RACI matrices
-- [Technical Tools & Frameworks](./technical-tools-framework.md) - Comprehensive catalog of tools organized by Well-Architected Framework pillars
-- [Project Planning & Delivery](./project-planning-delivery.md) - Project planning, delivery strategies, and resource management by phase
+This project has been restructured into a monorepo with clear separation:
 
-### Patterns and Use Cases
-- [RAG Patterns](./patterns/README.md) - Complete RAG pattern library
-- [Pattern Index](./patterns/pattern-index.md) - Quick pattern selection guide
-- [AI Design Patterns](./ai-design-patterns/README.md) - Comprehensive catalog of AI design patterns (beyond RAG)
-- [AI Design Pattern Index](./ai-design-patterns/pattern-index.md) - Quick selection guide for AI design patterns
-- [AI Development Techniques](./ai-development-techniques.md) - Comprehensive catalog of AI/ML techniques, methodologies, and frameworks
-- [Use Cases](./use-cases/README.md) - Use case-specific guidance
-- [Vendor Guides](./vendor-guides/README.md) - Vendor-specific implementation guides
+### 📚 Pattern Library Documentation
+**All pattern documentation has moved to [`../pattern-library/`](../pattern-library/)**
 
-### Setup and Configuration
-- [Document Store Setup](./document-store-setup.md) - Document store setup and usage
-- [Agent Setup Guide](./agent-setup-guide.md) - Google ADK and Ollama setup
-- [Troubleshooting Guide](./troubleshooting-guide.md) - Common issues and solutions
-- [Glossary](./glossary.md) - Terminology and definitions
-- [Project Review](./project-review.md) - Comprehensive project review and gap analysis
+- **RAG Patterns**: [`pattern-library/patterns/rag/`](../pattern-library/patterns/rag/)
+- **AI Design Patterns**: [`pattern-library/patterns/ai-design/`](../pattern-library/patterns/ai-design/)
+- **Use Cases**: [`pattern-library/use-cases/`](../pattern-library/use-cases/)
+- **Vendor Guides**: [`pattern-library/vendor-guides/`](../pattern-library/vendor-guides/)
+- **Framework Documentation**: [`pattern-library/framework/`](../pattern-library/framework/)
 
-## Documentation Structure
+### 🔍 Query Application Documentation
+**Application-specific documentation has moved to [`../pattern-query-app/docs/`](../pattern-query-app/docs/)**
 
-### `patterns/`
-Contains detailed documentation for each RAG pattern and architecture blueprint. Each pattern includes:
-- Architecture overview
-- When to use / when not to use
-- Implementation examples for multiple vendors
-- Performance characteristics
-- Trade-offs and considerations
-- Architecture diagrams
-- **Well-Architected Framework alignment**
-- **Deployment considerations**
+- **ADK Quick Start**: [`pattern-query-app/docs/ADK_QUICKSTART.md`](../pattern-query-app/docs/ADK_QUICKSTART.md)
+- **Agent Setup Guide**: [`pattern-query-app/docs/agent-setup-guide.md`](../pattern-query-app/docs/agent-setup-guide.md)
+- **Document Store Setup**: [`pattern-query-app/docs/document-store-setup.md`](../pattern-query-app/docs/document-store-setup.md)
+- **Troubleshooting Guide**: [`pattern-query-app/docs/troubleshooting-guide.md`](../pattern-query-app/docs/troubleshooting-guide.md)
+- **Project Review**: [`pattern-query-app/docs/project-review.md`](../pattern-query-app/docs/project-review.md)
 
-### `use-cases/`
-Contains use case-specific documentation that helps you:
-- Understand requirements for different use cases
-- Select the right pattern for your use case
-- Compare patterns for your specific needs
-- Find implementation examples
+### 🏗️ Project Infrastructure
+**Project governance and specifications have moved to [`../project/`](../project/)**
 
-### `vendor-guides/`
-Contains vendor-specific implementation guides for:
-- Vertex AI (Gemini)
-- Anthropic (Claude)
-- Azure OpenAI
-- AWS Bedrock
-- LangChain
-- Spring AI
-- Google ADK
-- Ollama
+- **Project Specs**: [`project/specs/`](../project/specs/)
+- **Project Memory**: [`project/memory/`](../project/memory/)
 
-## Well-Architected Framework
+## Quick Links
 
-All patterns and architectures align with the [Google Cloud Well-Architected Framework](https://docs.cloud.google.com/architecture/framework/printable):
+- **Main README**: [`../README.md`](../README.md) - Start here for project overview
+- **Pattern Library**: [`../pattern-library/README.md`](../pattern-library/README.md) - Healthcare AI patterns
+- **Query App**: [`../pattern-query-app/README.md`](../pattern-query-app/README.md) - Query tool documentation
 
-1. **Operational Excellence** - Monitoring, automation, continuous improvement
-2. **Security, Privacy, and Compliance** - Security by design, AI security, privacy
-3. **Reliability** - High availability, graceful degradation, redundancy
-4. **Cost Optimization** - Resource optimization, cost monitoring
-5. **Performance Optimization** - Modular design, resource planning, monitoring
-6. **Sustainability** - Resource efficiency, environmental considerations
+---
 
-See [Architecture Framework](./architecture-framework.md) for detailed guidance.
+**Why the change?** The new structure provides clear separation between:
+1. **Pattern documentation** (what to build)
+2. **Query application** (tool to search patterns)
+3. **Project infrastructure** (governance)
 
-## Getting Started
-
-1. Start with [Use Cases](./use-cases/) if you know your use case
-2. Browse [Patterns](./patterns/) to understand available architectures
-3. Check [Vendor Guides](./vendor-guides/) for implementation details
-4. Review [Architecture Framework](./architecture-framework.md) for quality principles
-5. Consult [Deployment Guide](./deployment-guide.md) for deployment strategies
-
-## Contributing
-
-When adding new documentation:
-- Follow the templates in `../templates/`
-- Include multi-vendor examples
-- Provide clear use case guidance
-- Include architecture diagrams
-- **Align with Well-Architected Framework pillars**
-- **Document deployment considerations**
-- Test all code examples
+See the [main README](../README.md) for the full explanation.
