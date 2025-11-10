@@ -52,7 +52,7 @@ class PatternMetadata:
 class PatternParser:
     """Parse pattern documentation to extract metadata and content."""
 
-    def __init__(self, patterns_dir: str = "./docs/patterns"):
+    def __init__(self, patterns_dir: str = "../pattern-library/patterns/rag"):
         """
         Initialize pattern parser.
 

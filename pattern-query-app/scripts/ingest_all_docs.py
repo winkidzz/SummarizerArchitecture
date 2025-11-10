@@ -37,21 +37,29 @@ def main():
         collection_name="architecture_patterns",
     )
 
-    # Collect all markdown files
-    docs_dir = REPO_ROOT / "docs"
+    # Collect all markdown files from the pattern library
+    pattern_lib_dir = REPO_ROOT.parent / "pattern-library"
 
     pattern_paths = []
-    if (docs_dir / "patterns").exists():
-        pattern_paths.extend(list((docs_dir / "patterns").glob("*.md")))
+    # RAG patterns
+    if (pattern_lib_dir / "patterns" / "rag").exists():
+        pattern_paths.extend(list((pattern_lib_dir / "patterns" / "rag").glob("*.md")))
 
-    if (docs_dir / "ai-design-patterns").exists():
-        pattern_paths.extend(list((docs_dir / "ai-design-patterns").rglob("*.md")))
+    # AI design patterns
+    if (pattern_lib_dir / "patterns" / "ai-design").exists():
+        pattern_paths.extend(list((pattern_lib_dir / "patterns" / "ai-design").rglob("*.md")))
 
-    if (docs_dir / "vendor-guides").exists():
-        pattern_paths.extend(list((docs_dir / "vendor-guides").glob("*.md")))
+    # Vendor guides
+    if (pattern_lib_dir / "vendor-guides").exists():
+        pattern_paths.extend(list((pattern_lib_dir / "vendor-guides").glob("*.md")))
 
-    if (docs_dir / "use-cases").exists():
-        pattern_paths.extend(list((docs_dir / "use-cases").glob("*.md")))
+    # Use cases
+    if (pattern_lib_dir / "use-cases").exists():
+        pattern_paths.extend(list((pattern_lib_dir / "use-cases").glob("*.md")))
+
+    # Framework documentation
+    if (pattern_lib_dir / "framework").exists():
+        pattern_paths.extend(list((pattern_lib_dir / "framework").glob("*.md")))
 
     logger.info(f"Found {len(pattern_paths)} documents to ingest")
 
@@ -80,7 +88,7 @@ def main():
             documents_to_add.append({
                 "content": content,
                 "metadata": {
-                    "source": str(doc_path.relative_to(REPO_ROOT)),
+                    "source": str(doc_path.relative_to(pattern_lib_dir)),
                     "title": title,
                     "type": doc_type,
                     "filename": doc_path.name,

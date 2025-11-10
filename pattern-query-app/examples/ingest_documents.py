@@ -27,9 +27,9 @@ def main():
     # Example: Ingest documentation files
     # Replace with your actual document paths
     document_sources = [
-        # "./docs/patterns/basic-rag.md",
-        # "./docs/patterns/advanced-rag.md",
-        # "./specs/001-ai-summarization-reference-architecture/spec.md",
+        # "../pattern-library/patterns/rag/basic-rag.md",
+        # "../pattern-library/patterns/rag/advanced-rag.md",
+        # "../project/specs/001-ai-summarization-reference-architecture/spec.md",
     ]
     
     if document_sources:
