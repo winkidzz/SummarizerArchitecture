@@ -20,6 +20,7 @@ __pycache__/
 .Python
 env/
 venv/
+venv312/
 ENV/
 .venv
 
@@ -52,3 +53,4 @@ data/
 *.sqlite3
 chroma_db/
 
+venv312/
