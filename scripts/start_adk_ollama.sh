@@ -7,7 +7,7 @@ AGENTS_DIR="${ROOT_DIR}/.adk/agents"
 HOST="${ADK_WEB_HOST:-127.0.0.1}"
 PORT="${ADK_WEB_PORT:-8000}"
 ALLOW_ORIGINS="${ADK_ALLOW_ORIGINS:-*}"
-OLLAMA_MODEL="${OLLAMA_MODEL:-qwen3:14b}"
+OLLAMA_MODEL="${OLLAMA_MODEL:-gemma3:4b}"
 
 echo "=========================================="
 echo "ADK Web UI with Local Ollama"

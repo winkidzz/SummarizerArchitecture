@@ -28,7 +28,8 @@
       "Bash(pip install:*)",
       "Bash(export OLLAMA_MODEL=\"gemma3:4b\")",
       "Bash(timeout 60 python3:*)",
-      "Bash(PORT=8090 python3:*)"
+      "Bash(PORT=8090 python3:*)",
+      "Bash(xargs kill -9)"
     ],
     "deny": [],
     "ask": []

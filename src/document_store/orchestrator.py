@@ -6,7 +6,7 @@ updating the knowledge base, and querying patterns.
 """
 
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 import logging
 
 from .processors.docling_processor import DoclingProcessor
@@ -28,7 +28,7 @@ class DocumentStoreOrchestrator:
 
     def __init__(
         self,
-        persist_directory: str | Path = "./data/chroma_db",
+        persist_directory: Union[str, Path] = "./data/chroma_db",
         collection_name: str = "architecture_patterns",
         embedding_model: Optional[str] = None,
         use_adk_agent: bool = True,
