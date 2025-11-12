@@ -122,7 +122,11 @@ def validate_csv_format(response: str, validation_rules: Dict) -> Dict:
     return result
 
 
-def start_adk_server(agent_type: str = "gemini_agent", port: int = 8000) -> Optional[subprocess.Popen]:
+def start_adk_server(
+    agent_type: str = "gemini_agent",
+    port: int = 8000,
+    model: Optional[str] = None
+) -> Optional[subprocess.Popen]:
     """
     Start ADK web server programmatically.
     
@@ -141,7 +145,7 @@ def start_adk_server(agent_type: str = "gemini_agent", port: int = 8000) -> Opti
             print(f"  ✗ Error: ADK not found at {venv_adk}")
             return None
         
-        # Load environment variables from .env
+        # Load environment variables from .env FIRST
         from dotenv import load_dotenv
         load_dotenv(repo_root / ".env")
         
@@ -149,9 +153,19 @@ def start_adk_server(agent_type: str = "gemini_agent", port: int = 8000) -> Opti
         env = os.environ.copy()
         
         if agent_type == "ollama_agent":
-            env["OLLAMA_MODEL"] = os.getenv("OLLAMA_MODEL", "gemma3:4b")
+            # Use model from parameter, then environment, then default
+            # The model parameter should override .env file
+            # IMPORTANT: Set this AFTER loading .env so it overrides
+            ollama_model = model or os.getenv("OLLAMA_MODEL") or "qwen3:14b"
+            env["OLLAMA_MODEL"] = ollama_model  # Override .env with parameter
+            # Also unset it from current process env so ADK picks up the new value
+            os.environ["OLLAMA_MODEL"] = ollama_model
             env["OLLAMA_BASE_URL"] = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
-            agents_dir = repo_root / ".adk" / "agents" / "ollama_agent"
+            # Also set ADK_MODEL for consistency
+            env["ADK_MODEL"] = ollama_model
+            # Point to parent agents directory so ADK can discover all agents
+            agents_dir = repo_root / ".adk" / "agents"
+            print(f"  Server environment: OLLAMA_MODEL={ollama_model}, OLLAMA_BASE_URL={env['OLLAMA_BASE_URL']}")
         else:  # gemini_agent
             api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if not api_key:
@@ -249,7 +263,7 @@ def invoke_adk_via_http(
     agent_type: str = "ollama_agent",
     model: Optional[str] = None,
     api_url: str = "http://127.0.0.1:8000",
-    timeout: float = 300.0
+    timeout: float = 600.0  # Increased to 10 minutes for large CSV queries
 ) -> Optional[str]:
     """
     Invoke ADK agent via HTTP API using the /run endpoint.
@@ -276,9 +290,27 @@ def invoke_adk_via_http(
         session_id = str(uuid.uuid4())
         user_id = "csv-eval-user"
         
+        # First, create/initialize the session using the correct endpoint
+        # ADK requires session to exist before /run can be called
+        session_endpoint = f"{api_url}/apps/{agent_type}/users/{user_id}/sessions/{session_id}"
+        try:
+            session_response = requests.post(
+                session_endpoint,
+                json={},  # Empty JSON for session creation
+                headers={"Content-Type": "application/json"},
+                timeout=5.0
+            )
+            # Session creation might return 200 (created) or 409 (already exists) - both are OK
+            if session_response.status_code not in [200, 201, 409]:
+                print(f"  ⚠️  Session creation returned HTTP {session_response.status_code}")
+                print(f"  ⚠️  Response: {session_response.text[:200]}")
+        except Exception as e:
+            print(f"  ⚠️  Session creation warning: {e}, continuing anyway...")
+        
         # Prepare request payload for /run endpoint
         # According to ADK docs: https://google.github.io/adk-docs/api-reference/rest/
         # The new_message should be a Content object with parts (not content/text fields)
+        # The app_name should match the agent directory name
         payload = {
             "app_name": agent_type,  # e.g., "gemini_agent" or "ollama_agent"
             "user_id": user_id,
@@ -293,22 +325,6 @@ def invoke_adk_via_http(
             },
             "streaming": False  # Get complete response, not streamed
         }
-        
-        # First, create/initialize the session
-        # According to ADK docs, we need to create the session first
-        session_endpoint = f"{api_url}/apps/{agent_type}/users/{user_id}/sessions/{session_id}"
-        try:
-            session_response = requests.post(
-                session_endpoint,
-                json={"messages": []},  # Initialize with empty messages
-                headers={"Content-Type": "application/json"},
-                timeout=5.0
-            )
-            # Session creation might return 200 (created) or 409 (already exists) - both are OK
-            if session_response.status_code not in [200, 409]:
-                print(f"  ⚠️  Session creation returned HTTP {session_response.status_code}, continuing anyway...")
-        except Exception as e:
-            print(f"  ⚠️  Session creation warning: {e}, continuing anyway...")
         
         # Call the /run endpoint
         endpoint = f"{api_url}/run"
@@ -325,9 +341,15 @@ def invoke_adk_via_http(
                 print(f"  ✗ ADK API error: HTTP {response.status_code}")
                 try:
                     error_detail = response.json()
-                    print(f"  ✗ Error detail: {error_detail}")
+                    print(f"  ✗ Error detail: {json.dumps(error_detail, indent=2)[:500]}")
                 except:
-                    print(f"  ✗ Error response: {response.text[:200]}")
+                    print(f"  ✗ Error response: {response.text[:500]}")
+                # For 500 errors, also check if it's a model/agent issue
+                if response.status_code == 500:
+                    print(f"  ⚠️  Internal server error - this may indicate:")
+                    print(f"      - Ollama model not available or not responding")
+                    print(f"      - Agent configuration issue")
+                    print(f"      - Check server logs for details")
                 return None
             
             # Parse response - /run returns a list of events
@@ -464,14 +486,14 @@ def invoke_agent_for_csv(
     agent_type: str = "ollama_agent",
     model: Optional[str] = None,
     adk_api_url: Optional[str] = None,
-    adk_api_timeout: float = 300.0
+    adk_api_timeout: float = 600.0  # Increased to 10 minutes for large CSV queries
 ) -> Optional[str]:
     """
     Invoke ADK agent via HTTP API ONLY (no fallbacks).
     
     This function ONLY uses the ADK agent with tool access via HTTP API.
     If the server is not running, it will be started automatically.
-    
+
     Args:
         query: Query to send to agent
         agent_type: Agent to use (ollama_agent or gemini_agent)
@@ -505,7 +527,7 @@ def invoke_agent_for_csv(
         # Check if server is running, start if needed
         if not check_adk_server_running(api_url=api_url):
             print(f"  ADK server not running at {api_url}, starting server...")
-            server_process = start_adk_server(agent_type=agent_type, port=port)
+            server_process = start_adk_server(agent_type=agent_type, port=port, model=model)
             
             if not server_process:
                 print(f"  ✗ Error: Failed to start ADK server")
@@ -737,7 +759,7 @@ def evaluate_csv_with_ragas(
         print(f"    Row count validation: {actual_row_count} rows (expected: {expected_row_count}) {'✓' if row_count_match else '✗'}")
         
         return results_dict
-        
+
     except Exception as e:
         print(f"  ✗ Ragas evaluation error: {e}")
         import traceback
@@ -751,7 +773,7 @@ def run_csv_eval(
     agent_type: str = "ollama_agent",
     auto_invoke: bool = True,
     adk_api_url: Optional[str] = None,
-    adk_api_timeout: float = 300.0
+    adk_api_timeout: float = 600.0  # Increased to 10 minutes for large CSV queries
 ) -> Dict:
     """
     Run CSV formatting evaluation against multiple models.
@@ -915,8 +937,6 @@ def run_csv_eval(
                             print(f"    Row count: {actual_rows} (expected: {expected_rows}) ✓")
                             if content_verification:
                                 print(f"    Content verification: All {content_verification.get('expected_count', 'N/A')} techniques match ✓")
-                            import math
-                            is_nan = lambda x: x != x or (isinstance(x, float) and math.isnan(x))
                             if not is_nan(faithfulness_score):
                                 print(f"    Faithfulness: {faithfulness_score:.3f}")
                             if not is_nan(answer_relevancy_score):
@@ -925,14 +945,12 @@ def run_csv_eval(
                             status = "FAIL"
                             summary_stats["failed"] += 1
                             print(f"  ✗ FAIL ({elapsed:.2f}s)")
-                            if not row_match:
+                            if not row_pass:
                                 print(f"    Row count: {actual_rows} (expected: {expected_rows}) ✗")
-                            if not content_match:
-                                missing = content_verification.get("missing_count", 0)
-                                extra = content_verification.get("extra_count", 0)
+                            if not content_pass:
+                                missing = content_verification.get("missing_count", 0) if content_verification else 0
+                                extra = content_verification.get("extra_count", 0) if content_verification else 0
                                 print(f"    Content verification: Missing {missing}, Extra {extra} ✗")
-                            import math
-                            is_nan = lambda x: x != x or (isinstance(x, float) and math.isnan(x))
                             if not is_nan(faithfulness_score) and faithfulness_score < 0.5:
                                 print(f"    Faithfulness: {faithfulness_score:.3f} (below threshold)")
                             if not is_nan(answer_relevancy_score) and answer_relevancy_score < 0.5:

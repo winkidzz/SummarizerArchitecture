@@ -1,0 +1,43 @@
+.env
+
+# Temporary evaluation results
+*_eval_results.json
+ragas_results*.json
+eval_results.json
+csv_eval_results.json
+
+# Test output files
+test/csv_response_*.txt
+test/*_response_*.txt
+
+# Temporary documentation (keep only essential setup/troubleshooting docs)
+CSV_EVALUATION.md
+CSV_FORMATTING_FIX.md
+CHUNKING_EVALUATION.md
+VALIDATION_REPORT.md
+IMPLEMENTATION_SUMMARY.md
+FINAL_STATUS.md
+project-review.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

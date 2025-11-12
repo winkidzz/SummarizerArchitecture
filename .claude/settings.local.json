@@ -44,7 +44,11 @@
       "Bash(cat:*)",
       "Bash(../venv312/bin/python3:*)",
       "Bash(awk:*)",
-      "Bash(./scripts/start_adk_gemini.sh:*)"
+      "Bash(./scripts/start_adk_gemini.sh:*)",
+      "Bash(timeout 180 python3:*)",
+      "Bash(source ../venv312/bin/activate)",
+      "Bash(ls:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

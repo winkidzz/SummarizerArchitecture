@@ -166,6 +166,8 @@ def get_complete_document(source_filter: str) -> Dict[str, Any]:
     Args:
         source_filter: Partial or complete source path to match (e.g.,
                       "ai-development-techniques", "framework/ai-development-techniques.md")
+                      Can also be a content description (e.g., "techniques catalog")
+                      which will trigger semantic search fallback.
 
     Returns:
         Dictionary with:
@@ -175,6 +177,7 @@ def get_complete_document(source_filter: str) -> Dict[str, Any]:
         - content: reconstructed full content
         - total_chunks: number of chunks
         - error: error message if failed
+        - suggestions: list of alternative sources (if search failed)
     """
     try:
         vector_store = get_vector_store()
@@ -206,12 +209,70 @@ def get_complete_document(source_filter: str) -> Dict[str, Any]:
                 })
 
         if not matching_chunks:
-            return {
-                "success": False,
-                "error": f"No documents found matching '{source_filter}'",
-                "chunks": [],
-                "total_chunks": 0,
-            }
+            # FALLBACK: Try semantic search to find relevant document
+            # This helps when user provides content description instead of source name
+            try:
+                rag_interface = get_rag_interface()
+                search_results = rag_interface.query_patterns(
+                    query=source_filter,
+                    n_results=5
+                )
+
+                if search_results.get("results"):
+                    # Get unique source documents from search results
+                    candidate_sources = {}
+                    for result in search_results["results"]:
+                        source = result.get("metadata", {}).get("source", "")
+                        if source and source not in candidate_sources:
+                            candidate_sources[source] = result.get("content", "")[:200]
+
+                    if candidate_sources:
+                        # Try the most relevant source automatically
+                        best_source = list(candidate_sources.keys())[0]
+
+                        # Extract just the filename for matching
+                        import os
+                        best_source_name = os.path.basename(best_source).replace(".md", "")
+
+                        # Re-run the search with the discovered source
+                        for doc, metadata in zip(all_results["documents"], all_results["metadatas"]):
+                            source = metadata.get("source", "")
+                            if best_source_name.lower() in source.lower():
+                                matching_chunks.append({
+                                    "content": doc,
+                                    "metadata": metadata,
+                                    "chunk_index": metadata.get("chunk_index", 0),
+                                    "source": source,
+                                })
+
+                        if matching_chunks:
+                            # Found via semantic search!
+                            pass  # Continue with normal processing below
+                        else:
+                            # Semantic search found candidates but couldn't retrieve full doc
+                            return {
+                                "success": False,
+                                "error": f"No documents found matching '{source_filter}'",
+                                "chunks": [],
+                                "total_chunks": 0,
+                                "suggestions": [
+                                    f"{src} - {preview}..."
+                                    for src, preview in list(candidate_sources.items())[:3]
+                                ],
+                                "hint": f"Try using: {best_source_name}"
+                            }
+            except Exception as search_error:
+                # Semantic search failed, return original error
+                pass
+
+            # If still no matches after semantic search fallback
+            if not matching_chunks:
+                return {
+                    "success": False,
+                    "error": f"No documents found matching '{source_filter}'",
+                    "chunks": [],
+                    "total_chunks": 0,
+                }
 
         # Sort by chunk_index to reconstruct sequential document
         matching_chunks.sort(key=lambda x: x["chunk_index"])

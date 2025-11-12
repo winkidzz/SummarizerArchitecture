@@ -6,8 +6,22 @@ Uses the official Ragas library with Ollama or Gemini LLM support via LangChain.
 
 import logging
 import os
+import sys
 from typing import List, Dict, Any, Optional
 import pandas as pd
+
+# Fix for LangChain verbose/debug attribute errors
+# LangChain's get_verbose() and get_debug() try to access langchain.verbose and langchain.debug
+# which don't exist in newer versions. We patch the langchain module to add these attributes
+# before importing LangChain classes
+try:
+    import langchain
+    if not hasattr(langchain, 'verbose'):
+        langchain.verbose = False
+    if not hasattr(langchain, 'debug'):
+        langchain.debug = False
+except ImportError:
+    pass
 
 try:
     from datasets import Dataset
@@ -164,19 +178,31 @@ class RagasRealEvaluator:
                 )
             
             # Initialize Ollama LLM for Ragas
+            # Set verbose to False to avoid langchain.verbose attribute error
+            os.environ.setdefault("LANGCHAIN_VERBOSE", "false")
+
             try:
                 # Try new langchain-ollama API
                 ollama_llm = Ollama(
                     model=model,
                     base_url=self.base_url,
                     temperature=0.1,  # Low temperature for consistency
+                    verbose=False,  # Explicitly disable verbose mode
                 )
             except TypeError:
-                # Fallback for deprecated API
-                ollama_llm = Ollama(
-                    model=model,
-                    base_url=self.base_url,
-                )
+                # Fallback for deprecated API (may not support verbose parameter)
+                try:
+                    ollama_llm = Ollama(
+                        model=model,
+                        base_url=self.base_url,
+                        verbose=False,
+                    )
+                except TypeError:
+                    # If verbose parameter not supported, try without it
+                    ollama_llm = Ollama(
+                        model=model,
+                        base_url=self.base_url,
+                    )
             
             # Wrap LangChain LLM with Ragas wrapper for proper integration
             self.llm = LangchainLLMWrapper(ollama_llm)
