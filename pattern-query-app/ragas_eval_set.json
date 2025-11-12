@@ -1,0 +1,74 @@
+{
+  "name": "Ragas RAG Evaluation Set",
+  "description": "Test cases for evaluating RAG system quality using Ragas metrics",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "ragas_1",
+      "query": "What is Basic RAG and how does it work?",
+      "reference_answer": "Basic RAG is a foundational pattern for Retrieval-Augmented Generation. It works by: 1) Taking a user query, 2) Embedding the query into a vector, 3) Searching a vector database for similar documents, 4) Retrieving the top-k most relevant documents, 5) Passing the query and retrieved documents to an LLM, 6) The LLM generates a response grounded in the retrieved context. Basic RAG is simple to implement, has low latency (<500ms), and provides a good baseline for document-grounded question answering.",
+      "expected_metrics": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 0.90,
+        "context_precision": 0.80,
+        "context_recall": 0.85
+      }
+    },
+    {
+      "id": "ragas_2",
+      "query": "Compare RAPTOR RAG with Basic RAG",
+      "reference_answer": "RAPTOR RAG differs from Basic RAG by using a hierarchical approach. While Basic RAG retrieves flat chunks, RAPTOR builds a recursive tree of summaries at multiple abstraction levels. This allows RAPTOR to answer complex, multi-hop questions that require understanding across multiple document sections. RAPTOR typically shows 25-40% improvement for complex queries but has higher latency (2-3 seconds vs <500ms for Basic RAG) due to the tree construction process.",
+      "expected_metrics": {
+        "faithfulness": 0.80,
+        "answer_relevancy": 0.85,
+        "context_precision": 0.75,
+        "context_recall": 0.80
+      }
+    },
+    {
+      "id": "ragas_3",
+      "query": "What RAG patterns are available in the library?",
+      "reference_answer": "The library contains 8 RAG patterns: 1) Basic RAG - foundational pattern, 2) Contextual Retrieval - adds context to chunks (49-67% error reduction), 3) HyDE RAG - uses hypothetical documents, 4) RAPTOR RAG - hierarchical recursive summaries, 5) Query Routing - routes to different backends, 6) Reranking RAG - reranks retrieved results, 7) Long Context Window - uses extended context, 8) Multi-Modal RAG - handles images and text.",
+      "expected_metrics": {
+        "faithfulness": 0.90,
+        "answer_relevancy": 0.95,
+        "context_precision": 0.85,
+        "context_recall": 0.90
+      }
+    },
+    {
+      "id": "ragas_4",
+      "query": "How do I implement RAG with Google Vertex AI?",
+      "reference_answer": "To implement RAG with Google Vertex AI: 1) Use Vertex AI Embeddings API to generate embeddings from your documents, 2) Store embeddings in a vector database (e.g., Vertex AI Vector Search, ChromaDB), 3) Use Vertex AI Matching Engine for similarity search, 4) Pass retrieved documents to Gemini models via Vertex AI API, 5) Vertex AI supports 2M token context windows, enabling long-context RAG. Key features include Healthcare API integration, HIPAA compliance, and built-in evaluation tools.",
+      "expected_metrics": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 0.88,
+        "context_precision": 0.80,
+        "context_recall": 0.82
+      }
+    },
+    {
+      "id": "ragas_5",
+      "query": "What is Contextual Retrieval and what performance improvement does it provide?",
+      "reference_answer": "Contextual Retrieval is an advanced RAG technique announced by Anthropic in September 2024. It works by prepending context to each chunk before embedding, helping the retriever understand chunk meaning in relation to the broader document. This technique reduces retrieval errors by 49-67% compared to Basic RAG. The context is typically generated using an LLM to create a 1-2 sentence summary explaining how the chunk relates to the overall document.",
+      "expected_metrics": {
+        "faithfulness": 0.88,
+        "answer_relevancy": 0.92,
+        "context_precision": 0.82,
+        "context_recall": 0.85
+      }
+    }
+  ],
+  "evaluation_criteria": {
+    "faithfulness": "Response must be grounded in retrieved documents, no hallucinations",
+    "answer_relevancy": "Response must directly answer the query",
+    "context_precision": "Retrieved documents must be relevant to answering the query",
+    "context_recall": "All necessary information to answer query must be retrieved"
+  },
+  "scoring_guide": {
+    "excellent": ">= 0.85",
+    "good": "0.70 - 0.84",
+    "acceptable": "0.50 - 0.69",
+    "poor": "< 0.50"
+  }
+}

@@ -121,7 +121,7 @@ fi
 
 # Check agent directory
 echo ""
-if [ ! -d ".adk/agents/chromadb_agent" ]; then
+if [ ! -d ".adk/agents/gemini_agent" ]; then
     echo "⚠  ADK agent not configured"
     echo ""
     echo "Generating ADK agent configuration..."

@@ -1,0 +1,32 @@
+{
+  "name": "Simple ADK Agent Evaluation",
+  "description": "Quick 5-test validation set for fast agent testing",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "quick_1",
+      "query": "What RAG patterns are available?",
+      "expected": "Should list multiple RAG patterns"
+    },
+    {
+      "id": "quick_2",
+      "query": "Explain Basic RAG",
+      "expected": "Should describe Basic RAG pattern"
+    },
+    {
+      "id": "quick_3",
+      "query": "Compare Azure and AWS",
+      "expected": "Should compare both vendors"
+    },
+    {
+      "id": "quick_4",
+      "query": "How many documents in the knowledge base?",
+      "expected": "Should use get_store_info() tool"
+    },
+    {
+      "id": "quick_5",
+      "query": "What is the weather today?",
+      "expected": "Should say cannot answer from knowledge base"
+    }
+  ]
+}

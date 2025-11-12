@@ -1,0 +1,63 @@
+{
+  "name": "Ragas Quick Evaluation Set",
+  "description": "Quick 2-test evaluation including CSV formatting and comparison table",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "quick_1_csv_format",
+      "query": "Give me the Complete Techniques Catalog as CSV that I can copy paste",
+      "reference_answer": "A CSV-formatted list of all RAG techniques with columns like: Technique Name, Description, Use Case, Performance Improvement, Complexity, Vendor Support. Should include all 8+ patterns: Basic RAG, Contextual Retrieval, HyDE, RAPTOR, Query Routing, Reranking, Long Context, Multi-Modal RAG. Format must be valid CSV with headers and comma-separated values that can be directly copied into a spreadsheet.",
+      "expected_metrics": {
+        "faithfulness": 0.90,
+        "answer_relevancy": 0.95,
+        "context_precision": 0.85,
+        "context_recall": 0.88
+      },
+      "validation_criteria": [
+        "Response must be in CSV format",
+        "Must have proper CSV headers",
+        "Must be comma-separated (not pipe or tab)",
+        "Must include multiple RAG patterns (8+)",
+        "Must be directly copy-pasteable",
+        "Should NOT refuse or say 'cannot create files'",
+        "Should retrieve high n_results (20-30 chunks)"
+      ],
+      "expected_behavior": "Agent should understand CSV means formatted text output, not file creation. Should use high n_results parameter to get comprehensive catalog, then format as CSV text."
+    },
+    {
+      "id": "quick_2_comparison_table",
+      "query": "Show me a comparison table of healthcare RAG patterns with their HIPAA compliance features",
+      "reference_answer": "A markdown table comparing healthcare-specific RAG patterns across dimensions: Pattern Name, HIPAA Compliance Level, PHI Handling, Audit Logging, Encryption Support, Use Case. Should include patterns like: Basic RAG with HIPAA BAA, Contextual Retrieval for clinical notes, Multi-Modal RAG for medical imaging, Long Context for patient records. Table should be properly formatted with pipes and alignment.",
+      "expected_metrics": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 0.90,
+        "context_precision": 0.82,
+        "context_recall": 0.85
+      },
+      "validation_criteria": [
+        "Response must be markdown table format",
+        "Must have proper table structure (pipes, headers)",
+        "Must include healthcare-specific patterns",
+        "Must mention HIPAA compliance details",
+        "Should include 3+ patterns"
+      ],
+      "expected_behavior": "Agent should format retrieved data as a markdown table comparing healthcare RAG patterns on HIPAA-relevant dimensions."
+    }
+  ],
+  "evaluation_criteria": {
+    "faithfulness": "Response must be grounded in retrieved documents, especially important for formatting tasks",
+    "answer_relevancy": "Response must directly address formatting requirements (CSV, tables)",
+    "context_precision": "Retrieved documents must be highly relevant despite query complexity",
+    "context_recall": "All necessary information must be retrieved for comprehensive catalog/table"
+  },
+  "scoring_guide": {
+    "excellent": ">= 0.85",
+    "good": "0.70 - 0.84",
+    "acceptable": "0.50 - 0.69",
+    "poor": "< 0.50"
+  },
+  "notes": {
+    "csv_format_test": "Tests whether agent correctly interprets 'CSV' as text format output, not file creation. This was a previous issue.",
+    "markdown_table_test": "Tests agent's ability to format healthcare data as markdown table while maintaining HIPAA context."
+  }
+}

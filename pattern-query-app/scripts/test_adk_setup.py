@@ -126,7 +126,7 @@ def test_adk_agent_import():
     try:
         # Try importing the generated agent
         sys.path.insert(0, str(REPO_ROOT / ".adk" / "agents"))
-        from chromadb_agent import agent
+        from gemini_agent import agent
 
         print(f"✓ ADK agent imported successfully")
         print(f"  - Agent name: {agent.root_agent.name}")
@@ -216,7 +216,7 @@ def print_next_steps(results):
         print("To launch the web UI:")
         print("  ./scripts/start_adk_default_ui.sh")
         print("\nOr use the CLI directly:")
-        print("  adk run .adk/agents/chromadb_agent")
+        print("  adk run .adk/agents/gemini_agent")
         print("\nOr launch the web interface:")
         print("  adk web --host 127.0.0.1 --port 8000 .adk/agents")
         print("\nThen open: http://127.0.0.1:8000")

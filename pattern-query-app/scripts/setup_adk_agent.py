@@ -187,7 +187,7 @@ def main() -> None:
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[1]
-    agent_dir = repo_root / ".adk" / "agents" / "chromadb_agent"
+    agent_dir = repo_root / ".adk" / "agents" / "gemini_agent"
     agent_dir.mkdir(parents=True, exist_ok=True)
 
     init_path = agent_dir / "__init__.py"

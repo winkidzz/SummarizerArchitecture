@@ -1,0 +1,182 @@
+{
+  "name": "Ragas Complex RAG Evaluation Set",
+  "description": "Advanced test cases including formatting, multi-hop reasoning, and complex queries",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "complex_1_csv_format",
+      "query": "Give me the Complete Techniques Catalog as CSV that I can copy paste",
+      "reference_answer": "A CSV-formatted list of all RAG techniques with columns like: Technique Name, Description, Use Case, Performance Improvement, Complexity, Vendor Support. Should include all 8+ patterns: Basic RAG, Contextual Retrieval, HyDE, RAPTOR, Query Routing, Reranking, Long Context, Multi-Modal RAG. Format must be valid CSV with headers and comma-separated values that can be directly copied into a spreadsheet.",
+      "expected_metrics": {
+        "faithfulness": 0.90,
+        "answer_relevancy": 0.95,
+        "context_precision": 0.85,
+        "context_recall": 0.88
+      },
+      "validation_criteria": [
+        "Response must be in CSV format",
+        "Must have proper CSV headers",
+        "Must be comma-separated (not pipe or tab)",
+        "Must include multiple RAG patterns (8+)",
+        "Must be directly copy-pasteable",
+        "Should NOT refuse or say 'cannot create files'",
+        "Should retrieve high n_results (20-30 chunks)"
+      ],
+      "expected_behavior": "Agent should understand CSV means formatted text output, not file creation. Should use high n_results parameter to get comprehensive catalog, then format as CSV text."
+    },
+    {
+      "id": "complex_2_comparison_table",
+      "query": "Show me a comparison table of healthcare RAG patterns with their HIPAA compliance features",
+      "reference_answer": "A markdown table comparing healthcare-specific RAG patterns across dimensions: Pattern Name, HIPAA Compliance Level, PHI Handling, Audit Logging, Encryption Support, Use Case. Should include patterns like: Basic RAG with HIPAA BAA, Contextual Retrieval for clinical notes, Multi-Modal RAG for medical imaging, Long Context for patient records. Table should be properly formatted with pipes and alignment.",
+      "expected_metrics": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 0.90,
+        "context_precision": 0.82,
+        "context_recall": 0.85
+      },
+      "validation_criteria": [
+        "Response must be markdown table format",
+        "Must have proper table structure (pipes, headers)",
+        "Must include healthcare-specific patterns",
+        "Must mention HIPAA compliance details",
+        "Should include 3+ patterns"
+      ],
+      "expected_behavior": "Agent should format retrieved data as a markdown table comparing healthcare RAG patterns on HIPAA-relevant dimensions."
+    },
+    {
+      "id": "complex_3_multi_hop",
+      "query": "What's the best pattern for clinical notes with FHIR integration on AWS, and what are the cost implications?",
+      "reference_answer": "For clinical notes with FHIR integration on AWS, the recommended approach is: 1) Use Contextual Retrieval or RAPTOR RAG for better clinical note understanding, 2) Integrate with AWS HealthLake for FHIR data, 3) Use AWS Bedrock (Claude or Llama) for LLM inference. Cost breakdown: AWS Bedrock ~$0.003-0.008 per 1K tokens, HealthLake ~$0.75-1.50 per GB stored, vector search (OpenSearch) ~$0.096/hour. Total monthly cost for moderate usage: $200-500/month. Trade-offs: Contextual Retrieval adds preprocessing cost but reduces retrieval errors by 49-67%.",
+      "expected_metrics": {
+        "faithfulness": 0.80,
+        "answer_relevancy": 0.88,
+        "context_precision": 0.75,
+        "context_recall": 0.80
+      },
+      "validation_criteria": [
+        "Must recommend specific RAG pattern",
+        "Must mention FHIR integration approach",
+        "Must reference AWS services",
+        "Must provide cost estimates or cost considerations",
+        "Should synthesize information from multiple sources"
+      ],
+      "expected_behavior": "Agent must combine information from: RAG patterns docs, AWS vendor guide, healthcare use cases, and cost considerations. Requires multi-hop reasoning across multiple document types."
+    },
+    {
+      "id": "complex_4_code_generation",
+      "query": "Show me Python code to implement Basic RAG with Anthropic Claude and ChromaDB",
+      "reference_answer": "Python code implementing Basic RAG with: 1) ChromaDB initialization and document ingestion, 2) Embedding generation (e.g., using sentence-transformers), 3) Query function that retrieves relevant chunks, 4) Claude API call (anthropic library) passing query + retrieved context, 5) Response generation. Code should be complete, runnable, and include error handling. Should demonstrate the full RAG pipeline from document storage to answer generation.",
+      "expected_metrics": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 0.92,
+        "context_precision": 0.80,
+        "context_recall": 0.82
+      },
+      "validation_criteria": [
+        "Response must include Python code",
+        "Code must demonstrate RAG implementation",
+        "Must include ChromaDB usage",
+        "Must include Claude API usage",
+        "Code should be syntactically correct",
+        "Should cite source documents"
+      ],
+      "expected_behavior": "Agent should retrieve code examples from pattern library and synthesize them into a complete working example combining ChromaDB and Claude."
+    },
+    {
+      "id": "complex_5_aggregation",
+      "query": "List all available embedding models across all vendors with their dimensions and costs",
+      "reference_answer": "Comprehensive list of embedding models: 1) OpenAI: text-embedding-3-small (1536d, $0.00002/1K), text-embedding-3-large (3072d, $0.00013/1K), 2) Google: textembedding-gecko (768d, $0.000025/1K), text-embedding-004 (768d, $0.00001/1K), 3) AWS Bedrock: Titan Embeddings (1024d/1536d, $0.0001/1K), 4) Azure OpenAI: Same as OpenAI, 5) Anthropic: No native embeddings (use Voyage AI), 6) Local: all-MiniLM-L6-v2 (384d, free), BGE-large (1024d, free). Trade-offs: Higher dimensions = better quality but slower + more storage.",
+      "expected_metrics": {
+        "faithfulness": 0.88,
+        "answer_relevancy": 0.90,
+        "context_precision": 0.82,
+        "context_recall": 0.85
+      },
+      "validation_criteria": [
+        "Must list models from multiple vendors (3+)",
+        "Must include dimension sizes",
+        "Must include cost information",
+        "Should aggregate from multiple vendor guides",
+        "Response should be comprehensive (10+ models)"
+      ],
+      "expected_behavior": "Agent should use high n_results (20-30) to retrieve information from multiple vendor guides, then aggregate and format as a unified list."
+    },
+    {
+      "id": "complex_6_negative_boundary",
+      "query": "What's the best RAG pattern for real-time stock trading predictions?",
+      "reference_answer": "This question cannot be answered from the healthcare AI pattern library. The knowledge base focuses on healthcare summarization use cases (clinical notes, patient records, medical imaging) and does not contain information about stock trading or financial predictions. However, general RAG patterns like Basic RAG or Query Routing could theoretically be adapted for financial use cases, but specific guidance for stock trading is not available in this library.",
+      "expected_metrics": {
+        "faithfulness": 0.95,
+        "answer_relevancy": 0.85,
+        "context_precision": 0.70,
+        "context_recall": 0.80
+      },
+      "validation_criteria": [
+        "Must explicitly state this is out of scope",
+        "Must not hallucinate financial/trading information",
+        "Should mention what the knowledge base DOES contain",
+        "May suggest general patterns but note lack of specific guidance",
+        "Maintains honesty about knowledge boundaries"
+      ],
+      "expected_behavior": "Agent should recognize query is outside knowledge base domain and gracefully decline while being helpful about what information IS available."
+    },
+    {
+      "id": "complex_7_meta_query",
+      "query": "How many RAG patterns are documented in this library, and which one has the best performance metrics?",
+      "reference_answer": "The library documents 8 RAG patterns. Performance comparison: 1) Contextual Retrieval shows the highest documented improvement (49-67% error reduction), 2) RAPTOR RAG shows 25-40% improvement for complex queries, 3) HyDE RAG shows 15-30% accuracy improvement, 4) Reranking RAG shows 20-35% precision boost. 'Best' depends on use case: Contextual Retrieval is best for general accuracy, RAPTOR for complex multi-hop questions, Query Routing for cost optimization (30-60% savings). Basic RAG remains the baseline with <500ms latency.",
+      "expected_metrics": {
+        "faithfulness": 0.90,
+        "answer_relevancy": 0.92,
+        "context_precision": 0.85,
+        "context_recall": 0.88
+      },
+      "validation_criteria": [
+        "Must provide count of patterns (8)",
+        "Must compare performance metrics",
+        "Should mention multiple patterns",
+        "Should explain 'best' is context-dependent",
+        "Should cite specific improvement percentages"
+      ],
+      "expected_behavior": "Agent should use get_store_info() to count patterns, then retrieve and compare performance metrics across multiple patterns, synthesizing a nuanced comparison."
+    },
+    {
+      "id": "complex_8_vendor_filter",
+      "query": "Show me only the Azure-specific RAG implementation patterns, excluding all other vendors",
+      "reference_answer": "Azure-specific RAG implementations: 1) Basic RAG with Azure OpenAI: Use Azure OpenAI embeddings (text-embedding-ada-002) + GPT-4/GPT-3.5, Azure Cognitive Search for vector storage, 2) Long Context RAG with GPT-4-turbo-128k: Leverage 128K context window for large documents, 3) Healthcare RAG with Azure Health Data Services: Integrate with FHIR service, use Azure AI Health Insights, 4) Multi-Modal RAG with GPT-4 Vision: Process medical images + text. Key features: HIPAA BAA available, Azure AD authentication, Private Link for secure access, API version: 2024-10-21.",
+      "expected_metrics": {
+        "faithfulness": 0.88,
+        "answer_relevancy": 0.90,
+        "context_precision": 0.85,
+        "context_recall": 0.82
+      },
+      "validation_criteria": [
+        "Must ONLY mention Azure services",
+        "Must not include AWS, GCP, or other vendors",
+        "Should use vendor filter parameter",
+        "Must include Azure-specific features",
+        "Should mention multiple Azure services"
+      ],
+      "expected_behavior": "Agent should use vendor='azure' filter when calling query_architecture_patterns() to retrieve only Azure-related content, excluding other cloud providers."
+    }
+  ],
+  "evaluation_criteria": {
+    "faithfulness": "Response must be grounded in retrieved documents, especially important for formatting and code tasks",
+    "answer_relevancy": "Response must directly address complex requirements (CSV format, tables, multi-hop queries)",
+    "context_precision": "Retrieved documents must be highly relevant despite query complexity",
+    "context_recall": "All necessary information must be retrieved even when query requires aggregation across multiple sources"
+  },
+  "scoring_guide": {
+    "excellent": ">= 0.85",
+    "good": "0.70 - 0.84",
+    "acceptable": "0.50 - 0.69",
+    "poor": "< 0.50"
+  },
+  "notes": {
+    "csv_format_test": "Tests whether agent correctly interprets 'CSV' as text format output, not file creation. This was a previous issue where agent refused thinking CSV meant file creation.",
+    "multi_hop_reasoning": "Tests agent's ability to synthesize information from multiple documents (patterns + vendor guides + use cases + costs).",
+    "formatting_compliance": "Tests agent's ability to format output correctly (CSV, markdown tables) while maintaining faithfulness to retrieved content.",
+    "boundary_testing": "Tests agent's ability to recognize out-of-scope queries and gracefully decline without hallucinating.",
+    "aggregation": "Tests agent's ability to retrieve large datasets (high n_results) and aggregate information across multiple sources.",
+    "filtering": "Tests agent's correct use of metadata filters (vendor, pattern_type) to narrow search scope."
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "name": "ADK Agent Evaluation Set",
+  "description": "Test cases to validate both ollama_agent and gemini_agent functionality",
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "basic_query_1",
+      "category": "basic_retrieval",
+      "query": "What RAG patterns are available?",
+      "expected_behavior": "Should list multiple RAG patterns from the knowledge base",
+      "validation_criteria": [
+        "Response mentions at least 3 RAG patterns",
+        "Cites document IDs or sources",
+        "Mentions patterns like 'Basic RAG', 'Contextual Retrieval', 'RAPTOR', etc."
+      ]
+    },
+    {
+      "id": "specific_pattern_1",
+      "category": "pattern_details",
+      "query": "Explain Contextual Retrieval and when to use it",
+      "expected_behavior": "Should provide detailed explanation of Contextual Retrieval pattern",
+      "validation_criteria": [
+        "Explains what Contextual Retrieval is",
+        "Mentions error reduction (49-67%)",
+        "Describes when to use it",
+        "Cites source documents"
+      ]
+    },
+    {
+      "id": "comparison_1",
+      "category": "pattern_comparison",
+      "query": "Compare RAPTOR RAG vs Basic RAG",
+      "expected_behavior": "Should compare and contrast both patterns",
+      "validation_criteria": [
+        "Describes both RAPTOR and Basic RAG",
+        "Highlights key differences",
+        "Mentions performance improvements",
+        "Provides use case recommendations"
+      ]
+    },
+    {
+      "id": "vendor_specific_1",
+      "category": "vendor_guidance",
+      "query": "How do I implement RAG with Google Vertex AI?",
+      "expected_behavior": "Should provide Vertex AI specific implementation guidance",
+      "validation_criteria": [
+        "Mentions Google Vertex AI",
+        "Provides implementation steps or code examples",
+        "References Vertex AI documentation",
+        "Cites relevant vendor guides"
+      ]
+    },
+    {
+      "id": "healthcare_1",
+      "category": "healthcare_use_case",
+      "query": "How do I summarize patient records?",
+      "expected_behavior": "Should provide healthcare-specific summarization guidance",
+      "validation_criteria": [
+        "Mentions patient record summarization",
+        "References HIPAA or privacy considerations",
+        "Suggests appropriate RAG patterns",
+        "Cites healthcare use case documents"
+      ]
+    },
+    {
+      "id": "technical_1",
+      "category": "technical_details",
+      "query": "What embedding models should I use?",
+      "expected_behavior": "Should recommend embedding models with context",
+      "validation_criteria": [
+        "Lists specific embedding models",
+        "Provides context for different use cases",
+        "Mentions trade-offs (quality vs. speed vs. cost)",
+        "References technical documentation"
+      ]
+    },
+    {
+      "id": "format_csv_1",
+      "category": "data_formatting",
+      "query": "List all RAG patterns as CSV",
+      "expected_behavior": "Should format RAG patterns as CSV text",
+      "validation_criteria": [
+        "Returns CSV-formatted text",
+        "Includes multiple patterns",
+        "Has proper CSV structure (headers, comma-separated values)",
+        "Can be copy-pasted"
+      ]
+    },
+    {
+      "id": "format_table_1",
+      "category": "data_formatting",
+      "query": "Show me a comparison table of healthcare RAG patterns",
+      "expected_behavior": "Should format data as a markdown table",
+      "validation_criteria": [
+        "Returns markdown table format",
+        "Includes multiple patterns",
+        "Has comparison dimensions (use case, performance, etc.)",
+        "Properly formatted with pipes and headers"
+      ]
+    },
+    {
+      "id": "large_dataset_1",
+      "category": "comprehensive_retrieval",
+      "query": "Give me the complete techniques catalog",
+      "expected_behavior": "Should retrieve comprehensive dataset with high n_results",
+      "validation_criteria": [
+        "Returns many techniques (20+)",
+        "Uses high n_results parameter",
+        "Aggregates multiple chunks",
+        "Provides complete catalog"
+      ]
+    },
+    {
+      "id": "metadata_1",
+      "category": "store_info",
+      "query": "How many documents are in the knowledge base?",
+      "expected_behavior": "Should use get_store_info() tool",
+      "validation_criteria": [
+        "Calls get_store_info() tool",
+        "Returns document count",
+        "Mentions collection name",
+        "Provides persistence path"
+      ]
+    },
+    {
+      "id": "filter_pattern_1",
+      "category": "filtered_search",
+      "query": "Show me only Azure-specific patterns",
+      "expected_behavior": "Should filter by vendor=azure",
+      "validation_criteria": [
+        "Uses vendor filter parameter",
+        "Returns only Azure-related content",
+        "Mentions Azure services",
+        "Filters out non-Azure content"
+      ]
+    },
+    {
+      "id": "multi_hop_1",
+      "category": "complex_query",
+      "query": "What's the best pattern for clinical notes with FHIR integration on AWS?",
+      "expected_behavior": "Should combine multiple filters and provide comprehensive answer",
+      "validation_criteria": [
+        "Addresses clinical notes use case",
+        "Mentions FHIR integration",
+        "References AWS implementation",
+        "Synthesizes information from multiple documents"
+      ]
+    },
+    {
+      "id": "cost_analysis_1",
+      "category": "cost_comparison",
+      "query": "Compare costs for different vendors",
+      "expected_behavior": "Should retrieve and compare pricing information",
+      "validation_criteria": [
+        "Mentions multiple vendors (GCP, Azure, AWS)",
+        "Provides cost estimates",
+        "Compares pricing models",
+        "References vendor guides with pricing"
+      ]
+    },
+    {
+      "id": "negative_test_1",
+      "category": "knowledge_boundary",
+      "query": "What's the weather like today?",
+      "expected_behavior": "Should explicitly state it cannot answer from knowledge base",
+      "validation_criteria": [
+        "States question cannot be answered from knowledge base",
+        "Does not make up information",
+        "May suggest what the knowledge base contains",
+        "Polite and helpful tone"
+      ]
+    },
+    {
+      "id": "code_example_1",
+      "category": "code_retrieval",
+      "query": "Show me Python code for basic RAG",
+      "expected_behavior": "Should retrieve and display code examples",
+      "validation_criteria": [
+        "Includes Python code snippets",
+        "Code is syntactically valid",
+        "Demonstrates RAG implementation",
+        "Cites source documents"
+      ]
+    }
+  ],
+  "agent_comparison_criteria": [
+    {
+      "dimension": "accuracy",
+      "description": "How accurate are the responses?",
+      "weight": 0.3
+    },
+    {
+      "dimension": "completeness",
+      "description": "Does the response cover all aspects of the query?",
+      "weight": 0.25
+    },
+    {
+      "dimension": "citation_quality",
+      "description": "Are sources properly cited with IDs?",
+      "weight": 0.15
+    },
+    {
+      "dimension": "formatting",
+      "description": "Is the response well-formatted (CSV, tables, etc.)?",
+      "weight": 0.15
+    },
+    {
+      "dimension": "latency",
+      "description": "How long does the response take?",
+      "weight": 0.10
+    },
+    {
+      "dimension": "tool_usage",
+      "description": "Does the agent use tools correctly?",
+      "weight": 0.05
+    }
+  ],
+  "evaluation_notes": {
+    "ollama_agent": {
+      "expected_strengths": [
+        "Fast responses (local processing)",
+        "No API costs",
+        "Works offline"
+      ],
+      "expected_weaknesses": [
+        "Lower quality responses than Gemini",
+        "May struggle with complex multi-hop queries",
+        "Limited reasoning capability"
+      ]
+    },
+    "gemini_agent": {
+      "expected_strengths": [
+        "Higher quality responses",
+        "Better reasoning for complex queries",
+        "More sophisticated formatting"
+      ],
+      "expected_weaknesses": [
+        "Slower (network latency)",
+        "Costs money (~$0.001-0.01 per query)",
+        "Requires internet connection"
+      ]
+    }
+  }
+}
