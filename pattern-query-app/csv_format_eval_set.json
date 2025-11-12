@@ -1,0 +1,44 @@
+{
+  "name": "CSV Formatting Evaluation",
+  "description": "Tests LLM ability to format complete documents as properly structured CSV with content verification",
+  "test_cases": [
+    {
+      "id": "csv_complete_table",
+      "query": "list the 'Complete Techniques Catalog' as csv that i can copy paste into google sheet",
+      "expected": {
+        "format": "csv",
+        "row_count": 163,
+        "column_count": 7,
+        "columns": [
+          "Phase",
+          "Category",
+          "Technique/Methodology",
+          "Description",
+          "Process Framework",
+          "Usage in Architecture",
+          "Lifecycle Steps"
+        ],
+        "requirements": [
+          "CSV format with comma delimiters",
+          "All fields with commas must be quoted",
+          "Exactly 7 columns per row",
+          "163 data rows (plus 1 header row)",
+          "No None or empty columns",
+          "Strip markdown formatting from values",
+          "Must contain all 163 unique Category/Technique combinations from the source document"
+        ],
+        "verify_content": true,
+        "expected_techniques_file": "expected_techniques_list.json"
+      },
+      "validation": {
+        "csv_parseable": true,
+        "min_row_count": 160,
+        "max_row_count": 165,
+        "exact_column_count": 7,
+        "check_quoting": true,
+        "check_header": true,
+        "verify_techniques": true
+      }
+    }
+  ]
+}

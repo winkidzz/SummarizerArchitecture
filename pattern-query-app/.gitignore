@@ -1,1 +1,10 @@
 .env
+
+# Temporary evaluation results
+*_eval_results.json
+ragas_results_*.json
+eval_results.json
+
+# Test output files
+test/csv_response_*.txt
+test/*_response_*.txt

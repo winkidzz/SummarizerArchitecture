@@ -1,0 +1,656 @@
+{
+  "expected_techniques": [
+    {
+      "category": "Accuracy",
+      "technique": "Accuracy Degradation Detection"
+    },
+    {
+      "category": "Accuracy",
+      "technique": "Bias Monitoring"
+    },
+    {
+      "category": "Accuracy",
+      "technique": "Clinical Validation Updates"
+    },
+    {
+      "category": "Accuracy",
+      "technique": "Continuous Accuracy Monitoring"
+    },
+    {
+      "category": "Accuracy",
+      "technique": "Quality Improvement"
+    },
+    {
+      "category": "Architecture Design",
+      "technique": "API-First Design"
+    },
+    {
+      "category": "Architecture Design",
+      "technique": "Domain-Driven Design (DDD)"
+    },
+    {
+      "category": "Architecture Design",
+      "technique": "Event-Driven Architecture"
+    },
+    {
+      "category": "Architecture Design",
+      "technique": "Layered Architecture"
+    },
+    {
+      "category": "Architecture Design",
+      "technique": "Microservices Architecture"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Bias Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Compliance Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Data Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Fairness Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Model Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Performance Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Process Auditing"
+    },
+    {
+      "category": "Auditing",
+      "technique": "Security Auditing"
+    },
+    {
+      "category": "Bias Testing",
+      "technique": "Calibration by Group"
+    },
+    {
+      "category": "Bias Testing",
+      "technique": "Demographic Parity"
+    },
+    {
+      "category": "Bias Testing",
+      "technique": "Disparate Impact Analysis"
+    },
+    {
+      "category": "Bias Testing",
+      "technique": "Equalized Odds"
+    },
+    {
+      "category": "Clinical Validation",
+      "technique": "Clinical Expert Review"
+    },
+    {
+      "category": "Clinical Validation",
+      "technique": "Clinical Workflow Integration"
+    },
+    {
+      "category": "Clinical Validation",
+      "technique": "Inter-Rater Reliability"
+    },
+    {
+      "category": "Clinical Validation",
+      "technique": "Safety Assessment"
+    },
+    {
+      "category": "Compliance",
+      "technique": "Compliance Gap Analysis"
+    },
+    {
+      "category": "Compliance",
+      "technique": "Compliance Remediation"
+    },
+    {
+      "category": "Compliance",
+      "technique": "Compliance Reporting"
+    },
+    {
+      "category": "Compliance",
+      "technique": "Regulatory Monitoring"
+    },
+    {
+      "category": "Compliance Design",
+      "technique": "Audit Trail Design"
+    },
+    {
+      "category": "Compliance Design",
+      "technique": "Data Minimization"
+    },
+    {
+      "category": "Compliance Design",
+      "technique": "Privacy by Design"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "A/B Testing"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Contextual Bandits"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Ensemble Updates"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Experiment Tracking"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Hyperparameter Re-tuning"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Incremental Learning"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Model Retraining"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Model Versioning"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Multi-Armed Bandit"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Online Learning"
+    },
+    {
+      "category": "Continuous Improvement",
+      "technique": "Transfer Learning Updates"
+    },
+    {
+      "category": "Data Analysis",
+      "technique": "Bias Detection"
+    },
+    {
+      "category": "Data Analysis",
+      "technique": "Data Lineage Analysis"
+    },
+    {
+      "category": "Data Analysis",
+      "technique": "Data Profiling"
+    },
+    {
+      "category": "Data Analysis",
+      "technique": "Exploratory Data Analysis (EDA)"
+    },
+    {
+      "category": "Data Analysis",
+      "technique": "Feature Analysis"
+    },
+    {
+      "category": "Data Analysis",
+      "technique": "Statistical Analysis"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Data Augmentation"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Data Cleaning"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Data Normalization"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Data Splitting"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Data Standardization"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Data Transformation"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Feature Engineering"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Feature Selection"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Stratified Sampling"
+    },
+    {
+      "category": "Data Preparation",
+      "technique": "Time-Based Splitting"
+    },
+    {
+      "category": "Data Validation",
+      "technique": "Anomaly Detection"
+    },
+    {
+      "category": "Data Validation",
+      "technique": "Bias Detection"
+    },
+    {
+      "category": "Data Validation",
+      "technique": "Cross-Validation"
+    },
+    {
+      "category": "Data Validation",
+      "technique": "Data Drift Detection"
+    },
+    {
+      "category": "Data Validation",
+      "technique": "Data Quality Validation"
+    },
+    {
+      "category": "Data Validation",
+      "technique": "Schema Validation"
+    },
+    {
+      "category": "Deployment",
+      "technique": "A/B Testing"
+    },
+    {
+      "category": "Deployment",
+      "technique": "Multi-Armed Bandit (MAB)"
+    },
+    {
+      "category": "Deployment",
+      "technique": "Progressive Rollout"
+    },
+    {
+      "category": "Deployment",
+      "technique": "Ring Deployment"
+    },
+    {
+      "category": "Deployment",
+      "technique": "Rollback Strategy"
+    },
+    {
+      "category": "Deployment",
+      "technique": "Traffic Splitting"
+    },
+    {
+      "category": "Documentation",
+      "technique": "API Documentation"
+    },
+    {
+      "category": "Documentation",
+      "technique": "Architecture Decision Records (ADRs)"
+    },
+    {
+      "category": "Documentation",
+      "technique": "Runbook Documentation"
+    },
+    {
+      "category": "Documentation",
+      "technique": "Technical Documentation"
+    },
+    {
+      "category": "Feedback Collection",
+      "technique": "Active Learning from Feedback"
+    },
+    {
+      "category": "Feedback Collection",
+      "technique": "Explicit Feedback"
+    },
+    {
+      "category": "Feedback Collection",
+      "technique": "Feedback Loop Design"
+    },
+    {
+      "category": "Feedback Collection",
+      "technique": "Implicit Feedback"
+    },
+    {
+      "category": "Incident Response",
+      "technique": "5 Whys Analysis"
+    },
+    {
+      "category": "Incident Response",
+      "technique": "Failure Mode Analysis"
+    },
+    {
+      "category": "Incident Response",
+      "technique": "Fishbone Diagram"
+    },
+    {
+      "category": "Incident Response",
+      "technique": "Incident Post-Mortem"
+    },
+    {
+      "category": "Incident Response",
+      "technique": "Root Cause Analysis (RCA)"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Active Learning"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Architecture Search"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Chain-of-Thought (CoT)"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Ensemble Methods"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Few-Shot Learning"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Fine-Tuning"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Hyperparameter Tuning"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Multi-Agent Systems"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Prompt Engineering"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Retrieval-Augmented Generation (RAG)"
+    },
+    {
+      "category": "Model Development",
+      "technique": "Transfer Learning"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Ablation Studies"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Adversarial Testing"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Bootstrap Validation"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Calibration Analysis"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Confusion Matrix Analysis"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Cross-Validation"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Error Analysis"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Holdout Validation"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Leave-One-Out Cross-Validation"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Nested Cross-Validation"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Precision-Recall Analysis"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "ROC/AUC Analysis"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Stratified Cross-Validation"
+    },
+    {
+      "category": "Model Evaluation",
+      "technique": "Time-Series Cross-Validation"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Curriculum Learning"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Differential Privacy"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Federated Learning"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Homomorphic Encryption"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Online Learning"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Self-Supervised Learning"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Semi-Supervised Learning"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Supervised Learning"
+    },
+    {
+      "category": "Model Training",
+      "technique": "Unsupervised Learning"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Anomaly Detection"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Concept Drift Detection"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Dashboard Visualization"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Data Drift Detection"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Model Drift Detection"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Performance Monitoring"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Real-Time Alerting"
+    },
+    {
+      "category": "Monitoring",
+      "technique": "Statistical Process Control (SPC)"
+    },
+    {
+      "category": "Performance Testing",
+      "technique": "Endurance Testing"
+    },
+    {
+      "category": "Performance Testing",
+      "technique": "Load Testing"
+    },
+    {
+      "category": "Performance Testing",
+      "technique": "Spike Testing"
+    },
+    {
+      "category": "Performance Testing",
+      "technique": "Stress Testing"
+    },
+    {
+      "category": "Performance Testing",
+      "technique": "Volume Testing"
+    },
+    {
+      "category": "Pre-Production Testing",
+      "technique": "Blue-Green Deployment"
+    },
+    {
+      "category": "Pre-Production Testing",
+      "technique": "Canary Testing"
+    },
+    {
+      "category": "Pre-Production Testing",
+      "technique": "Chaos Engineering"
+    },
+    {
+      "category": "Pre-Production Testing",
+      "technique": "Feature Flags"
+    },
+    {
+      "category": "Pre-Production Testing",
+      "technique": "Rolling Deployment"
+    },
+    {
+      "category": "Pre-Production Testing",
+      "technique": "Shadow Mode Deployment"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Actor-Critic Methods"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Deep Q-Network (DQN)"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Exploration Strategies"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Hierarchical RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Human-in-the-Loop RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Inverse Reinforcement Learning"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Model-Based RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Model-Free RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Multi-Agent RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Off-Policy RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "On-Policy RL"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Policy Gradient Methods"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Proximal Policy Optimization (PPO)"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Q-Learning"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "REINFORCE"
+    },
+    {
+      "category": "Reinforcement Learning",
+      "technique": "Reward Shaping"
+    },
+    {
+      "category": "Requirements Analysis",
+      "technique": "Risk Assessment"
+    },
+    {
+      "category": "Requirements Analysis",
+      "technique": "Stakeholder Analysis"
+    },
+    {
+      "category": "Requirements Analysis",
+      "technique": "Use Case Analysis"
+    },
+    {
+      "category": "Security Design",
+      "technique": "Defense in Depth"
+    },
+    {
+      "category": "Security Design",
+      "technique": "Principle of Least Privilege"
+    },
+    {
+      "category": "Security Design",
+      "technique": "Zero Trust Architecture"
+    },
+    {
+      "category": "Training",
+      "technique": "Administrator Training"
+    },
+    {
+      "category": "Training",
+      "technique": "Clinical Training"
+    },
+    {
+      "category": "Training",
+      "technique": "User Training"
+    }
+  ]
+}
