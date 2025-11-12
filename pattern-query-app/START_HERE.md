@@ -173,6 +173,31 @@ Explain multi-modal RAG for medical imaging
 
 ---
 
+## Testing & Evaluation
+
+### CSV Formatting Evaluation (Optional)
+
+Want to test different LLM models for CSV formatting capabilities?
+
+**Quick Test:**
+```bash
+# Validate an existing agent response
+python3 scripts/run_simple_eval.py \
+  --eval-file csv_format_eval_set.json \
+  --validate-response /path/to/response.txt
+```
+
+**Manual Testing Workflow:**
+1. Edit `.env`: Set `OLLAMA_MODEL=gemma2:27b` (or another model)
+2. Start agent: `./scripts/start_adk_ollama.sh`
+3. Run query: "list the 'Complete Techniques Catalog' as csv that i can copy paste into google sheet"
+4. Save response to `test/llm_response_<model>.txt`
+5. Validate: `python3 scripts/run_simple_eval.py --validate-response test/llm_response_<model>.txt`
+
+📖 **Full Guide**: [docs/CSV_EVALUATION.md](docs/CSV_EVALUATION.md)
+
+---
+
 ## Troubleshooting
 
 ### Issue: "No agents found"

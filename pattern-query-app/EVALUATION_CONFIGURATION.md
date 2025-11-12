@@ -7,11 +7,23 @@ This document explains how to configure the RAG evaluation system using environm
 Configure evaluation behavior in the `.env` file:
 
 ```bash
+# RAG Evaluation Configuration
 # Use Ollama (true) or Gemini (false) for evaluation judge
 USE_OLLAMA_EVAL=false
 
 # Use Real Ragas library (true) or Custom implementation (false)
 USE_REAL_RAGAS=false
+
+# CSV Formatting Evaluation Configuration (NEW - 2025-11-12)
+# Ollama model to use for ADK agents
+OLLAMA_MODEL=qwen3:14b
+
+# Ollama base URL
+OLLAMA_BASE_URL=http://localhost:11434/v1
+
+# Gemini model for ADK agents
+GEMINI_MODEL=gemini-2.0-flash-exp
+ADK_MODEL=gemini-2.0-flash-exp
 ```
 
 ## Configuration Matrix
@@ -109,12 +121,58 @@ The system computes 4 Ragas-style metrics:
 
 ## Evaluation Datasets
 
-Available test sets:
+### RAG Evaluation Test Sets
 
 - `simple_eval_set.json` - 5 fast vector retrieval tests (~82ms per query)
 - `ragas_eval_set_quick.json` - 2 quick Ragas evaluation tests (recommended for testing)
 - `ragas_eval_set.json` - 5 standard Ragas tests
 - `ragas_eval_set_complex.json` - 8 complex tests (CSV formatting, multi-hop reasoning)
+
+### CSV Formatting Evaluation (NEW - 2025-11-12)
+
+Test LLM model capabilities for generating properly formatted CSV output.
+
+**Test Set:**
+- `csv_format_eval_set.json` - CSV formatting validation test
+  - Query: "list the 'Complete Techniques Catalog' as csv..."
+  - Expected: 163 rows, 7 columns, proper CSV structure
+  - Validates: row count, column count, quoting rules, header
+
+**Usage:**
+```bash
+# Validate an existing agent response
+python3 scripts/run_simple_eval.py \
+  --eval-file csv_format_eval_set.json \
+  --validate-response /path/to/response.txt
+
+# Generate test plan for multiple Ollama models
+python3 scripts/run_simple_eval.py \
+  --eval-type csv \
+  --eval-file csv_format_eval_set.json \
+  --models qwen3:14b,gemma2:27b,llama3.1:70b
+```
+
+**Manual Testing Required:**
+CSV evaluation requires manual agent interaction. See [docs/CSV_EVALUATION.md](docs/CSV_EVALUATION.md) for complete workflow:
+1. Configure model in `.env`
+2. Start agent
+3. Run test query
+4. Save response
+5. Validate with script
+
+**Current Results:**
+| Model | Status | Notes |
+|-------|--------|-------|
+| gemini-2.0-flash-exp | ✅ PASS | Perfect CSV formatting (163 rows, 7 columns) |
+| qwen3:14b | ❌ FAIL | Returns markdown outline (35 rows, 8 columns) |
+| mannix/deepseek-coder-v2-lite-instruct:q8_0 | ❌ FAIL | Partial response (10 rows, 3 columns) |
+| granite4:latest | ❌ FAIL | No valid CSV output (0 rows, 1 column) |
+| gemma3:4b-it-qat | ❌ FAIL | Partial response (36 rows, many empty columns) |
+| gpt-oss:latest | ❌ FAIL | Severe truncation (13 rows, 9 columns) |
+| gemma2:27b | ⚠️ NOT TESTED | Ready to test |
+| llama3.1:70b | ⚠️ NOT TESTED | Ready to test |
+
+📖 **Full Guide**: [docs/CSV_EVALUATION.md](docs/CSV_EVALUATION.md)
 
 ## Troubleshooting
 

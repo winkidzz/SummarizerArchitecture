@@ -272,6 +272,79 @@ See [`examples/`](examples/) for working code:
 
 ---
 
+## 🧪 Evaluation & Testing
+
+### CSV Formatting Evaluation
+
+Test LLM model capabilities for generating properly formatted CSV output across different Ollama models.
+
+**Quick Start:**
+```bash
+# Validate an existing response
+python3 scripts/run_simple_eval.py \
+  --eval-file csv_format_eval_set.json \
+  --validate-response /path/to/agent_response.txt
+
+# Generate test plan for multiple models
+python3 scripts/run_simple_eval.py \
+  --eval-type csv \
+  --eval-file csv_format_eval_set.json \
+  --models qwen3:14b,gemma2:27b,llama3.1:70b
+```
+
+**Manual Testing Workflow:**
+
+1. **Configure Model** (in `.env`):
+   ```bash
+   OLLAMA_MODEL=gemma2:27b  # Change to model you want to test
+   ```
+
+2. **Start Ollama Agent**:
+   ```bash
+   ./scripts/start_adk_ollama.sh
+   # Opens http://127.0.0.1:8000
+   ```
+
+3. **Run Test Query** (in web UI):
+   ```
+   list the 'Complete Techniques Catalog' as csv that i can copy paste into google sheet
+   ```
+
+4. **Save Response**:
+   - Copy the full agent response
+   - Save to `test/llm_response_<model>.txt`
+   - Example: `test/llm_response_gemma2_27b.txt`
+
+5. **Validate Response**:
+   ```bash
+   python3 scripts/run_simple_eval.py \
+     --eval-file csv_format_eval_set.json \
+     --validate-response test/llm_response_gemma2_27b.txt
+   ```
+
+6. **Repeat for Other Models**:
+   - Update `OLLAMA_MODEL` in `.env`
+   - Restart agent
+   - Run query and save response
+   - Validate
+
+**Expected Results:**
+- ✅ **Valid CSV**: 163 rows, 7 columns, proper quoting
+- ❌ **Invalid**: Markdown outline, wrong structure, field splitting
+
+**Current Results:**
+- ✅ Gemini (gemini-2.0-flash-exp): PASS (163 rows, 7 columns)
+- ❌ Qwen3:14b: FAIL (returns markdown outline)
+- ❌ mannix/deepseek-coder-v2-lite-instruct:q8_0: FAIL (10 rows, 3 columns - partial response)
+- ❌ granite4:latest: FAIL (0 rows, 1 column - no valid CSV output)
+- ❌ gemma3:4b-it-qat: FAIL (36 rows, many empty columns - partial response)
+- ❌ gpt-oss:latest: FAIL (13 rows, 9 columns - severe truncation)
+- ⚠️ Gemma2:27b, Llama3.1:70b: Not yet tested
+
+📖 **Detailed Guide**: See [docs/CSV_EVALUATION.md](docs/CSV_EVALUATION.md) for complete documentation.
+
+---
+
 ## 🔧 Development
 
 ### Running Tests
@@ -282,6 +355,12 @@ python scripts/initialize_and_test.py
 ### Pattern Validation
 ```bash
 python scripts/pattern_validator.py
+```
+
+### RAG Evaluation
+```bash
+# Standard RAG query evaluation
+python3 scripts/run_simple_eval.py --eval-file simple_eval_set.json
 ```
 
 ### Custom Ingestion

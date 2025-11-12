@@ -216,6 +216,12 @@ Return Formatted CSV
 - `.adk/agents/gemini_agent/agent.py` - Add tool
 - `.adk/agents/ollama_agent/agent.py` - Add tool
 
+### Evaluation System (NEW - 2025-11-12)
+- `csv_format_eval_set.json` - CSV formatting test case definition
+- `scripts/run_simple_eval.py` - Extended with CSV validation and multi-model comparison
+- `.env` - Added OLLAMA_MODEL and OLLAMA_BASE_URL configuration
+- `.env.example` - Added Ollama configuration template
+
 ### Scripts Created
 - `scripts/analyze_chunking.py` - Chunking quality analysis
 - `scripts/validate_csv_simple.py` - CSV structure validation
@@ -225,7 +231,9 @@ Return Formatted CSV
 - `docs/IMPLEMENTATION_SUMMARY.md` - Implementation overview
 - `docs/CSV_FORMATTING_FIX.md` - CSV formatting fix details
 - `docs/VALIDATION_REPORT.md` - Comprehensive validation results
+- `docs/CSV_EVALUATION.md` - **NEW: Manual evaluation guide for testing models**
 - `docs/FINAL_STATUS.md` - This document
+- `README.md` - Updated with CSV evaluation section
 
 ---
 
@@ -317,6 +325,93 @@ if result['success']:
 
 ---
 
+## CSV Evaluation System (NEW - 2025-11-12)
+
+### Overview
+
+Added comprehensive evaluation system to test LLM model capabilities for CSV formatting across different Ollama models.
+
+**Problem Identified:** Ollama agent (qwen3:14b) fails to generate CSV despite having same prompt as Gemini agent. Returns markdown outline instead.
+
+**Solution Implemented:** Multi-model evaluation framework with automated validation.
+
+### Components
+
+1. **Test Case Definition** - `csv_format_eval_set.json`
+   - Query: "list the 'Complete Techniques Catalog' as csv..."
+   - Validation rules: 163 rows, 7 columns, proper CSV structure
+   - Requirements: quoting, field counts, header matching
+
+2. **Validation Script** - `scripts/run_simple_eval.py` (Extended)
+   - `validate_csv_format()` - CSV parsing and validation
+   - `run_csv_eval()` - Multi-model test plan generation
+   - `validate_saved_csv_response()` - Validate saved agent responses
+   - Command-line interface with argparse
+
+3. **Configuration** - `.env` and `.env.example`
+   - `OLLAMA_MODEL` - Model selection (qwen3:14b, gemma2:27b, llama3.1:70b, etc.)
+   - `OLLAMA_BASE_URL` - Ollama server URL
+
+4. **Documentation** - `docs/CSV_EVALUATION.md`
+   - Complete manual testing workflow (6 steps)
+   - Validation criteria and expected results
+   - Troubleshooting guide
+   - Command reference
+
+### Usage
+
+**Validate existing response:**
+```bash
+python3 scripts/run_simple_eval.py \
+  --eval-file csv_format_eval_set.json \
+  --validate-response /path/to/response.txt
+```
+
+**Generate multi-model test plan:**
+```bash
+python3 scripts/run_simple_eval.py \
+  --eval-type csv \
+  --eval-file csv_format_eval_set.json \
+  --models qwen3:14b,gemma2:27b,llama3.1:70b
+```
+
+**Manual Testing Workflow:**
+1. Configure model in `.env`: `OLLAMA_MODEL=gemma2:27b`
+2. Start agent: `./scripts/start_adk_ollama.sh`
+3. Run query: "list the 'Complete Techniques Catalog' as csv..."
+4. Save response: `test/llm_response_gemma2_27b.txt`
+5. Validate: `python3 scripts/run_simple_eval.py --validate-response ...`
+6. Repeat for other models
+
+### Results
+
+| Model | Status | Row Count | Column Count | Notes |
+|-------|--------|-----------|--------------|-------|
+| gemini-2.0-flash-exp | ✅ PASS | 163 | 7 | Perfect CSV |
+| qwen3:14b | ❌ FAIL | 35 | 8 | Markdown outline |
+| mannix/deepseek-coder-v2-lite-instruct:q8_0 | ❌ FAIL | 10 | 3 | Partial response, incorrect formatting |
+| granite4:latest | ❌ FAIL | 0 | 1 | No valid CSV output |
+| gemma3:4b-it-qat | ❌ FAIL | 36 | - | Partial response, many empty columns |
+| gpt-oss:latest | ❌ FAIL | 13 | 9 | Severe truncation, wrong column count |
+| gemma2:27b | ⚠️ NOT TESTED | - | - | Ready to test |
+| llama3.1:70b | ⚠️ NOT TESTED | - | - | Ready to test |
+
+### Key Insights
+
+1. **Model Size Matters**: 14B model (qwen3) cannot handle complex formatting
+2. **Instruction-Following**: Gemini excels at following CSV formatting rules
+3. **Validation Automation**: Automated validation catches formatting errors immediately
+4. **Reusable Framework**: System can evaluate any formatting task, not just CSV
+
+### Documentation
+
+- **User Guide**: [docs/CSV_EVALUATION.md](CSV_EVALUATION.md) - Complete manual testing guide
+- **Quick Start**: [README.md](../README.md#evaluation--testing) - Summary in main README
+- **Test Case**: `csv_format_eval_set.json` - Validation criteria
+- **Results**: This document - Current test results
+
+---
+
 ## Future Enhancements (Optional)
 
 ### Priority: Low
@@ -336,6 +431,23 @@ if result['success']:
 4. **Direct File Download**
    - Offer CSV file download instead of copy-paste
    - Requires ADK file handling implementation
+
+### Priority: Medium (Evaluation System)
+
+5. **Automated Agent Invocation**
+   - Direct Python API to invoke agent programmatically
+   - Eliminate manual copy-paste step
+   - Full end-to-end automation
+
+6. **Expanded Test Coverage**
+   - Test other formatting tasks (JSON, XML, YAML)
+   - Test smaller tables (10-50 rows)
+   - Test different column counts (3, 5, 10, 15 columns)
+
+7. **Model Recommendation Engine**
+   - Automatically recommend best model based on test results
+   - Balance accuracy vs speed vs local/cloud
+   - Cost optimization suggestions
 
 ---
 
