@@ -12,6 +12,7 @@ from .agent_base import (
     get_rag_interface,
     query_architecture_patterns,
     get_store_info,
+    get_complete_document,
     setup_sys_path,
 )
 
@@ -27,5 +28,6 @@ __all__ = [
     "get_rag_interface",
     "query_architecture_patterns",
     "get_store_info",
+    "get_complete_document",
     "setup_sys_path",
 ]

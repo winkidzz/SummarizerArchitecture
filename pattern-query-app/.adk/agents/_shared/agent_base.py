@@ -30,8 +30,37 @@ DEFAULT_INSTRUCTION = (
     "Markdown tables), format the retrieved data accordingly. 'CSV' means "
     "comma-separated text that can be copied, NOT file creation.\n\n"
 
-    "LARGE DATASETS: For comprehensive queries (e.g., 'complete catalog'), "
-    "use n_results=20-30 to retrieve multiple chunks, then aggregate them "
+    "CSV FORMATTING RULES (CRITICAL):\n"
+    "- ALWAYS enclose fields containing commas in double quotes\n"
+    "- ALWAYS enclose fields containing double quotes in double quotes (and escape internal quotes)\n"
+    "- ALWAYS enclose fields containing newlines in double quotes\n"
+    "- Example: \"patterns, distributions, and relationships\" (quoted because of commas)\n"
+    "- Example: \"CRISP-DM, KDD Process\" (quoted because of comma)\n"
+    "- Example: \"Analyze data (FHIR, EHR, BigQuery)\" (quoted because of commas in parentheses)\n"
+    "- Strip markdown formatting (**, *, etc.) from cell values\n"
+    "- Each row must have exactly the same number of fields as the header\n"
+    "- Test your CSV by counting commas: header should have N-1 commas, each data row should have N-1 commas (where N = number of columns)\n\n"
+
+    "COMPLETE DOCUMENTS AND TABLES:\n"
+    "- When users request 'complete', 'entire', 'full', or 'all' content from a specific document, "
+    "use the get_complete_document() tool instead of query_architecture_patterns().\n"
+    "- The get_complete_document() tool retrieves ALL chunks from a document in sequential order "
+    "and automatically reconstructs the complete content.\n"
+    "- Example queries that should use get_complete_document():\n"
+    "  * 'Show me the complete techniques catalog'\n"
+    "  * 'Give me the entire table from ai-development-techniques'\n"
+    "  * 'List all techniques from the framework document'\n"
+    "- Pass a partial document name (e.g., 'ai-development-techniques') to source_filter.\n"
+    "- The tool returns reconstructed content with deduplicated headers - use it directly.\n\n"
+
+    "MULTI-CHUNK TABLE HANDLING:\n"
+    "- If using query_architecture_patterns() returns table chunks, check metadata for chunk_index.\n"
+    "- If chunks have chunk_index metadata, sort them by chunk_index before processing.\n"
+    "- Table chunks now include headers, so you can process each chunk independently.\n"
+    "- For large tables, consider using get_complete_document() instead of similarity search.\n\n"
+
+    "LARGE DATASETS: For comprehensive queries about specific topics (not complete documents), "
+    "use n_results=20-30 to retrieve multiple relevant chunks, then aggregate them "
     "into a complete formatted response."
 )
 
@@ -40,9 +69,15 @@ def setup_sys_path() -> Path:
     """
     Setup sys.path to include repository root and src directory.
     Returns the repository root path.
+
+    File location: pattern-query-app/.adk/agents/_shared/agent_base.py
+    parents[0] = _shared/
+    parents[1] = agents/
+    parents[2] = .adk/
+    parents[3] = pattern-query-app/ <- This is the repo root we need
     """
-    # Get repository root (3 levels up from this file)
-    repo_root = Path(__file__).resolve().parents[4]
+    # Get repository root (pattern-query-app directory)
+    repo_root = Path(__file__).resolve().parents[3]
     src_dir = repo_root / "src"
 
     if str(repo_root) not in sys.path:
@@ -119,3 +154,108 @@ def get_store_info() -> Dict[str, Any]:
     """Return collection metadata (document counts, persistence path, etc.)."""
     vector_store = get_vector_store()
     return vector_store.get_collection_info()
+
+
+def get_complete_document(source_filter: str) -> Dict[str, Any]:
+    """
+    Retrieve ALL chunks from a specific document and reconstruct it sequentially.
+
+    This is useful when the user requests a "complete" document, "entire" table,
+    or "full catalog" - situations where similarity search would fragment the results.
+
+    Args:
+        source_filter: Partial or complete source path to match (e.g.,
+                      "ai-development-techniques", "framework/ai-development-techniques.md")
+
+    Returns:
+        Dictionary with:
+        - success: bool
+        - source: matched source path
+        - chunks: list of chunks sorted by chunk_index
+        - content: reconstructed full content
+        - total_chunks: number of chunks
+        - error: error message if failed
+    """
+    try:
+        vector_store = get_vector_store()
+        collection = vector_store.collection
+
+        # Get ALL documents from collection (no where clause - not supported in get())
+        all_results = collection.get(
+            include=["metadatas", "documents"],
+        )
+
+        if not all_results or not all_results.get("documents"):
+            return {
+                "success": False,
+                "error": "No documents found in collection",
+                "chunks": [],
+                "total_chunks": 0,
+            }
+
+        # Filter documents that match the source filter (client-side filtering)
+        matching_chunks = []
+        for doc, metadata in zip(all_results["documents"], all_results["metadatas"]):
+            source = metadata.get("source", "")
+            if source_filter.lower() in source.lower():
+                matching_chunks.append({
+                    "content": doc,
+                    "metadata": metadata,
+                    "chunk_index": metadata.get("chunk_index", 0),
+                    "source": source,
+                })
+
+        if not matching_chunks:
+            return {
+                "success": False,
+                "error": f"No documents found matching '{source_filter}'",
+                "chunks": [],
+                "total_chunks": 0,
+            }
+
+        # Sort by chunk_index to reconstruct sequential document
+        matching_chunks.sort(key=lambda x: x["chunk_index"])
+
+        # Get the actual source path from first chunk
+        source_path = matching_chunks[0]["source"] if matching_chunks else ""
+
+        # Reconstruct full content by joining all chunks
+        # For tables, we need to deduplicate headers
+        full_content = ""
+        seen_header = None
+
+        for chunk in matching_chunks:
+            content = chunk["content"]
+
+            # Detect and skip duplicate table headers (except first occurrence)
+            lines = content.split("\n")
+            if len(lines) >= 2 and lines[0].strip().startswith("|") and lines[1].strip().startswith("|---"):
+                # This chunk has a header
+                header = lines[0] + "\n" + lines[1]
+                if seen_header is None:
+                    # First header, keep it
+                    seen_header = header
+                    full_content += content + "\n"
+                else:
+                    # Skip duplicate header, only add content after header
+                    content_after_header = "\n".join(lines[2:])
+                    full_content += content_after_header + "\n"
+            else:
+                # No header in this chunk, add as-is
+                full_content += content + "\n"
+
+        return {
+            "success": True,
+            "source": source_path,
+            "chunks": matching_chunks,
+            "content": full_content.strip(),
+            "total_chunks": len(matching_chunks),
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error retrieving document: {str(e)}",
+            "chunks": [],
+            "total_chunks": 0,
+        }

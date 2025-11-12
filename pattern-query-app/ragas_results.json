@@ -1,0 +1,79 @@
+{
+  "eval_dataset": "ragas_eval_set.json",
+  "judge_model": "qwen3:14b",
+  "timestamp": "2025-11-11 22:13:02",
+  "results": [
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.5,
+      "query": "What is Basic RAG and how does it work?",
+      "response": "Based on the documentation: |---------|---------------------|-------------------|\n| Basic RAG | < 500ms | 50 req/s |\n| Advanced RAG | < 2000ms | 20 req/s |\n| Self-RAG | < 3000ms | 10 req/s |\n| Streami...",
+      "test_id": "ragas_1"
+    },
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.5,
+      "query": "Compare RAPTOR RAG with Basic RAG",
+      "response": "Based on the documentation: |---------|---------------------|-------------------|\n| Basic RAG | < 500ms | 50 req/s |\n| Advanced RAG | < 2000ms | 20 req/s |\n| Self-RAG | < 3000ms | 10 req/s |\n| Streami...",
+      "test_id": "ragas_2"
+    },
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.5,
+      "query": "What RAG patterns are available in the library?",
+      "response": "Based on the documentation: # RAG Pattern Index\n\nComplete index of all RAG patterns documented in this reference architecture.\n\n## Core Patterns\n\n| Pattern | Description | Complexity | Use Case |\n|---...",
+      "test_id": "ragas_3"
+    },
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.5,
+      "query": "How do I implement RAG with Google Vertex AI?",
+      "response": "Based on the documentation: # Google Vertex AI Vendor Guide\n\n## Overview\n\nGoogle Vertex AI is Google Cloud's unified AI platform providing access to Gemini models, custom model training, and enterpris...",
+      "test_id": "ragas_4"
+    },
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.5,
+      "query": "What is Contextual Retrieval and what performance improvement does it provide?",
+      "response": "Based on the documentation: trieval Research - Anthropic](https://www.anthropic.com/research/contextual-retrieval)\n- [RAG Performance Improvements with Contextual Embeddings](https://arxiv.org/abs/240...",
+      "test_id": "ragas_5"
+    }
+  ],
+  "aggregate": {
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.5,
+    "context_precision": 0.5,
+    "context_recall": 0.5,
+    "overall": 0.5
+  },
+  "metadata": {
+    "num_cases": 5,
+    "total_time": 1436.373785018921,
+    "avg_time_per_case": 287.2747570037842
+  }
+}

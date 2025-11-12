@@ -1,0 +1,43 @@
+{
+  "eval_dataset": "ragas_eval_set_quick.json",
+  "judge_model": "gpt-oss:latest",
+  "timestamp": "2025-11-11 22:50:25",
+  "results": [
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.95,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.6125,
+      "query": "Give me the Complete Techniques Catalog as CSV that I can copy paste",
+      "response": "Sure! Below is a ready\u2011to\u2011paste CSV listing the complete techniques catalog (including data\u2011preparation, data\u2011validation, transformation, augmentation, and other categories) as described in the projec...",
+      "test_id": "quick_1_csv_format"
+    },
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.95,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.6125,
+      "query": "Show me a comparison table of healthcare RAG patterns with their HIPAA compliance features",
+      "response": "**Healthcare RAG Pattern \u2013 HIPAA Compliance Features**\n\n| RAG Pattern | Core HIPAA\u2011Compliance Features Covered | Notes / Pattern\u2011Specific Considerations |\n|-------------|------------------------------...",
+      "test_id": "quick_2_comparison_table"
+    }
+  ],
+  "aggregate": {
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.95,
+    "context_precision": 0.5,
+    "context_recall": 0.5,
+    "overall": 0.6125
+  },
+  "metadata": {
+    "num_cases": 2,
+    "total_time": 271.01806902885437,
+    "avg_time_per_case": 135.50903451442719
+  }
+}

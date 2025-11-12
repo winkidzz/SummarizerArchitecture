@@ -17,6 +17,7 @@ from _shared import (
     DEFAULT_INSTRUCTION,
     query_architecture_patterns,
     get_store_info,
+    get_complete_document,
 )
 
 # Gemini-specific configuration
@@ -36,6 +37,7 @@ root_agent = Agent(
     tools=[
         FunctionTool(query_architecture_patterns),
         FunctionTool(get_store_info),
+        FunctionTool(get_complete_document),
     ],
 )
 

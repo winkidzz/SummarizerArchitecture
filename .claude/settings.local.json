@@ -33,7 +33,18 @@
       "Bash(git mv:*)",
       "Bash(git push:*)",
       "Bash(git rm:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(./venv312/bin/adk web:*)",
+      "Bash(../venv312/bin/adk web:*)",
+      "Bash(for file in ./START_HERE.md ./docs/ADK_QUICKSTART.md ./docs/agent-setup-guide.md ./README.md ./scripts/quick_start_adk.sh ./scripts/setup_adk_agent.py ./scripts/test_adk_setup.py ./scripts/ADK_SETUP.md ./scripts/start_adk_default_ui.sh ./CLAUDE.md)",
+      "Bash(do sed -i '' 's/chromadb_agent/gemini_agent/g' \"$file\")",
+      "Bash(done)",
+      "Bash(for:*)",
+      "Bash(cat:*)",
+      "Bash(../venv312/bin/python3:*)",
+      "Bash(awk:*)",
+      "Bash(./scripts/start_adk_gemini.sh:*)"
     ],
     "deny": [],
     "ask": []

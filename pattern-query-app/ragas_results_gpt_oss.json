@@ -1,0 +1,43 @@
+{
+  "eval_dataset": "ragas_eval_set_quick.json",
+  "judge_model": "gpt-oss:latest",
+  "timestamp": "2025-11-11 22:29:57",
+  "results": [
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.05,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.3875,
+      "query": "Give me the Complete Techniques Catalog as CSV that I can copy paste",
+      "response": "Based on the documentation: e event streaming. Used in healthcare data patterns.\n\n## Q\n\n**Query Routing**: Pattern that dynamically selects optimal retrieval strategy based on query characteristics. A...",
+      "test_id": "quick_1_csv_format"
+    },
+    {
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.2,
+        "context_precision": 0.5,
+        "context_recall": 0.5
+      },
+      "overall_score": 0.425,
+      "query": "Show me a comparison table of healthcare RAG patterns with their HIPAA compliance features",
+      "response": "Based on the documentation: \n### HIPAA Compliance\n- Document HIPAA-compliant patterns for all vendors\n- Data encryption and access controls\n- Audit logging and compliance reporting\n- Business Associat...",
+      "test_id": "quick_2_comparison_table"
+    }
+  ],
+  "aggregate": {
+    "faithfulness": 0.5,
+    "answer_relevancy": 0.125,
+    "context_precision": 0.5,
+    "context_recall": 0.5,
+    "overall": 0.40625
+  },
+  "metadata": {
+    "num_cases": 2,
+    "total_time": 164.34866499900818,
+    "avg_time_per_case": 82.17433249950409
+  }
+}

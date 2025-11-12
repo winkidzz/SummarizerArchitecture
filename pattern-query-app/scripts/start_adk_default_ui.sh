@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Launch the Google ADK default web UI against the local chromadb_agent.
+# Launch the Google ADK default web UI against the local gemini_agent.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -11,6 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from document_store.storage.vector_store import VectorStore
+from document_store.processors.text_chunker import TextChunker
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -35,6 +36,12 @@ def main():
     vector_store = VectorStore(
         persist_directory=str(REPO_ROOT / "data" / "chroma_db"),
         collection_name="architecture_patterns",
+    )
+    
+    # Initialize chunker for large documents
+    chunker = TextChunker(
+        chunk_size=2000,  # 2000 characters per chunk
+        chunk_overlap=200,  # 200 character overlap
     )
 
     # Collect all markdown files from the pattern library
@@ -76,6 +83,8 @@ def main():
                 doc_type = "use-case"
             elif "ai-design-patterns" in str(doc_path):
                 doc_type = "ai-design-pattern"
+            elif "framework" in str(doc_path):
+                doc_type = "framework"
 
             # Extract title from first heading or filename
             title = doc_path.stem.replace("-", " ").title()
@@ -85,23 +94,54 @@ def main():
                     title = line.lstrip("# ").strip()
                     break
 
-            documents_to_add.append({
-                "content": content,
-                "metadata": {
-                    "source": str(doc_path.relative_to(pattern_lib_dir)),
-                    "title": title,
-                    "type": doc_type,
-                    "filename": doc_path.name,
-                }
-            })
-            logger.info(f"  ✓ Processed: {doc_path.name}")
+            base_metadata = {
+                "source": str(doc_path.relative_to(pattern_lib_dir)),
+                "title": title,
+                "type": doc_type,
+                "filename": doc_path.name,
+            }
+            
+            # Chunk large documents (especially those with tables)
+            if len(content) > 5000 or "|" in content[:500]:  # Large files or files with tables
+                logger.info(f"  📄 Chunking large document: {doc_path.name} ({len(content)} chars)")
+                if "|" in content and "\n|" in content:
+                    # Use table-aware chunking
+                    chunks = chunker.chunk_markdown_table(content, base_metadata)
+                else:
+                    # Use regular chunking
+                    chunks = chunker.chunk_text(content, base_metadata)
+                
+                documents_to_add.extend(chunks)
+                logger.info(f"  ✓ Processed into {len(chunks)} chunks: {doc_path.name}")
+            else:
+                # Small document, add as-is
+                documents_to_add.append({
+                    "content": content,
+                    "metadata": base_metadata,
+                })
+                logger.info(f"  ✓ Processed: {doc_path.name}")
         else:
             logger.warning(f"  ⚠ Skipped (too short): {doc_path.name}")
 
     # Add to vector store
     if documents_to_add:
         logger.info(f"\nAdding {len(documents_to_add)} documents to vector store...")
-        vector_store.add_documents(documents_to_add)
+        
+        # Generate unique IDs for chunks
+        ids = []
+        for i, doc in enumerate(documents_to_add):
+            metadata = doc.get("metadata", {})
+            source = metadata.get("source", f"doc_{i}")
+            chunk_index = metadata.get("chunk_index")
+            
+            if chunk_index is not None:
+                # Chunked document - include chunk index in ID
+                ids.append(f"{source}__chunk_{chunk_index}")
+            else:
+                # Regular document
+                ids.append(source)
+        
+        vector_store.add_documents(documents_to_add, ids=ids)
 
         # Verify
         info = vector_store.get_collection_info()

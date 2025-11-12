@@ -10,7 +10,7 @@ Reference Architecture.
 > pip install google-adk==1.18.0
 > export GOOGLE_API_KEY="..."        # from https://aistudio.google.com/app/apikey
 > python scripts/setup_adk_agent.py
-> scripts/start_adk_default_ui.sh    # or: adk run .adk/agents/chromadb_agent
+> scripts/start_adk_default_ui.sh    # or: adk run .adk/agents/gemini_agent
 > ```
 
 ## 1. Prerequisites
@@ -32,7 +32,7 @@ of the built-in UI):
 
 ## 2. Generate the Agent Package
 
-The repository ships with a ready-to-use agent under `.adk/agents/chromadb_agent`.
+The repository ships with a ready-to-use agent under `.adk/agents/gemini_agent`.
 Regenerate or customize it at any time using:
 
 ```bash
@@ -52,10 +52,10 @@ Key flags:
 | `--model` | Default Gemini model (`gemini-2.5-flash`, `gemini-1.5-pro`, etc.) |
 | `--agent-name` | Friendly identifier shown inside ADK |
 | `--instruction-file` | Optional Markdown/text file with a custom system prompt |
-| `--overwrite` | Force regeneration even if `.adk/agents/chromadb_agent/agent.py` already exists |
+| `--overwrite` | Force regeneration even if `.adk/agents/gemini_agent/agent.py` already exists |
 
 The script:
-1. Creates `.adk/agents/chromadb_agent`.
+1. Creates `.adk/agents/gemini_agent`.
 2. Writes `agent.py` that wires the ADK agent to `DocumentStoreOrchestrator`.
 3. Ensures the package’s `__init__.py` is present so the ADK CLI can auto-load it.
 
@@ -78,7 +78,7 @@ Save these in `.env` (gitignored) or export them before running the CLI.
 ### 4.1 Interactive CLI
 
 ```bash
-adk run .adk/agents/chromadb_agent
+adk run .adk/agents/gemini_agent
 ```
 
 This opens the built-in REPL. Ask natural-language questions; the agent will call
@@ -124,7 +124,7 @@ adk api_server --host=0.0.0.0 --port=8000 --allow_origins=http://localhost:4200 
 
 | File | Purpose |
 |------|---------|
-| `.adk/agents/chromadb_agent/agent.py` | Source for the ADK agent that connects to `DocumentStoreOrchestrator` |
+| `.adk/agents/gemini_agent/agent.py` | Source for the ADK agent that connects to `DocumentStoreOrchestrator` |
 | `scripts/setup_adk_agent.py` | Generates/updates the agent package |
 | `scripts/start_adk_default_ui.sh` | Convenience wrapper around `adk web` |
 | `docs/agent-setup-guide.md` | High-level narrative for ADK + Ollama usage |

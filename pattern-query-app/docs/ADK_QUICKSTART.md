@@ -110,7 +110,7 @@ The ADK agent will:
                   ▼
 ┌─────────────────────────────────────────────────────────────┐
 │           ADK Agent (Gemini 2.5 Flash)                      │
-│        .adk/agents/chromadb_agent/agent.py                  │
+│        .adk/agents/gemini_agent/agent.py                  │
 │                                                             │
 │  Tools:                                                     │
 │  • query_architecture_patterns()                            │
@@ -184,6 +184,40 @@ export ADK_MODEL="gemini-2.0-flash-lite"
 
 ## Troubleshooting
 
+### Issue: "No agents found" or "Failed to load agents"
+
+**Cause**: ADK is pointing to the wrong directory (a specific agent subdirectory instead of the parent agents directory)
+
+**Solution:**
+```bash
+# CORRECT - Point to the parent agents directory
+adk web .adk/agents
+
+# WRONG - Don't point to a specific agent subdirectory
+adk web .adk/agents/ollama_agent  # ❌ This will fail
+```
+
+**Why**: ADK needs to scan the `.adk/agents` directory to discover all available agents. When you point to a specific agent subdirectory, ADK can't find the agent structure.
+
+### Issue: Using wrong Python version (3.9 instead of 3.12)
+
+**Cause**: Using hardcoded paths or system Python instead of project venv312
+
+**Solution:**
+```bash
+# Check your Python version
+python3 --version  # Should be 3.12.12
+
+# Use venv312 explicitly
+../venv312/bin/adk web .adk/agents
+
+# Or activate venv312 first
+source ../venv312/bin/activate
+adk web .adk/agents
+```
+
+**Why**: The project uses Python 3.12.12 (see `../.python-version`). Python 3.9 has limitations (no MCP support, warnings) and should not be used.
+
 ### Issue: "GOOGLE_API_KEY not set"
 
 **Solution:**
@@ -238,7 +272,7 @@ pip install sentence-transformers>=3.3.0
 curl http://127.0.0.1:8000/health
 
 # Check the ADK agent directory exists
-ls -la .adk/agents/chromadb_agent/
+ls -la .adk/agents/gemini_agent/
 
 # Regenerate if needed
 python3 scripts/setup_adk_agent.py --overwrite
@@ -296,7 +330,7 @@ For terminal-based interaction:
 
 ```bash
 # Interactive REPL
-adk run .adk/agents/chromadb_agent
+adk run .adk/agents/gemini_agent
 
 # Then type your questions:
 > What are the best RAG patterns for healthcare?
@@ -341,7 +375,7 @@ adk api_server --host=0.0.0.0 --port=8000 \
 ## What's Next?
 
 - **Add More Patterns**: Edit files in `docs/patterns/` and re-ingest
-- **Customize Agent**: Modify [.adk/agents/chromadb_agent/agent.py](.adk/agents/chromadb_agent/agent.py)
+- **Customize Agent**: Modify [.adk/agents/gemini_agent/agent.py](.adk/agents/gemini_agent/agent.py)
 - **Deploy to Cloud**: See [docs/vendor-guides/google-adk.md](docs/vendor-guides/google-adk.md)
 - **Add Custom Tools**: Extend the agent with additional functions
 

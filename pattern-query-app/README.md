@@ -8,28 +8,57 @@ This application indexes, stores, and queries the [Healthcare AI Pattern Library
 
 ---
 
+## 📚 Documentation Quick Links
+
+**New here? Start with these guides:**
+
+- **[START_HERE.md](START_HERE.md)** - 5-minute quick start guide with decision tree
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive instructions for AI assistants (helps any LLM understand the project)
+- **[ADK_QUICKSTART.md](docs/ADK_QUICKSTART.md)** - Detailed ADK setup guide with troubleshooting
+- **[README.md](README.md)** (this file) - Full project documentation
+
+**Choose your path:**
+- 🚀 Just want to start the app? → [START_HERE.md](START_HERE.md)
+- 🤖 Are you an AI assistant? → [CLAUDE.md](CLAUDE.md)
+- 📖 Want detailed docs? → Keep reading below
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.9+ (Python 3.10+ recommended)
-- Ollama (for local LLM) or Google Cloud account (for ADK)
+- Python 3.12.12 (managed via `../venv312/`)
+- Ollama running locally (with qwen3:14b model)
 - 500MB disk space for ChromaDB
 
-### Installation
+### One-Command Start
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+cd pattern-query-app && \
+export OLLAMA_MODEL="qwen3:14b" && \
+export OLLAMA_BASE_URL="http://localhost:11434/v1" && \
+../venv312/bin/adk web --host=127.0.0.1 --port=8000 --allow_origins="*" .adk/agents
+```
 
-# Ingest pattern library into ChromaDB
-python scripts/ingest_all_docs.py
+### First-Time Setup
 
-# Start the query interface
-python scripts/start_ollama_agent.py  # Or use ADK: ./scripts/start_adk_ollama.sh
+```bash
+# 1. Ingest pattern library into ChromaDB (one time only)
+cd pattern-query-app
+../venv312/bin/python scripts/ingest_all_docs.py
+
+# 2. Start the web UI
+export OLLAMA_MODEL="qwen3:14b"
+export OLLAMA_BASE_URL="http://localhost:11434/v1"
+../venv312/bin/adk web --host=127.0.0.1 --port=8000 --allow_origins="*" .adk/agents
 ```
 
 ### Access the Web UI
-Open http://127.0.0.1:8080 in your browser to query patterns!
+1. Open http://127.0.0.1:8000 in your browser
+2. Select **ollama_agent** from the dropdown
+3. Start querying patterns!
+
+> **Detailed setup guide**: See [START_HERE.md](START_HERE.md) for step-by-step instructions with troubleshooting.
 
 ---
 
@@ -97,7 +126,7 @@ pattern-query-app/
 │       ├── spanner_connector.py
 │       └── pubsub_events.py
 ├── .adk/agents/                  # ADK agent packages
-│   ├── chromadb_agent/
+│   ├── gemini_agent/
 │   └── ollama_agent/
 ├── scripts/                      # Utility scripts
 ├── examples/                     # Usage examples
