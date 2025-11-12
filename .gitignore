@@ -54,3 +54,4 @@ data/
 chroma_db/
 
 venv312/
+test/*.txt
