@@ -13,6 +13,9 @@ from .agent_base import (
     query_architecture_patterns,
     get_store_info,
     get_complete_document,
+    generate_structured_table,
+    generate_structured_list,
+    generate_comparison_matrix,
     setup_sys_path,
 )
 
@@ -29,5 +32,8 @@ __all__ = [
     "query_architecture_patterns",
     "get_store_info",
     "get_complete_document",
+    "generate_structured_table",
+    "generate_structured_list",
+    "generate_comparison_matrix",
     "setup_sys_path",
 ]

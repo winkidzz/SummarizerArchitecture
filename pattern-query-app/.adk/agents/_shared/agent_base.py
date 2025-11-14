@@ -26,11 +26,55 @@ DEFAULT_INSTRUCTION = (
     "answering. If a question cannot be answered from the knowledge base, say "
     "so explicitly.\n\n"
 
-    "FORMAT RETRIEVED DATA: When users request specific formats (CSV, JSON, "
-    "Markdown tables), format the retrieved data accordingly. 'CSV' means "
-    "comma-separated text that can be copied, NOT file creation.\n\n"
+    "TOOL SELECTION GUIDE - WHEN TO USE STRUCTURED OUTPUT:\n"
+    "You have access to specialized structured output tools. Use them intelligently:\n\n"
+
+    "USE generate_structured_table() when:\n"
+    "- User explicitly requests CSV, TSV, spreadsheet, or tabular format\n"
+    "- Query contains: 'as CSV', 'as table', 'in spreadsheet format'\n"
+    "- Example: 'List the Complete Techniques Catalog as CSV'\n"
+    "- This tool uses LLM to extract structured data with schema validation\n\n"
+
+    "USE generate_structured_list() when:\n"
+    "- User requests a list or catalog (but not in table format)\n"
+    "- Query contains: 'list all', 'catalog of', 'enumerate'\n"
+    "- Example: 'List all RAG patterns'\n\n"
+
+    "USE generate_comparison_matrix() when:\n"
+    "- User requests comparisons between multiple entities\n"
+    "- Query contains: 'compare', 'vs', 'differences between'\n"
+    "- Example: 'Compare Anthropic vs Azure OpenAI'\n\n"
+
+    "DO NOT USE structured output tools for:\n"
+    "- Conceptual questions or explanations\n"
+    "- General queries about how something works\n"
+    "- Single item lookups or descriptions\n"
+    "- When user doesn't specify a particular format\n"
+    "- Use query_architecture_patterns() or get_complete_document() instead\n\n"
+
+    "FORMAT RETRIEVED DATA: When structured output tools are not appropriate, "
+    "you can still format data manually from query results.\n\n"
+    
+    "STEP-BY-STEP PROCESS FOR 'Complete Techniques Catalog' CSV (CRITICAL - FOLLOW EXACTLY):\n"
+    "1. Call get_complete_document(source_filter='ai-development-techniques')\n"
+    "2. In the returned content, search for the exact text '## Complete Techniques Catalog'\n"
+    "3. Find the markdown table immediately following this heading\n"
+    "4. The table header row is: | Phase | Category | Technique/Methodology | Description | Process Framework | Usage in Architecture | Lifecycle Steps |\n"
+    "5. Extract ALL 163 data rows from this table (plus the header row = 164 total rows)\n"
+    "6. Convert markdown table to CSV:\n"
+    "   - Example markdown row: | **1. Ideation & Planning** | Data Analysis | **Exploratory Data Analysis (EDA)** | Initial data exploration... | CRISP-DM, KDD Process | Analyze healthcare data... | 1.1 Requirements Gathering - Technical |\n"
+    "   - Convert to CSV: \"1. Ideation & Planning\",\"Data Analysis\",\"Exploratory Data Analysis (EDA)\",\"Initial data exploration...\",\"CRISP-DM, KDD Process\",\"Analyze healthcare data...\",\"1.1 Requirements Gathering - Technical\"\n"
+    "   - Remove markdown bold (**text** → text)\n"
+    "   - Quote ALL fields that contain commas, quotes, or newlines\n"
+    "   - Remove leading/trailing spaces\n"
+    "7. Your response MUST start with the CSV header row, then all 163 data rows\n"
+    "8. DO NOT add any text before or after the CSV - no explanations, no markdown, no code blocks\n"
+    "9. DO NOT summarize, translate, or modify any content - extract the table exactly as it appears\n"
+    "10. The output should be 164 lines total: 1 header + 163 data rows\n\n"
 
     "CSV FORMATTING RULES (CRITICAL):\n"
+    "- When user requests CSV, you MUST return ONLY the CSV data - no explanations, no markdown, no code blocks\n"
+    "- Start directly with the header row, then all data rows\n"
     "- ALWAYS enclose fields containing commas in double quotes\n"
     "- ALWAYS enclose fields containing double quotes in double quotes (and escape internal quotes)\n"
     "- ALWAYS enclose fields containing newlines in double quotes\n"
@@ -39,19 +83,29 @@ DEFAULT_INSTRUCTION = (
     "- Example: \"Analyze data (FHIR, EHR, BigQuery)\" (quoted because of commas in parentheses)\n"
     "- Strip markdown formatting (**, *, etc.) from cell values\n"
     "- Each row must have exactly the same number of fields as the header\n"
-    "- Test your CSV by counting commas: header should have N-1 commas, each data row should have N-1 commas (where N = number of columns)\n\n"
+    "- For 'Complete Techniques Catalog', expect 7 columns: Phase, Category, Technique/Methodology, Description, Process Framework, Usage in Architecture, Lifecycle Steps\n"
+    "- Test your CSV by counting commas: header should have 6 commas (7 columns), each data row should have 6 commas\n"
+    "- DO NOT include markdown table syntax (|), code fences (```), or explanatory text - ONLY the CSV rows\n\n"
 
     "COMPLETE DOCUMENTS AND TABLES:\n"
-    "- When users request 'complete', 'entire', 'full', or 'all' content from a specific document, "
+    "- When users request 'complete', 'entire', 'full', 'all', or 'Complete Techniques Catalog', "
     "use the get_complete_document() tool instead of query_architecture_patterns().\n"
     "- The get_complete_document() tool retrieves ALL chunks from a document in sequential order "
     "and automatically reconstructs the complete content.\n"
+    "- CRITICAL: For 'Complete Techniques Catalog' queries, ALWAYS use source_filter='ai-development-techniques'\n"
     "- Example queries that should use get_complete_document():\n"
-    "  * 'Show me the complete techniques catalog'\n"
-    "  * 'Give me the entire table from ai-development-techniques'\n"
-    "  * 'List all techniques from the framework document'\n"
-    "- Pass a partial document name (e.g., 'ai-development-techniques') to source_filter.\n"
-    "- The tool returns reconstructed content with deduplicated headers - use it directly.\n\n"
+    "  * 'Show me the complete techniques catalog' → use source_filter='ai-development-techniques'\n"
+    "  * 'Give me the entire table from ai-development-techniques' → use source_filter='ai-development-techniques'\n"
+    "  * 'List all techniques from the framework document' → use source_filter='ai-development-techniques'\n"
+    "- The tool returns reconstructed content with deduplicated headers.\n"
+    "- CRITICAL FOR 'Complete Techniques Catalog':\n"
+    "  1. Search for the table with header containing: 'Phase', 'Category', 'Technique/Methodology', 'Description', 'Process Framework', 'Usage in Architecture', 'Lifecycle Steps'\n"
+    "  2. This table has exactly 163 data rows (plus 1 header row = 164 total rows)\n"
+    "  3. Extract ONLY this specific table - ignore all other content, summaries, translations, or explanations\n"
+    "  4. Convert the markdown table (| columns |) to CSV format\n"
+    "  5. Return ONLY the CSV rows - no markdown, no explanations, no other text\n"
+    "  6. DO NOT translate, summarize, or modify the content - extract it exactly as it appears\n"
+    "  7. The table starts after a heading like '## Complete Techniques Catalog' or similar\n\n"
 
     "MULTI-CHUNK TABLE HANDLING:\n"
     "- If using query_architecture_patterns() returns table chunks, check metadata for chunk_index.\n"
@@ -319,4 +373,254 @@ def get_complete_document(source_filter: str) -> Dict[str, Any]:
             "error": f"Error retrieving document: {str(e)}",
             "chunks": [],
             "total_chunks": 0,
+        }
+
+
+# ============================================================================
+# Structured Output Tools (Optional - LLM decides when to use)
+# ============================================================================
+
+def generate_structured_table(
+    source_filter: str,
+    output_format: str = "csv",
+    schema_name: str = "table"
+) -> Dict[str, Any]:
+    """
+    Generate structured table output using LLM with schema validation.
+
+    USE THIS TOOL when the user explicitly requests:
+    - A table in CSV, TSV, or structured format
+    - "List as CSV", "create a table", "show in spreadsheet format"
+    - Any request for tabular data that needs to be structured
+
+    DO NOT USE this tool for:
+    - Conceptual questions or explanations
+    - General queries about patterns or techniques
+    - Requests that don't need structured/tabular output
+
+    This tool retrieves document content and uses an LLM to extract structured
+    data according to a schema, then converts to the requested format.
+
+    Args:
+        source_filter: Document source to retrieve (e.g., 'ai-development-techniques')
+        output_format: Desired format ('csv', 'tsv', 'markdown', 'json', 'html')
+        schema_name: Schema to use ('table', 'techniques_catalog', 'list', etc.)
+
+    Returns:
+        Dictionary with:
+        - success: bool
+        - data: Formatted output (CSV text, JSON, etc.)
+        - format: Output format used
+        - schema_used: Schema name
+        - validation: Validation results
+        - metadata: Additional info (row count, columns, etc.)
+
+    Example queries that should use this tool:
+        - "List the Complete Techniques Catalog as CSV"
+        - "Show me all patterns in a table"
+        - "Create a spreadsheet of vendor features"
+    """
+    try:
+        # Import the structured output service
+        from document_store.formatting import StructuredOutputService, create_service
+
+        # Get complete document
+        doc_result = get_complete_document(source_filter)
+
+        if not doc_result.get("success"):
+            return {
+                "success": False,
+                "error": doc_result.get("error", "Failed to retrieve document"),
+                "suggestions": doc_result.get("suggestions", [])
+            }
+
+        # Create structured output service
+        service = create_service()
+
+        # Generate structured output
+        # Use a query that helps the LLM understand what to extract
+        query = f"Extract all data from this document as a structured {output_format}"
+
+        result = service.generate_structured_output(
+            content=doc_result["content"],
+            query=query,
+            schema_name=schema_name,
+            output_format=output_format,
+            validate=True
+        )
+
+        return result
+
+    except ImportError as e:
+        return {
+            "success": False,
+            "error": f"Structured output module not available: {str(e)}",
+            "fallback": "Use get_complete_document() and format manually"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error generating structured output: {str(e)}",
+            "error_type": type(e).__name__
+        }
+
+
+def generate_structured_list(
+    query: str,
+    n_results: int = 10,
+    output_format: str = "json"
+) -> Dict[str, Any]:
+    """
+    Generate structured list/catalog from query results.
+
+    USE THIS TOOL when the user requests:
+    - A list or catalog of items
+    - "List all X", "catalog of Y", "enumerate Z"
+    - Results that should be formatted as a structured collection
+
+    DO NOT USE this tool for:
+    - Single item lookups
+    - Conceptual explanations
+    - Comparison queries (use generate_comparison_matrix instead)
+
+    Args:
+        query: Search query
+        n_results: Number of results to retrieve
+        output_format: Desired format ('json', 'csv', 'markdown', 'yaml')
+
+    Returns:
+        Dictionary with structured list output
+
+    Example queries:
+        - "List all RAG patterns"
+        - "Show me a catalog of available techniques"
+        - "Enumerate all vendor integrations"
+    """
+    try:
+        from document_store.formatting import StructuredOutputService, create_service
+
+        # Query patterns
+        search_results = query_architecture_patterns(
+            query=query,
+            n_results=n_results
+        )
+
+        if not search_results.get("results"):
+            return {
+                "success": False,
+                "error": "No results found for query"
+            }
+
+        # Combine results into content
+        content = "\n\n".join([
+            f"Item {i+1}:\n{result.get('content', '')}"
+            for i, result in enumerate(search_results["results"])
+        ])
+
+        # Create structured output service
+        service = create_service()
+
+        # Generate structured output
+        result = service.generate_structured_output(
+            content=content,
+            query=query,
+            schema_name="list",
+            output_format=output_format,
+            validate=True
+        )
+
+        return result
+
+    except ImportError as e:
+        return {
+            "success": False,
+            "error": f"Structured output module not available: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error generating structured list: {str(e)}"
+        }
+
+
+def generate_comparison_matrix(
+    entities: str,
+    dimensions: str = "features",
+    output_format: str = "markdown"
+) -> Dict[str, Any]:
+    """
+    Generate structured comparison matrix.
+
+    USE THIS TOOL when the user requests:
+    - Comparisons between multiple items
+    - "Compare X vs Y", "what are the differences between A and B"
+    - Feature comparison matrices
+    - Vendor/pattern/technique comparisons
+
+    DO NOT USE this tool for:
+    - Single item descriptions
+    - Simple lists or catalogs
+    - Explanations without comparison
+
+    Args:
+        entities: Entities to compare (comma-separated or descriptive)
+                 e.g., "Anthropic, Google, Azure" or "all cloud vendors"
+        dimensions: What to compare (e.g., "features", "pricing", "performance")
+        output_format: Desired format ('markdown', 'csv', 'html', 'json')
+
+    Returns:
+        Dictionary with comparison matrix output
+
+    Example queries:
+        - "Compare Anthropic vs Azure OpenAI"
+        - "What are the differences between Basic RAG and Contextual Retrieval?"
+        - "Create a feature comparison matrix for all vendors"
+    """
+    try:
+        from document_store.formatting import StructuredOutputService, create_service
+
+        # Build query for comparison
+        query = f"Compare {entities} across {dimensions}"
+
+        # Query patterns with more results to get comprehensive data
+        search_results = query_architecture_patterns(
+            query=query,
+            n_results=15
+        )
+
+        if not search_results.get("results"):
+            return {
+                "success": False,
+                "error": f"No results found for comparison: {entities}"
+            }
+
+        # Combine results into content
+        content = "\n\n".join([
+            f"{result.get('metadata', {}).get('source', 'Unknown')}:\n{result.get('content', '')}"
+            for result in search_results["results"]
+        ])
+
+        # Create structured output service
+        service = create_service()
+
+        # Generate structured comparison
+        result = service.generate_structured_output(
+            content=content,
+            query=query,
+            schema_name="comparison",
+            output_format=output_format,
+            validate=True
+        )
+
+        return result
+
+    except ImportError as e:
+        return {
+            "success": False,
+            "error": f"Structured output module not available: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error generating comparison matrix: {str(e)}"
         }

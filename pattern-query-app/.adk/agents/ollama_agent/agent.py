@@ -19,6 +19,9 @@ from _shared import (
     query_architecture_patterns,
     get_store_info,
     get_complete_document,
+    generate_structured_table,
+    generate_structured_list,
+    generate_comparison_matrix,
 )
 
 # Ollama-specific configuration
@@ -49,6 +52,9 @@ root_agent = Agent(
         FunctionTool(query_architecture_patterns),
         FunctionTool(get_store_info),
         FunctionTool(get_complete_document),
+        FunctionTool(generate_structured_table),
+        FunctionTool(generate_structured_list),
+        FunctionTool(generate_comparison_matrix),
     ],
 )
 
