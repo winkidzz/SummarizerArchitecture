@@ -48,7 +48,18 @@
       "Bash(timeout 180 python3:*)",
       "Bash(source ../venv312/bin/activate)",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(pkill:*)",
+      "Bash(tee:*)",
+      "Bash(../venv312/bin/python:*)",
+      "Bash(timeout 120 ../venv312/bin/python:*)",
+      "Bash(USE_OLLAMA_EVAL=true OLLAMA_MODEL=\"qwen3:14b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" ../venv312/bin/python:*)",
+      "Bash(USE_OLLAMA_EVAL=true OLLAMA_MODEL=\"llama3.2:1b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" ../venv312/bin/python:*)",
+      "Bash(OLLAMA_MODEL=\"llama3.2:1b\" ./scripts/start_adk_ollama.sh:*)",
+      "Bash(OLLAMA_MODEL=\"llama3.2:1b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" ../venv312/bin/adk:*)",
+      "Bash(OLLAMA_MODEL=\"llama3.2:1b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" ../../../../venv312/bin/adk web:*)",
+      "Bash(OLLAMA_MODEL=\"llama3.2:1b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" /Users/sanantha/SummarizerArchitecture/venv312/bin/adk web:*)",
+      "Bash(/Users/sanantha/SummarizerArchitecture/venv312/bin/python3:*)"
     ],
     "deny": [],
     "ask": []

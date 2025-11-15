@@ -52,7 +52,13 @@ class DocumentStoreOrchestrator:
             embedding_model=embedding_model,
         )
         self.rag_interface = RAGQueryInterface(self.vector_store)
-        self.web_search = WebSearchTool()
+
+        # Initialize web search (optional dependency)
+        try:
+            self.web_search = WebSearchTool()
+        except ImportError as e:
+            logger.warning(f"Web search not available: {e}")
+            self.web_search = None
         
         # Initialize agents
         self.adk_agent = None

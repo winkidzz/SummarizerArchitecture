@@ -33,7 +33,7 @@ if [ -z "$GEMINI_API_KEY" ]; then
 fi
 
 # Use GEMINI_MODEL from .env or default
-GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.0-flash-exp}"
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
 ADK_MODEL="${ADK_MODEL:-$GEMINI_MODEL}"
 
 echo ""

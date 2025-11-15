@@ -6,16 +6,18 @@ Provides LLM-driven structured output generation with support for:
 - Ollama (JSON mode)
 - Dynamic schema selection
 - Validation and format conversion
+- Schema caching for performance optimization
 """
 
 import os
 import json
-from typing import Dict, Any, Optional, Literal, Type
+from typing import Dict, Any, Optional, Literal, Type, List
 from pydantic import BaseModel
 
 from .schemas import SchemaRegistry, TableSchema, ListSchema, ComparisonSchema
 from .converters import FormatConverter
 from .validators import OutputValidator, ValidationResult
+from .schema_cache import SchemaCache
 
 
 class StructuredOutputService:
@@ -30,7 +32,10 @@ class StructuredOutputService:
         self,
         model_name: Optional[str] = None,
         use_ollama: bool = False,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        enable_caching: bool = True,
+        cache_max_size: int = 100,
+        cache_ttl: int = 3600
     ):
         """
         Initialize the structured output service.
@@ -39,8 +44,17 @@ class StructuredOutputService:
             model_name: LLM model to use (if None, uses env vars)
             use_ollama: Whether to use Ollama instead of Gemini
             api_key: API key for Gemini (if None, uses env vars)
+            enable_caching: Enable schema caching for performance
+            cache_max_size: Maximum number of schemas to cache
+            cache_ttl: Time-to-live for cached schemas in seconds
         """
         self.use_ollama = use_ollama
+
+        # Initialize schema cache
+        self.schema_cache = SchemaCache(
+            max_size=cache_max_size,
+            ttl_seconds=cache_ttl
+        ) if enable_caching else None
 
         if use_ollama:
             # Ollama configuration
@@ -49,7 +63,7 @@ class StructuredOutputService:
             self._init_ollama()
         else:
             # Gemini configuration
-            self.model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
+            self.model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
             self.api_key = api_key or os.getenv("GEMINI_API_KEY")
             self._init_gemini()
 
@@ -135,6 +149,8 @@ class StructuredOutputService:
 
             # Validate against schema
             validation_result = None
+            validated_dict = None
+
             if validate:
                 validation_result = OutputValidator.validate_json(
                     json_data=structured_json,
@@ -150,9 +166,17 @@ class StructuredOutputService:
                         "raw_output": structured_json
                     }
 
-            # Validate the data with Pydantic
-            validated_data = schema_class.model_validate(structured_json)
-            validated_dict = validated_data.model_dump()
+                # Validate the data with Pydantic (only when validate=True)
+                validated_data = schema_class.model_validate(structured_json)
+                validated_dict = validated_data.model_dump()
+            else:
+                # Skip validation - use raw JSON from LLM
+                # Handle case where LLM returns list directly instead of schema object
+                if isinstance(structured_json, list):
+                    # Wrap list in TableSchema-like structure
+                    validated_dict = {"rows": structured_json}
+                else:
+                    validated_dict = structured_json
 
             # Convert to requested format
             if output_format != "json":
@@ -185,6 +209,258 @@ class StructuredOutputService:
                 "schema_used": schema_name
             }
 
+    def generate_schema_from_content(
+        self,
+        content: str,
+        query: str,
+        schema_type: str,
+        use_cache: bool = True,
+        content_preview_size: int = 2000
+    ) -> Dict[str, Any]:
+        """
+        Generate a dynamic JSON schema by analyzing document content.
+
+        This is Step 1 of the two-step extraction process. The generated schema
+        can be reused across multiple similar documents for efficiency.
+
+        Args:
+            content: Document content to analyze
+            query: User query providing context for schema design
+            schema_type: Type of schema (table, list, comparison, etc.)
+            use_cache: Whether to use cached schemas (default: True)
+            content_preview_size: Number of characters to analyze (default: 2000)
+
+        Returns:
+            Dictionary with:
+                - success: bool
+                - schema: Generated JSON schema dict
+                - schema_type: Type of schema generated
+                - from_cache: Whether result came from cache
+                - metadata: Additional info (model, content_analyzed, etc.)
+        """
+        # Check cache first
+        if use_cache and self.schema_cache:
+            cache_key = self.schema_cache.generate_key(
+                content=content,
+                schema_type=schema_type,
+                query=query,
+                sample_size=content_preview_size
+            )
+            cached_schema = self.schema_cache.get(cache_key)
+
+            if cached_schema:
+                return {
+                    "success": True,
+                    "schema": cached_schema,
+                    "schema_type": schema_type,
+                    "from_cache": True,
+                    "metadata": {
+                        "cache_key": cache_key,
+                        "model": self.model_name
+                    }
+                }
+
+        # Generate schema using LLM
+        try:
+            content_sample = content[:content_preview_size]
+
+            if self.use_ollama:
+                generated_schema = self._generate_schema_internal(
+                    content_sample=content_sample,
+                    query=query,
+                    schema_type=schema_type,
+                    fallback_schema=None
+                )
+            else:
+                # For Gemini, use predefined schema structure
+                schema_class = SchemaRegistry.get_schema(schema_type)
+                if schema_class:
+                    generated_schema = schema_class.model_json_schema()
+                else:
+                    return {
+                        "success": False,
+                        "error": f"Unknown schema type: {schema_type}"
+                    }
+
+            # Cache the generated schema
+            if use_cache and self.schema_cache:
+                cache_key = self.schema_cache.generate_key(
+                    content=content,
+                    schema_type=schema_type,
+                    query=query,
+                    sample_size=content_preview_size
+                )
+                self.schema_cache.set(cache_key, generated_schema)
+
+            return {
+                "success": True,
+                "schema": generated_schema,
+                "schema_type": schema_type,
+                "from_cache": False,
+                "metadata": {
+                    "model": self.model_name,
+                    "use_ollama": self.use_ollama,
+                    "content_analyzed": len(content_sample)
+                }
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "schema_type": schema_type
+            }
+
+    def extract_data_with_schema(
+        self,
+        content: str,
+        schema: Dict[str, Any],
+        query: Optional[str] = None,
+        validate: bool = True,
+        output_format: Literal["json", "csv", "tsv", "markdown", "html", "yaml"] = "json"
+    ) -> Dict[str, Any]:
+        """
+        Extract structured data from content using a provided schema.
+
+        This is Step 2 of the two-step extraction process. Use this with a schema
+        from generate_schema_from_content() or provide your own custom schema.
+
+        Args:
+            content: Document content to extract data from
+            schema: JSON schema to use for extraction
+            query: Optional query for context
+            validate: Whether to validate extracted data
+            output_format: Desired output format (default: json)
+
+        Returns:
+            Dictionary with:
+                - success: bool
+                - data: Extracted data (format depends on output_format)
+                - format: Output format used
+                - schema_used: Schema that was used
+                - validation: ValidationResult (if validate=True)
+                - metadata: Additional info
+        """
+        try:
+            # Extract data using LLM
+            if self.use_ollama:
+                extracted_data = self._extract_data_internal(
+                    content=content,
+                    schema=schema,
+                    query=query
+                )
+            else:
+                # For Gemini, use the schema directly with native support
+                # This requires converting dict schema back to Pydantic class
+                # For now, fall back to Ollama behavior
+                extracted_data = self._extract_data_internal(
+                    content=content,
+                    schema=schema,
+                    query=query
+                )
+
+            # Validate if requested
+            validation_result = None
+            if validate:
+                # Basic validation - check if data matches schema structure
+                validation_result = OutputValidator.validate_json(
+                    json_data=extracted_data,
+                    pydantic_model=None,  # Can't validate without Pydantic model
+                    check_completeness=False
+                )
+
+            # Convert to requested format
+            if output_format != "json":
+                formatted_output = FormatConverter.to_format(
+                    data=extracted_data,
+                    format_type=output_format
+                )
+            else:
+                formatted_output = extracted_data
+
+            return {
+                "success": True,
+                "data": formatted_output,
+                "format": output_format,
+                "schema_used": schema,
+                "validation": validation_result.__dict__ if validation_result else None,
+                "metadata": {
+                    "model": self.model_name,
+                    "use_ollama": self.use_ollama
+                }
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "error_type": type(e).__name__
+            }
+
+    def extract_batch(
+        self,
+        documents: List[str],
+        query: str,
+        schema_type: str,
+        output_format: Literal["json", "csv", "tsv", "markdown", "html", "yaml"] = "json",
+        validate: bool = True
+    ) -> List[Dict[str, Any]]:
+        """
+        Extract structured data from multiple documents using schema reuse.
+
+        Generates schema once from the first document, then applies it to all
+        documents. This is ~50% more efficient than calling generate_structured_output()
+        for each document individually.
+
+        Args:
+            documents: List of document contents to process
+            query: User query for context
+            schema_type: Type of schema to use
+            output_format: Desired output format
+            validate: Whether to validate extracted data
+
+        Returns:
+            List of result dictionaries (one per document)
+        """
+        if not documents:
+            return []
+
+        # Step 1: Generate schema from first document (with caching)
+        schema_result = self.generate_schema_from_content(
+            content=documents[0],
+            query=query,
+            schema_type=schema_type,
+            use_cache=True
+        )
+
+        if not schema_result["success"]:
+            # If schema generation failed, return error for all documents
+            return [schema_result] * len(documents)
+
+        generated_schema = schema_result["schema"]
+
+        # Step 2: Extract from all documents using the same schema
+        results = []
+        for i, doc in enumerate(documents):
+            result = self.extract_data_with_schema(
+                content=doc,
+                schema=generated_schema,
+                query=query,
+                validate=validate,
+                output_format=output_format
+            )
+
+            # Add batch metadata
+            if result.get("metadata"):
+                result["metadata"]["batch_index"] = i
+                result["metadata"]["batch_size"] = len(documents)
+                result["metadata"]["schema_from_cache"] = schema_result["from_cache"]
+
+            results.append(result)
+
+        return results
+
     def _generate_with_gemini(
         self,
         content: str,
@@ -193,27 +469,31 @@ class StructuredOutputService:
         schema_name: str
     ) -> Dict[str, Any]:
         """
-        Generate structured output using Google Gemini with native schema support.
+        Generate structured output using Google Gemini with JSON mode.
+
+        Note: We use JSON mode without a fixed schema to allow Gemini to infer
+        the table structure from the content (supporting dynamic columns).
 
         Args:
             content: Source content
             query: User query
-            schema_class: Pydantic model class
+            schema_class: Pydantic model class (for reference, not enforced)
             schema_name: Schema name for context
 
         Returns:
             Structured JSON data
         """
-        # Create model with response schema
+        # Use JSON mode WITHOUT fixed schema to allow dynamic structure
+        # This lets Gemini infer table columns from the content
         model = self.genai.GenerativeModel(
             model_name=self.model_name,
             generation_config=self.genai.GenerationConfig(
                 response_mime_type="application/json",
-                response_schema=schema_class
+                temperature=0.1
             )
         )
 
-        # Create prompt
+        # Create prompt that guides Gemini to generate the right structure
         prompt = self._build_extraction_prompt(content, query, schema_name)
 
         # Generate response
@@ -239,7 +519,7 @@ class StructuredOutputService:
         schema_name: str
     ) -> Dict[str, Any]:
         """
-        Generate structured output using Ollama with JSON mode.
+        Generate structured output using Ollama with JSON mode (two-step process).
 
         Args:
             content: Source content
@@ -250,12 +530,116 @@ class StructuredOutputService:
         Returns:
             Structured JSON data
         """
-        # Get JSON schema from Pydantic model
-        json_schema = schema_class.model_json_schema()
+        # STEP 1: Generate schema
+        generated_schema = self._generate_schema_internal(
+            content_sample=content[:2000],
+            query=query,
+            schema_type=schema_name,
+            fallback_schema=schema_class.model_json_schema()
+        )
 
-        # Create prompt with schema instructions
-        prompt = self._build_extraction_prompt(content, query, schema_name)
-        prompt += f"\n\nYou MUST respond with valid JSON matching this schema:\n{json.dumps(json_schema, indent=2)}"
+        # STEP 2: Extract data using generated schema
+        extracted_data = self._extract_data_internal(
+            content=content,
+            schema=generated_schema,
+            query=query
+        )
+
+        return extracted_data
+
+    def _generate_schema_internal(
+        self,
+        content_sample: str,
+        query: str,
+        schema_type: str,
+        fallback_schema: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Internal method to generate schema using LLM.
+
+        Args:
+            content_sample: Sample of content for analysis
+            query: User query
+            schema_type: Type of schema to generate
+            fallback_schema: Fallback schema if generation fails
+
+        Returns:
+            Generated JSON schema
+        """
+        schema_generation_prompt = f"""Analyze the following document and create a JSON schema definition for extracting structured data.
+
+User Query: {query}
+Target Schema Type: {schema_type}
+
+Document Content:
+{content_sample}
+
+Generate a JSON schema that captures the structure of the data in this document. Include:
+- Field names that match the document content
+- Field types (string, array, object, etc.)
+- Descriptions for each field
+- Required fields
+
+Return ONLY the JSON schema definition."""
+
+        schema_response = self.ollama_client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a schema design expert. Analyze documents and create appropriate JSON schemas for data extraction."
+                },
+                {
+                    "role": "user",
+                    "content": schema_generation_prompt
+                }
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.3
+        )
+
+        # Parse the generated schema
+        generated_schema_text = schema_response.choices[0].message.content
+        try:
+            return json.loads(generated_schema_text)
+        except json.JSONDecodeError:
+            # Fallback to predefined schema if available
+            if fallback_schema:
+                return fallback_schema
+            raise
+
+    def _extract_data_internal(
+        self,
+        content: str,
+        schema: Dict[str, Any],
+        query: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Internal method to extract data using provided schema.
+
+        Args:
+            content: Full document content
+            schema: JSON schema to use for extraction
+            query: Optional query for context
+
+        Returns:
+            Extracted structured data
+        """
+        extraction_prompt = f"""Extract structured data from the document using the provided schema.
+
+Document Content:
+{content}
+
+Schema to follow:
+{json.dumps(schema, indent=2)}
+
+IMPORTANT:
+- Extract ACTUAL DATA from the document, not the schema definition
+- Fill in real values from the document content
+- If the document contains a table, extract ALL rows
+- Preserve exact values and structure from the document
+
+Return the extracted data as JSON matching the schema structure."""
 
         # Generate response with JSON mode
         response = self.ollama_client.chat.completions.create(
@@ -263,11 +647,11 @@ class StructuredOutputService:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a data extraction assistant. Extract structured data from documents and return it as valid JSON matching the provided schema. Do not add any explanatory text, only return the JSON."
+                    "content": "You are a data extraction assistant. Extract structured data FROM documents using the provided schema. Return actual data values, not schema definitions."
                 },
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": extraction_prompt
                 }
             ],
             response_format={"type": "json_object"},

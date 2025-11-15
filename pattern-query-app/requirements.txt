@@ -13,6 +13,9 @@ openai>=1.54.0
 # Google Vertex AI
 google-cloud-aiplatform>=1.70.0
 
+# Google Gemini API
+google-generativeai>=0.8.0
+
 # AWS Bedrock
 boto3>=1.35.0
 

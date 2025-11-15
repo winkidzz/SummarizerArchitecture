@@ -47,7 +47,7 @@ class RagasRealEvaluator:
 
     def __init__(
         self,
-        model: str = "gemini-2.0-flash-exp",
+        model: str = "gemini-2.5-flash",
         llm_type: str = "auto",
         api_key: Optional[str] = None,
     ):
@@ -55,7 +55,7 @@ class RagasRealEvaluator:
         Initialize Real Ragas evaluator.
 
         Args:
-            model: Model name (e.g., "gemini-2.0-flash-exp", "qwen3:14b")
+            model: Model name (e.g., "gemini-2.5-flash", "qwen3:14b")
             llm_type: "auto", "gemini", or "ollama"
             api_key: API key for Gemini (reads from GEMINI_API_KEY if not provided)
         """

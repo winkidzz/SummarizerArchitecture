@@ -266,7 +266,7 @@ def generate_structured_table(source_filter: str, output_format: str = "csv"):
 ```bash
 # Gemini Configuration (for structured output)
 GEMINI_API_KEY=your-api-key
-GEMINI_MODEL=gemini-2.0-flash-exp  # Supports native structured output
+GEMINI_MODEL=gemini-2.5-flash  # Supports native structured output (recommended)
 
 # Ollama Configuration (alternative)
 OLLAMA_MODEL=qwen3:14b
@@ -279,7 +279,7 @@ USE_OLLAMA_EVAL=false  # false=Gemini, true=Ollama
 ### Model Requirements
 
 **Gemini (Recommended):**
-- Models: `gemini-2.0-flash-exp`, `gemini-1.5-pro`, `gemini-1.5-flash`
+- Models: `gemini-2.5-flash` (recommended), `gemini-2.5-pro`, `gemini-1.5-pro`, `gemini-1.5-flash`, `gemini-2.0-flash-exp`
 - Native structured output support via `response_schema`
 - Faster and more reliable
 

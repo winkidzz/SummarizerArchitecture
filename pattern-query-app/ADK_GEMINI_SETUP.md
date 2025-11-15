@@ -16,22 +16,24 @@ Add these to your `.env` file:
 GEMINI_API_KEY=your-api-key-here
 
 # Google Gemini Configuration for ADK Agent
-# Model to use for Gemini agent (default: gemini-2.0-flash-exp)
-# Options: gemini-2.0-flash-exp, gemini-1.5-pro, gemini-1.5-flash, etc.
-GEMINI_MODEL=gemini-2.0-flash-exp
+# Model to use for Gemini agent (default: gemini-2.5-flash)
+# Options: gemini-2.5-flash (recommended), gemini-2.5-pro, gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp, etc.
+GEMINI_MODEL=gemini-2.5-flash
 
 # ADK Agent Configuration (used by ADK framework)
-ADK_MODEL=gemini-2.0-flash-exp
+ADK_MODEL=gemini-2.5-flash
 ```
 
 ## Available Models
 
 You can configure any Gemini model by changing the `GEMINI_MODEL` parameter in `.env`:
 
-- `gemini-2.0-flash-exp` - Latest experimental flash model (fastest, recommended)
-- `gemini-1.5-pro` - Most capable model
+- `gemini-2.5-flash` - Latest stable flash model (fastest, recommended)
+- `gemini-2.5-pro` - Most capable model (best quality)
+- `gemini-1.5-pro` - Stable production model
 - `gemini-1.5-flash` - Fast, balanced model
-- `gemini-1.0-pro` - Production-ready model
+- `gemini-2.0-flash-exp` - Experimental model (may be deprecated)
+- `gemini-1.0-pro` - Legacy production model
 
 ## Starting the ADK Agent
 
@@ -157,8 +159,9 @@ Solution:
 
 | Agent Type | Model | Speed | Cost | Best For |
 |------------|-------|-------|------|----------|
-| Gemini | gemini-2.0-flash-exp | Very Fast (1-2s) | Low | Production, evaluation |
-| Gemini | gemini-1.5-pro | Fast (2-4s) | Medium | Complex queries |
+| Gemini | gemini-2.5-flash | Very Fast (1-2s) | Low | Production, evaluation (recommended) |
+| Gemini | gemini-2.5-pro | Fast (2-4s) | Medium | Complex queries, best quality |
+| Gemini | gemini-1.5-pro | Fast (2-4s) | Medium | Stable production |
 | Ollama | qwen3:14b | Slow (10-30s) | Free | Offline development |
 
 ## Related Documentation
@@ -170,7 +173,7 @@ Solution:
 ## Current Status
 
 ✅ **Gemini Agent Running**
-- Model: `gemini-2.0-flash-exp`
+- Model: `gemini-2.5-flash` (default, configurable via `.env`)
 - Port: `8000`
 - Status: Active
 - API Key: Configured from `.env`

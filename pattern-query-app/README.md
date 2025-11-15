@@ -74,7 +74,10 @@ Interactive web interface powered by Google ADK or Ollama:
 - Real-time pattern retrieval
 - Source citations
 
-**Start**: `./scripts/start_adk_ollama.sh` or `python scripts/start_ollama_agent.py`
+**Start**: 
+- `./scripts/start_adk_ollama.sh` - For Ollama (local models)
+- `./scripts/start_adk_gemini.sh` - For Gemini (cloud API)
+- Or directly: `../venv312/bin/adk web --host=127.0.0.1 --port=8000 --allow_origins="*" .adk/agents`
 
 ### 2. 🐍 Python API
 Programmatic access for integration:
@@ -119,6 +122,11 @@ pattern-query-app/
 │   ├── agents/
 │   │   ├── adk_agent.py          # Google ADK agent
 │   │   └── ollama_agent.py       # Ollama local LLM
+│   ├── formatting/               # 🆕 Structured output generation
+│   │   ├── schemas.py            # Pydantic schemas
+│   │   ├── structured_output.py  # LLM service
+│   │   ├── converters.py         # Format converters
+│   │   └── validators.py         # Output validators
 │   └── healthcare/               # Healthcare data connectors
 │       ├── fhir_client.py
 │       ├── ehr_client.py
@@ -156,11 +164,14 @@ pattern-query-app/
 ✅ **Metadata Filtering**: Filter by pattern type, vendor, use case
 
 ### Advanced Features
+✅ **Structured Output**: LLM-driven adaptive structured data generation (CSV, JSON, tables)
 ✅ **Healthcare Data Integration**: FHIR, EHR, BigQuery connectors
 ✅ **Web Search**: Supplement pattern library with live web results
 ✅ **Local LLMs**: 100% local with Ollama (no API keys)
 ✅ **Pattern Validation**: Validate pattern documentation quality
 ✅ **Bulk Ingestion**: Ingest all patterns in one command
+
+> 📖 **New Feature:** [Structured Output Documentation](docs/STRUCTURED_OUTPUT.md) - Learn how the agent intelligently generates validated CSV, JSON, and table outputs with schema enforcement.
 
 ---
 
@@ -244,17 +255,30 @@ export SPANNER_INSTANCE="your-instance-id"
 - Any Ollama model
 
 **Google ADK (Cloud)**:
-- `gemini-1.5-pro` - Best quality
+- `gemini-2.5-flash` - Latest, fast (recommended)
+- `gemini-2.5-pro` - Best quality
+- `gemini-1.5-pro` - Stable production model
 - `gemini-1.5-flash` - Fast, cost-effective
-- `gemini-1.0-pro` - Stable
 
 ---
 
 ## 📖 Documentation
 
-- [Setup Guide](docs/ADK_QUICKSTART.md) - Complete ADK setup
+**Getting Started:**
+- [START_HERE.md](START_HERE.md) - Quick start guide
+- [CLAUDE.md](CLAUDE.md) - Instructions for AI assistants
+- [ADK_QUICKSTART.md](docs/ADK_QUICKSTART.md) - Complete ADK setup
+
+**Features:**
+- [STRUCTURED_OUTPUT.md](docs/STRUCTURED_OUTPUT.md) - Structured output generation
+- [EVALUATION_CONFIGURATION.md](EVALUATION_CONFIGURATION.md) - Evaluation system setup
+
+**Configuration:**
+- [ADK_GEMINI_SETUP.md](ADK_GEMINI_SETUP.md) - Gemini agent setup
 - [Agent Setup](docs/agent-setup-guide.md) - Configure agents
 - [Document Store Setup](docs/document-store-setup.md) - ChromaDB configuration
+
+**Reference:**
 - [Troubleshooting](docs/troubleshooting-guide.md) - Common issues
 - [Technical Tools](docs/technical-tools-framework.md) - Tool catalog
 
@@ -334,14 +358,9 @@ python3 scripts/run_simple_eval.py \
 
 **Current Results:**
 - ✅ Gemini (gemini-2.0-flash-exp): PASS (163 rows, 7 columns)
-- ❌ Qwen3:14b: FAIL (returns markdown outline)
-- ❌ mannix/deepseek-coder-v2-lite-instruct:q8_0: FAIL (10 rows, 3 columns - partial response)
-- ❌ granite4:latest: FAIL (0 rows, 1 column - no valid CSV output)
-- ❌ gemma3:4b-it-qat: FAIL (36 rows, many empty columns - partial response)
-- ❌ gpt-oss:latest: FAIL (13 rows, 9 columns - severe truncation)
-- ⚠️ Gemma2:27b, Llama3.1:70b: Not yet tested
+- ⚠️ Ollama models: Testing in progress (see [EVALUATION_CONFIGURATION.md](EVALUATION_CONFIGURATION.md) for details)
 
-📖 **Detailed Guide**: See [docs/CSV_EVALUATION.md](docs/CSV_EVALUATION.md) for complete documentation.
+📖 **Detailed Guide**: See [EVALUATION_CONFIGURATION.md](EVALUATION_CONFIGURATION.md) for complete evaluation documentation.
 
 ---
 

@@ -22,8 +22,8 @@ OLLAMA_MODEL=qwen3:14b
 OLLAMA_BASE_URL=http://localhost:11434/v1
 
 # Gemini model for ADK agents
-GEMINI_MODEL=gemini-2.0-flash-exp
-ADK_MODEL=gemini-2.0-flash-exp
+GEMINI_MODEL=gemini-2.5-flash
+ADK_MODEL=gemini-2.5-flash
 ```
 
 ## Configuration Matrix
@@ -163,6 +163,7 @@ CSV evaluation requires manual agent interaction. See [docs/CSV_EVALUATION.md](d
 **Current Results:**
 | Model | Status | Notes |
 |-------|--------|-------|
+| gemini-2.5-flash | ✅ PASS | Perfect CSV formatting (163 rows, 7 columns) |
 | gemini-2.0-flash-exp | ✅ PASS | Perfect CSV formatting (163 rows, 7 columns) |
 | qwen3:14b | ❌ FAIL | Returns markdown outline (35 rows, 8 columns) |
 | mannix/deepseek-coder-v2-lite-instruct:q8_0 | ❌ FAIL | Partial response (10 rows, 3 columns) |

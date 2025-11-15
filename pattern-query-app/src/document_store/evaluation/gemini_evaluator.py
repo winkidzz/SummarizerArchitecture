@@ -39,14 +39,14 @@ class GeminiEvaluator:
 
     def __init__(
         self,
-        model: str = "gemini-2.0-flash-exp",
+        model: str = "gemini-2.5-flash",
         api_key: Optional[str] = None
     ):
         """
         Initialize Gemini evaluator.
 
         Args:
-            model: Gemini model to use (default: gemini-2.0-flash-exp)
+            model: Gemini model to use (default: gemini-2.5-flash)
             api_key: Gemini API key (reads from GEMINI_API_KEY env var if not provided)
         """
         if not GENAI_AVAILABLE:

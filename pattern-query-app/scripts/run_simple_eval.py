@@ -172,7 +172,7 @@ def start_adk_server(
                 print(f"  ✗ Error: GOOGLE_API_KEY or GEMINI_API_KEY not set")
                 return None
             env["GOOGLE_API_KEY"] = api_key
-            env["ADK_MODEL"] = os.getenv("ADK_MODEL") or os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
+            env["ADK_MODEL"] = os.getenv("ADK_MODEL") or os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
             agents_dir = repo_root / ".adk" / "agents"
         
         if not agents_dir.exists():
@@ -809,7 +809,7 @@ def run_csv_eval(
         if agent_type == "ollama_agent":
             current_model = os.getenv("OLLAMA_MODEL", "qwen3:14b")
         else:
-            current_model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
+            current_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
         models = [current_model]
         print(f"Using configured model: {current_model}")
 

@@ -4,7 +4,37 @@
 *_eval_results.json
 ragas_results_*.json
 eval_results.json
+*_eval_*.log
 
 # Test output files
 test/csv_response_*.txt
 test/*_response_*.txt
+test/llm_response_*.txt
+
+# Temporary test scripts (if any remain)
+scripts/test_*.py
+scripts/validate_*.py
+scripts/web_ui_*.py
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
