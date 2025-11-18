@@ -19,7 +19,12 @@ cd semantic-pattern-query-app
 docker-compose up -d
 ```
 
-This starts Qdrant (vector DB), Elasticsearch (BM25), and Redis (caching).
+This starts all infrastructure services:
+- **Qdrant** (vector DB) - Port 6333
+- **Elasticsearch** (BM25 search) - Port 9200
+- **Redis** (caching) - Port 6380
+- **Prometheus** (metrics) - Port 9090
+- **Grafana** (dashboards) - Port 3333
 
 ### 2. Configure Environment
 
@@ -69,6 +74,34 @@ This processes all markdown files from `../pattern-library/` and creates embeddi
 Server runs at http://localhost:8000
 
 Visit http://localhost:8000/docs for interactive API documentation.
+
+### 6. Launch the React UI
+
+The repository now includes a React dashboard for issuing queries via the REST API.
+
+```bash
+cd web-ui
+cp .env.example .env     # Optional: edit VITE_API_BASE_URL
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 (Vite default port). The UI sends requests to `/query` and `/stats`, so make sure the FastAPI service is running first.
+
+## Quick Access Links
+
+Once all services are running:
+
+- **Web UI**: http://localhost:5173
+- **API Server**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+- **Metrics Endpoint**: http://localhost:8000/metrics
+- **Grafana Dashboards**: http://localhost:3333 (admin/admin)
+- **Prometheus**: http://localhost:9090
+- **Elasticsearch**: http://localhost:9200
+- **Qdrant**: http://localhost:6333/dashboard
+
+See [docs/PORTS.md](docs/PORTS.md) for complete port configuration.
 
 ## Usage Examples
 
@@ -157,12 +190,21 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed configuration op
 
 ## Documentation
 
+### Setup & Configuration
 - [QUICKSTART.md](docs/QUICKSTART.md) - Step-by-step setup guide
-- [API_GUIDE.md](docs/API_GUIDE.md) - API endpoints and examples
 - [CONFIGURATION.md](docs/CONFIGURATION.md) - Environment variables reference
+- [PORTS.md](docs/PORTS.md) - Port assignments and service URLs
+- [GRAFANA_SETUP_COMPLETE.md](GRAFANA_SETUP_COMPLETE.md) - Monitoring dashboards setup
+
+### Usage & Features
+- [API_GUIDE.md](docs/API_GUIDE.md) - API endpoints and examples
+- [QUERY_GUIDE.md](docs/QUERY_GUIDE.md) - Advanced query patterns
+- [EMBEDDER_SELECTION_GUIDE.md](docs/EMBEDDER_SELECTION_GUIDE.md) - Choosing embedders
+
+### Integration Guides
 - [CALIBRATION_GUIDE.md](docs/CALIBRATION_GUIDE.md) - Embedding calibration for cross-space mapping
 - [GEMINI_INTEGRATION.md](docs/GEMINI_INTEGRATION.md) - Using Gemini embeddings
-- [QUERY_GUIDE.md](docs/QUERY_GUIDE.md) - Advanced query patterns
+- [MONITORING_SETUP.md](docs/MONITORING_SETUP.md) - Prometheus & Grafana setup
 
 ## Project Structure
 

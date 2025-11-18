@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - 2025-11-18
+
+#### Grafana Dashboards with Prometheus Monitoring
+
+**Comprehensive Monitoring Infrastructure**
+
+**New Features**:
+
+1. **5 Grafana Dashboards** (1604 lines total)
+   - RAG Performance - Detailed Analytics (457 lines, 19 panels)
+   - RAG System - Real-Time Telemetry (308 lines, 10 panels)
+   - Embedder Comparison - Ollama vs Gemini (348 lines, 15 panels)
+   - RAG System Health (75 lines, 4 panels)
+   - Infrastructure Health - System Resources (416 lines, 18 panels)
+
+2. **Monitoring Services** (docker-compose.yml)
+   - Prometheus service (port 9090) with metrics collection
+   - Grafana service (port 3333) with auto-provisioning
+   - 15-second scrape interval for API metrics
+   - Persistent data volumes for both services
+
+3. **Automated Dashboard Import**
+   - Created `scripts/import_dashboards.sh`
+   - Imports all dashboards via Grafana API
+   - Provides success/failure feedback with URLs
+
+4. **Documentation**
+   - `GRAFANA_SETUP_COMPLETE.md` - Complete setup guide
+   - `grafana/README.md` - Dashboard documentation
+   - `docs/PORTS.md` - Updated port assignments
+
+**Configuration Files**:
+- `prometheus.yml` - Prometheus scrape configuration
+- `grafana/provisioning/datasources/prometheus.yml` - Datasource config
+- `grafana/provisioning/dashboards/dashboards.yml` - Dashboard provisioning
+
+**Access URLs**:
+- Grafana: http://localhost:3333 (admin/admin)
+- Prometheus: http://localhost:9090
+- Metrics: http://localhost:8000/metrics
+
+**Files Created**:
+- `grafana/dashboards/*.json` (5 dashboards)
+- `grafana/provisioning/**/*.yml` (2 provisioning configs)
+- `grafana/README.md`
+- `prometheus.yml`
+- `scripts/import_dashboards.sh`
+- `GRAFANA_SETUP_COMPLETE.md`
+- `docs/PORTS.md`
+
+**Files Modified**:
+- `docker-compose.yml` - Added Prometheus and Grafana services
+- `README.md` - Added Quick Access Links section
+- `.gitignore` - Added *.bak exclusions
+
+---
+
 ### Fixed - 2025-11-18
 
 #### Elasticsearch Docker Configuration (docker-compose.yml)

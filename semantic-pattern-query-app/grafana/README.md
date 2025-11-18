@@ -203,18 +203,20 @@ datasources:
 
 ### Via Grafana UI
 
-1. **Open Grafana**: `http://localhost:3000`
+1. **Open Grafana**: `http://localhost:3333`
 2. **Login**: Default credentials (username: `admin`, password: `admin`)
 3. **Navigate**: Dashboards → Browse → RAG System folder
 4. **Select**: Choose a dashboard from the list
 
 ### Direct URLs
 
-- Performance Detailed: `http://localhost:3000/d/rag-performance-detailed`
-- Real-Time Telemetry: `http://localhost:3000/d/rag-realtime-dashboard`
-- Embedder Comparison: `http://localhost:3000/d/embedder-comparison`
-- System Health: `http://localhost:3000/d/rag-system-health`
-- Infrastructure Health: `http://localhost:3000/d/infrastructure-health`
+- Performance Detailed: `http://localhost:3333/d/rag-performance-detailed`
+- Real-Time Telemetry: `http://localhost:3333/d/rag-realtime-dashboard`
+- Embedder Comparison: `http://localhost:3333/d/embedder-comparison`
+- System Health: `http://localhost:3333/d/rag-system-health`
+- Infrastructure Health: `http://localhost:3333/d/infrastructure-health`
+
+**Note**: Grafana runs on port 3333 (not default 3000) to avoid SSH tunnel conflicts.
 
 ---
 

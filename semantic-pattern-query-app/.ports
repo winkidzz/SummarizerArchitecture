@@ -1,0 +1,24 @@
+# Standardized Port Configuration
+# This file defines all ports used by the RAG system to avoid conflicts
+
+# API Server
+API_PORT=8000
+
+# Web UI (Vite)
+WEB_UI_PORT=3000
+
+# Grafana
+GRAFANA_PORT=3005
+
+# Prometheus
+PROMETHEUS_PORT=9090
+
+# Qdrant (if using Docker)
+QDRANT_PORT=6333
+
+# Redis (if using Docker)
+REDIS_PORT=6379
+
+# Elasticsearch (if using Docker)
+ELASTICSEARCH_PORT=9200
+

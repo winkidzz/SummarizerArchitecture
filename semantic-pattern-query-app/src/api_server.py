@@ -17,14 +17,20 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import logging
+import time
+
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from src.document_store.orchestrator import SemanticPatternOrchestrator
+from src.document_store.monitoring import QueryTelemetry, StructuredLogger
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+telemetry_logger = StructuredLogger(__name__)
 
 app = FastAPI(
     title="Semantic Pattern Query API",
@@ -54,12 +60,17 @@ def get_orchestrator() -> SemanticPatternOrchestrator:
         ollama_generation_model = os.getenv("OLLAMA_GENERATION_MODEL", "qwen3:14b")
         ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
-        logger.info(f"Creating orchestrator with ollama_model={ollama_model}, generation_model={ollama_generation_model}")
+        # Read Elasticsearch URL from environment
+        # Default to local Elasticsearch instance
+        elasticsearch_url = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
+        
+        logger.info(f"Creating orchestrator with ollama_model={ollama_model}, generation_model={ollama_generation_model}, elasticsearch_url={elasticsearch_url}")
 
         _orchestrator = SemanticPatternOrchestrator(
             ollama_model=ollama_model,
             ollama_generation_model=ollama_generation_model,
-            ollama_base_url=ollama_base_url
+            ollama_base_url=ollama_base_url,
+            elasticsearch_url=elasticsearch_url
         )
     return _orchestrator
 
@@ -140,7 +151,7 @@ async def health():
 @app.post("/query", response_model=QueryResponse)
 async def query(request: QueryRequest):
     """
-    Query the pattern library.
+    Query the pattern library with telemetry tracking.
     
     Args:
         request: Query request with query text and options
@@ -149,6 +160,13 @@ async def query(request: QueryRequest):
     Returns:
         Query response with answer, sources, and metadata
     """
+    # Initialize telemetry tracking
+    telemetry = QueryTelemetry(
+        query=request.query,
+        user_context=request.user_context or {}
+    )
+    telemetry.start()
+    
     try:
         # Validate query_embedder_type
         if request.query_embedder_type and request.query_embedder_type not in ["ollama", "gemini"]:
@@ -157,22 +175,52 @@ async def query(request: QueryRequest):
                 detail=f"query_embedder_type must be 'ollama' or 'gemini', got: {request.query_embedder_type}"
             )
         
+        # Pass telemetry to orchestrator
         orchestrator = get_orchestrator()
         result = orchestrator.query(
             query=request.query,
             top_k=request.top_k,
             use_cache=request.use_cache,
             user_context=request.user_context,
-            query_embedder_type=request.query_embedder_type
+            query_embedder_type=request.query_embedder_type,
+            telemetry=telemetry  # Pass telemetry context
+        )
+        
+        # Record final metrics
+        telemetry.finish(
+            status="success",
+            answer=result.get("answer"),
+            sources=result.get("sources", [])
         )
         
         return QueryResponse(**result)
     
     except HTTPException:
+        telemetry.finish(status="error")
         raise
     except Exception as e:
+        telemetry.finish(status="error")
         logger.error(f"Query error: {e}")
+        telemetry_logger.log_error(
+            error_type=type(e).__name__,
+            error_message=str(e),
+            query_id=telemetry.query_id
+        )
         raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+
+
+@app.get("/metrics")
+async def metrics():
+    """
+    Prometheus metrics endpoint.
+    
+    Returns:
+        Prometheus metrics in text format
+    """
+    return Response(
+        content=generate_latest(),
+        media_type=CONTENT_TYPE_LATEST
+    )
 
 
 @app.get("/stats", response_model=StatsResponse)
@@ -298,5 +346,8 @@ async def ingest(request: IngestRequest, background_tasks: BackgroundTasks):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import os
+    # Get port from environment or default to 8000
+    port = int(os.getenv("API_PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 

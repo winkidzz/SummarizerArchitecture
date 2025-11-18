@@ -64,7 +64,16 @@
       "Bash(kill:*)",
       "Bash(source:*)",
       "Bash(./venv/bin/python3:*)",
-      "Bash(ollama pull:*)"
+      "Bash(ollama pull:*)",
+      "Bash(./venv/bin/pip install:*)",
+      "Bash(./venv/bin/python:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker inspect:*)",
+      "Bash(docker-compose down:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker stats:*)",
+      "Bash(docker info:*)",
+      "Bash(./scripts/import_dashboards.sh:*)"
     ],
     "deny": [],
     "ask": []

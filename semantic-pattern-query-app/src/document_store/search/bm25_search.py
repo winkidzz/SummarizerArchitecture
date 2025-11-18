@@ -45,17 +45,19 @@ class BM25Search:
                 "Install it with: pip install elasticsearch"
             )
         
+        # Default to local Elasticsearch if not specified
         self.url = url or os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
         self.index_name = index_name
         
         # Initialize client
         # Note: Using elasticsearch<9.0.0 for ES 8.x server compatibility
-        # Explicitly disable authentication for local development
+        # Configure SSL verification based on URL (disable for HTTP, enable for HTTPS)
+        use_ssl = self.url.startswith('https://')
         self.client = Elasticsearch(
             [self.url],
-            request_timeout=30,
-            verify_certs=False,  # Disable SSL verification for local
-            ssl_show_warn=False
+            request_timeout=30,  # Standard timeout for local connections
+            verify_certs=False if not use_ssl else True,  # Disable SSL verification for HTTP
+            ssl_show_warn=False if not use_ssl else True
         )
         
         # Verify connection - use cluster health instead of ping

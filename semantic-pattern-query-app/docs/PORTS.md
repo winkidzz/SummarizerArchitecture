@@ -7,7 +7,7 @@ This document defines all ports used by the RAG system to prevent conflicts.
 | Service | Port | Description | Configuration |
 |---------|------|-------------|---------------|
 | **API Server** | `8000` | FastAPI backend with metrics endpoint | `API_PORT` env var or `.ports` file |
-| **Web UI** | `3000` | Vite dev server (frontend) | Vite default |
+| **Web UI** | `5173` | Vite dev server (frontend) | Vite default (auto-increments if port in use) |
 | **Grafana** | `3333` | Monitoring dashboards | `docker-compose.yml` |
 | **Prometheus** | `9090` | Metrics collection | `docker-compose.yml` |
 | **Elasticsearch** | `9200` | BM25 search engine | `docker-compose.yml` |
@@ -52,7 +52,7 @@ docker-compose up -d elasticsearch qdrant redis prometheus grafana
 ### Web UI
 ```bash
 cd web-ui
-npm run dev  # Uses port 3000
+npm run dev  # Uses port 5173 (Vite default)
 ```
 
 ## Port Conflict Resolution
@@ -116,6 +116,7 @@ redis-cli -p 6380 ping
 
 ## Quick Links
 
+- **Web UI**: http://localhost:5173
 - **API Server**: http://localhost:8000
 - **API Metrics**: http://localhost:8000/metrics
 - **Grafana Dashboards**: http://localhost:3333 (admin/admin)
@@ -125,10 +126,10 @@ redis-cli -p 6380 ping
 
 ## Notes
 
-- Port 3000 is reserved for the Web UI (Vite)
-- Port 3333 is used for Grafana (changed from 3005 to avoid SSH tunnel conflicts)
+- Port 5173 is the Vite default (will auto-increment to 5174, 5175, etc. if port is in use)
+- Port 3333 is used for Grafana (changed from default 3000 to avoid SSH tunnel conflicts)
 - Port 8000 is the default API port (configurable via `API_PORT`)
 - Port 6380 is used for Redis (mapped from internal 6379 to avoid conflicts)
 - All infrastructure services run in Docker containers (see `docker-compose.yml`)
-- For dashboard setup, see [GRAFANA_SETUP_COMPLETE.md](../GRAFANA_SETUP_COMPLETE.md)
+- For dashboard setup and access, see [GRAFANA_SETUP_COMPLETE.md](../GRAFANA_SETUP_COMPLETE.md)
 

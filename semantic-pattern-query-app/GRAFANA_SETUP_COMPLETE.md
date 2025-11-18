@@ -7,14 +7,22 @@
 
 ## Quick Access
 
-### Grafana UI
-- **URL**: http://localhost:3333
-- **Username**: `admin`
-- **Password**: `admin`
+### Application URLs
+- **Web UI**: http://localhost:5173
+- **API Server**: http://localhost:8000
+- **API Metrics**: http://localhost:8000/metrics
 
-### Prometheus UI
-- **URL**: http://localhost:9090
-- **Targets**: http://localhost:9090/targets
+### Monitoring URLs
+- **Grafana UI**: http://localhost:3333
+  - Username: `admin`
+  - Password: `admin`
+- **Prometheus UI**: http://localhost:9090
+  - Targets: http://localhost:9090/targets
+
+### Infrastructure URLs
+- **Elasticsearch**: http://localhost:9200
+- **Qdrant**: http://localhost:6333/dashboard
+- **Redis**: localhost:6380
 
 ---
 

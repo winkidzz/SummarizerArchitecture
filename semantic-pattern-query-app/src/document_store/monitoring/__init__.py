@@ -1,4 +1,12 @@
-"""Monitoring modules."""
+"""Monitoring and Telemetry Modules for RAG System."""
 
-# Placeholder for future monitoring functionality
+from .metrics import MetricsCollector
+from .logger import StructuredLogger
+from .telemetry import TelemetryContext, QueryTelemetry
 
+__all__ = [
+    "MetricsCollector",
+    "StructuredLogger",
+    "TelemetryContext",
+    "QueryTelemetry",
+]
