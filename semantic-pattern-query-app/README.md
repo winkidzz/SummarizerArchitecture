@@ -8,6 +8,7 @@ Production-ready RAG system with **dual performance optimizations** for querying
 - **Multi-Embedder Support**: Switch between Ollama and Gemini embeddings via configuration
 - **Hash-Based Incremental Re-Embedding**: Skip unchanged documents using SHA256 comparison
 - **Production Architecture**: 7-layer system with vector search, BM25, reranking, and semantic caching
+- **Real-Time Quality Metrics**: Automatic hallucination detection and quality monitoring on every query
 - **100% Open Source Stack**: Qdrant, Elasticsearch, Redis, Ollama, Sentence Transformers
 
 ## Quick Start
@@ -132,6 +133,38 @@ print(f"Sources: {len(result['sources'])}")
 
 Visit http://localhost:8000/docs to try queries in your browser.
 
+### Quality Metrics in Response
+
+Every query now includes **real-time quality metrics**:
+
+```json
+{
+  "answer": "RAPTOR RAG is a retrieval technique...",
+  "sources": [...],
+  "quality_metrics": {
+    "answer": {
+      "faithfulness": 0.95,
+      "relevancy": 0.88,
+      "completeness": 0.80,
+      "has_hallucination": false,
+      "hallucination_severity": "minor"
+    },
+    "context": {
+      "relevancy": 0.87,
+      "utilization": 0.75
+    }
+  }
+}
+```
+
+**What's monitored automatically**:
+- ✅ **Hallucination Detection** - Detects fabricated claims not supported by context
+- ✅ **Answer Faithfulness** - % of claims supported by retrieved context
+- ✅ **Answer Relevancy** - How well answer addresses the query
+- ✅ **Context Utilization** - % of retrieved chunks actually used
+
+See [docs/implementation/REAL_TIME_QUALITY_METRICS.md](docs/implementation/REAL_TIME_QUALITY_METRICS.md) for details.
+
 ## Architecture
 
 **7-Layer Production RAG System**:
@@ -191,41 +224,106 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed configuration op
 ## Documentation
 
 ### Setup & Configuration
-- [QUICKSTART.md](docs/QUICKSTART.md) - Step-by-step setup guide
-- [CONFIGURATION.md](docs/CONFIGURATION.md) - Environment variables reference
-- [PORTS.md](docs/PORTS.md) - Port assignments and service URLs
-- [GRAFANA_SETUP_COMPLETE.md](GRAFANA_SETUP_COMPLETE.md) - Monitoring dashboards setup
+- [docs/guides/QUICKSTART.md](docs/guides/QUICKSTART.md) - Step-by-step setup guide
+- [docs/CONFIGURATION.md](docs/CONFIGURATION.md) - Environment variables reference
+- [docs/PORTS.md](docs/PORTS.md) - Port assignments and service URLs
+- [docs/MONITORING_SETUP.md](docs/MONITORING_SETUP.md) - Prometheus & Grafana setup
 
 ### Usage & Features
-- [API_GUIDE.md](docs/API_GUIDE.md) - API endpoints and examples
-- [QUERY_GUIDE.md](docs/QUERY_GUIDE.md) - Advanced query patterns
-- [EMBEDDER_SELECTION_GUIDE.md](docs/EMBEDDER_SELECTION_GUIDE.md) - Choosing embedders
+- [docs/guides/API_GUIDE.md](docs/guides/API_GUIDE.md) - API endpoints and examples
+- [docs/guides/QUERY_GUIDE.md](docs/guides/QUERY_GUIDE.md) - Advanced query patterns
+- [docs/guides/EMBEDDER_SELECTION_GUIDE.md](docs/guides/EMBEDDER_SELECTION_GUIDE.md) - Choosing embedders
+- [docs/guides/EVALUATION_QUICK_START.md](docs/guides/EVALUATION_QUICK_START.md) - Quality metrics evaluation
+
+### Quality Metrics & Monitoring
+- [docs/implementation/REAL_TIME_QUALITY_METRICS.md](docs/implementation/REAL_TIME_QUALITY_METRICS.md) - Real-time quality metrics
+- [docs/guides/GRAFANA_QUALITY_DASHBOARDS.md](docs/guides/GRAFANA_QUALITY_DASHBOARDS.md) - Quality metrics dashboards
+- [docs/guides/QUALITY_METRICS_TROUBLESHOOTING.md](docs/guides/QUALITY_METRICS_TROUBLESHOOTING.md) - Troubleshooting guide
+- [docs/guides/TELEMETRY_QUICKSTART.md](docs/guides/TELEMETRY_QUICKSTART.md) - Telemetry setup
 
 ### Integration Guides
-- [CALIBRATION_GUIDE.md](docs/CALIBRATION_GUIDE.md) - Embedding calibration for cross-space mapping
-- [GEMINI_INTEGRATION.md](docs/GEMINI_INTEGRATION.md) - Using Gemini embeddings
-- [MONITORING_SETUP.md](docs/MONITORING_SETUP.md) - Prometheus & Grafana setup
+- [docs/guides/CALIBRATION_GUIDE.md](docs/guides/CALIBRATION_GUIDE.md) - Embedding calibration for cross-space mapping
+- [docs/guides/GEMINI_INTEGRATION.md](docs/guides/GEMINI_INTEGRATION.md) - Using Gemini embeddings
+
+### Implementation Details
+- [docs/implementation/TELEMETRY_IMPLEMENTATION.md](docs/implementation/TELEMETRY_IMPLEMENTATION.md) - Telemetry system
+- [docs/implementation/PERFORMANCE_OPTIMIZATIONS.md](docs/implementation/PERFORMANCE_OPTIMIZATIONS.md) - Performance optimizations
+- [docs/implementation/INCREMENTAL_EMBEDDING_OPTIMIZATION.md](docs/implementation/INCREMENTAL_EMBEDDING_OPTIMIZATION.md) - Incremental re-embedding
 
 ## Project Structure
 
 ```
 semantic-pattern-query-app/
 ├── README.md                    # This file
+├── CHANGELOG.md                 # Complete project history
 ├── requirements.txt             # Python dependencies
-├── docker-compose.yml            # Service definitions
+├── docker-compose.yml           # Service definitions (Qdrant, ES, Redis, Prometheus, Grafana)
+├── prometheus.yml               # Prometheus scrape configuration
 ├── .env.example                 # Configuration template
 ├── src/
+│   ├── api_server.py           # FastAPI server with quality metrics
 │   └── document_store/
-│       ├── orchestrator.py      # Main orchestrator
-│       ├── embeddings/          # Hybrid embedding layer
-│       ├── storage/             # Qdrant vector store
-│       ├── search/              # Hybrid retrieval
-│       ├── generation/          # RAG generation
-│       └── cache/               # Semantic caching
+│       ├── orchestrator.py     # Main orchestrator (7-layer pipeline)
+│       ├── processors/         # Document extraction & chunking
+│       ├── embeddings/         # Hybrid embedding (local + premium)
+│       ├── storage/            # Qdrant vector store
+│       ├── search/             # Hybrid retrieval (vector + BM25)
+│       ├── generation/         # RAG generation with citations
+│       ├── cache/              # Semantic caching (Redis)
+│       ├── monitoring/         # Prometheus metrics & telemetry
+│       └── evaluation/         # Quality metrics evaluation
+├── tests/
+│   ├── test_api_quality_metrics.py        # API integration tests
+│   ├── test_quality_metrics_standalone.py # Evaluation module tests
+│   ├── test_healthcare_evaluation.py      # Healthcare scenario tests
+│   ├── test_evaluation_comparison.py      # Comparison tests
+│   └── test_optimizations.py              # Performance tests
 ├── scripts/
-│   ├── ingest_patterns.py       # Pattern ingestion
-│   └── query_example.py         # CLI query example
-└── docs/                        # Documentation
+│   ├── ingest_patterns.py      # Pattern ingestion
+│   ├── query_example.py        # CLI query example
+│   ├── calibrate_embeddings.py # Embedding calibration
+│   ├── start-server.sh         # Server startup script
+│   ├── monitoring/             # Monitoring scripts
+│   │   ├── import_dashboards.sh
+│   │   ├── restart_api_with_metrics.sh
+│   │   └── setup-monitoring.sh
+│   ├── testing/                # Test scripts
+│   │   ├── test_embedder_selection.py
+│   │   └── test_telemetry.py
+│   └── setup/                  # Setup scripts
+│       ├── setup_env.sh
+│       └── setup_services.sh
+├── docs/
+│   ├── guides/                 # User guides
+│   │   ├── QUICKSTART.md
+│   │   ├── API_GUIDE.md
+│   │   ├── QUERY_GUIDE.md
+│   │   ├── EMBEDDER_SELECTION_GUIDE.md
+│   │   ├── EVALUATION_QUICK_START.md
+│   │   ├── GRAFANA_QUALITY_DASHBOARDS.md
+│   │   ├── QUALITY_METRICS_TROUBLESHOOTING.md
+│   │   └── [8 more guides]
+│   ├── implementation/         # Implementation details
+│   │   ├── REAL_TIME_QUALITY_METRICS.md
+│   │   ├── TELEMETRY_IMPLEMENTATION.md
+│   │   ├── PERFORMANCE_OPTIMIZATIONS.md
+│   │   └── [4 more docs]
+│   ├── archived/               # Historical documentation
+│   ├── CONFIGURATION.md        # Environment variables
+│   ├── PORTS.md               # Port assignments
+│   └── MONITORING_SETUP.md    # Monitoring setup
+├── grafana/
+│   ├── dashboards/            # 6 dashboard templates (JSON)
+│   │   ├── rag-performance-detailed.json
+│   │   ├── rag-system-telemetry.json
+│   │   ├── embedder-comparison.json
+│   │   ├── rag-system-health.json
+│   │   ├── infrastructure-health.json
+│   │   └── rag-quality-metrics.json (NEW)
+│   └── provisioning/          # Auto-provisioning configs
+│       ├── datasources/
+│       └── dashboards/
+└── web-ui/                    # React dashboard (Vite)
 ```
 
 ## Troubleshooting
@@ -267,8 +365,8 @@ ollama pull qwen3:14b
 - Check `.env` configuration matches model capabilities
 
 **Dimension mismatch**:
-- See [docs/GEMINI_INTEGRATION.md](docs/GEMINI_INTEGRATION.md) for Gemini-specific issues
-- See [docs/CALIBRATION_GUIDE.md](docs/CALIBRATION_GUIDE.md) for cross-space mapping
+- See [docs/guides/GEMINI_INTEGRATION.md](docs/guides/GEMINI_INTEGRATION.md) for Gemini-specific issues
+- See [docs/guides/CALIBRATION_GUIDE.md](docs/guides/CALIBRATION_GUIDE.md) for cross-space mapping
 
 ### API Key Issues
 

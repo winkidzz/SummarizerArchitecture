@@ -73,7 +73,9 @@
       "Bash(docker-compose up:*)",
       "Bash(docker stats:*)",
       "Bash(docker info:*)",
-      "Bash(./scripts/import_dashboards.sh:*)"
+      "Bash(./scripts/import_dashboards.sh:*)",
+      "Bash(do)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

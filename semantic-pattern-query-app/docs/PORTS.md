@@ -31,13 +31,16 @@ export API_PORT=${API_PORT:-8000}
 ### API Server
 ```bash
 # Option 1: Use start script
-./start-server.sh
+./scripts/start-server.sh
 
 # Option 2: Manual start
 source .ports
 export API_PORT=${API_PORT:-8000}
 source venv/bin/activate
 python src/api_server.py
+
+# Option 3: Stop server
+./scripts/stop-server.sh
 ```
 
 ### Docker Services (Elasticsearch, Qdrant, Redis, Prometheus, Grafana)
@@ -131,5 +134,5 @@ redis-cli -p 6380 ping
 - Port 8000 is the default API port (configurable via `API_PORT`)
 - Port 6380 is used for Redis (mapped from internal 6379 to avoid conflicts)
 - All infrastructure services run in Docker containers (see `docker-compose.yml`)
-- For dashboard setup and access, see [GRAFANA_SETUP_COMPLETE.md](../GRAFANA_SETUP_COMPLETE.md)
+- For dashboard setup and access, see [guides/GRAFANA_QUALITY_DASHBOARDS.md](guides/GRAFANA_QUALITY_DASHBOARDS.md)
 

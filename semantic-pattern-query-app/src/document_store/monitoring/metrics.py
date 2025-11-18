@@ -195,6 +195,112 @@ query_complexity = Histogram(
 )
 
 # ============================================================================
+# Classical IR Metrics
+# ============================================================================
+
+retrieval_precision_at_k = Histogram(
+    'rag_retrieval_precision_at_k',
+    'Precision at K for retrieved documents',
+    ['k_value'],
+    buckets=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+)
+
+retrieval_recall_at_k = Histogram(
+    'rag_retrieval_recall_at_k',
+    'Recall at K for retrieved documents',
+    ['k_value'],
+    buckets=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+)
+
+retrieval_hit_rate_at_k = Histogram(
+    'rag_retrieval_hit_rate_at_k',
+    'Hit rate at K (whether any relevant doc in top-K)',
+    ['k_value'],
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+retrieval_mrr = Histogram(
+    'rag_retrieval_mrr',
+    'Mean Reciprocal Rank of first relevant document',
+    buckets=[0.0, 0.1, 0.2, 0.33, 0.5, 0.67, 0.8, 0.9, 1.0]
+)
+
+retrieval_map = Histogram(
+    'rag_retrieval_map',
+    'Mean Average Precision across all relevant documents',
+    buckets=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+)
+
+retrieval_ndcg_at_k = Histogram(
+    'rag_retrieval_ndcg_at_k',
+    'Normalized Discounted Cumulative Gain at K',
+    ['k_value'],
+    buckets=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+)
+
+# ============================================================================
+# Context Quality Metrics
+# ============================================================================
+
+context_precision = Histogram(
+    'rag_context_precision',
+    'Fraction of retrieved context that is relevant to query',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+context_recall = Histogram(
+    'rag_context_recall',
+    'Whether retrieved context covers all facts needed to answer query',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+context_relevancy = Histogram(
+    'rag_context_relevancy',
+    'Proportion of retrieved context that is relevant (irrespective of rank)',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+context_utilization = Histogram(
+    'rag_context_utilization',
+    'Ratio of retrieved context actually used in generated answer',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+# ============================================================================
+# Answer Quality Metrics
+# ============================================================================
+
+answer_faithfulness_score = Histogram(
+    'rag_answer_faithfulness_score',
+    'Faithfulness score - whether answer claims are supported by context',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+hallucination_detected = Counter(
+    'rag_hallucination_detected',
+    'Count of detected hallucinations (unsupported claims)',
+    ['severity']  # minor/moderate/severe
+)
+
+answer_relevancy_score = Histogram(
+    'rag_answer_relevancy_score',
+    'Embedding similarity between query and answer',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95, 1.0]
+)
+
+answer_completeness_score = Histogram(
+    'rag_answer_completeness_score',
+    'Whether answer includes all relevant information',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+citation_grounding_score = Histogram(
+    'rag_citation_grounding_score',
+    'Whether cited sources actually support the claims made',
+    buckets=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+)
+
+# ============================================================================
 # Helper Functions
 # ============================================================================
 
@@ -308,4 +414,88 @@ class MetricsCollector:
             error_type=error_type,
             model_type=model_type
         ).inc()
+
+    @staticmethod
+    def record_ir_metrics(
+        precision_at_k: dict,
+        recall_at_k: dict,
+        hit_rate_at_k: dict,
+        mrr: float,
+        map_score: float,
+        ndcg_at_k: dict
+    ):
+        """
+        Record classical Information Retrieval metrics.
+
+        Args:
+            precision_at_k: Dict mapping k values to precision scores
+            recall_at_k: Dict mapping k values to recall scores
+            hit_rate_at_k: Dict mapping k values to hit rates
+            mrr: Mean Reciprocal Rank score
+            map_score: Mean Average Precision score
+            ndcg_at_k: Dict mapping k values to NDCG scores
+        """
+        for k, score in precision_at_k.items():
+            retrieval_precision_at_k.labels(k_value=str(k)).observe(score)
+
+        for k, score in recall_at_k.items():
+            retrieval_recall_at_k.labels(k_value=str(k)).observe(score)
+
+        for k, score in hit_rate_at_k.items():
+            retrieval_hit_rate_at_k.labels(k_value=str(k)).observe(score)
+
+        retrieval_mrr.observe(mrr)
+        retrieval_map.observe(map_score)
+
+        for k, score in ndcg_at_k.items():
+            retrieval_ndcg_at_k.labels(k_value=str(k)).observe(score)
+
+    @staticmethod
+    def record_context_quality(
+        precision: float,
+        recall: float,
+        relevancy: float,
+        utilization: float
+    ):
+        """
+        Record context quality metrics.
+
+        Args:
+            precision: Fraction of retrieved context that is relevant
+            recall: Whether context covers all needed facts
+            relevancy: Proportion of relevant context
+            utilization: Ratio of context used in answer
+        """
+        context_precision.observe(precision)
+        context_recall.observe(recall)
+        context_relevancy.observe(relevancy)
+        context_utilization.observe(utilization)
+
+    @staticmethod
+    def record_answer_quality(
+        faithfulness: float,
+        relevancy: float,
+        completeness: float,
+        citation_grounding: float,
+        has_hallucination: bool = False,
+        hallucination_severity: str = "minor"
+    ):
+        """
+        Record answer quality metrics.
+
+        Args:
+            faithfulness: Whether answer is supported by context
+            relevancy: Similarity between query and answer
+            completeness: Whether answer includes all relevant info
+            citation_grounding: Whether citations support claims
+            has_hallucination: Whether hallucination detected
+            hallucination_severity: Severity level (minor/moderate/severe)
+        """
+        answer_faithfulness_score.observe(faithfulness)
+        answer_relevancy_score.observe(relevancy)
+        answer_completeness_score.observe(completeness)
+        citation_grounding_score.observe(citation_grounding)
+
+        if has_hallucination:
+            hallucination_detected.labels(severity=hallucination_severity).inc()
 

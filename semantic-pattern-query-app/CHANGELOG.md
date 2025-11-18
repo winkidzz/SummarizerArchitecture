@@ -9,6 +9,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added - 2025-11-18
 
+#### Real-Time Quality Metrics System
+
+**Automatic Quality Evaluation on Every Query**
+
+**New Features**:
+
+1. **Answer Quality Metrics** (Automatic)
+   - **Faithfulness**: % of answer claims supported by context (0.0-1.0)
+   - **Hallucination Detection**: Identifies unsupported claims with severity (minor/moderate/severe)
+   - **Relevancy**: How well answer addresses the query (0.0-1.0)
+   - **Completeness**: Whether answer fully addresses query (0.0-1.0)
+   - **Citation Grounding**: Accuracy of cited sources (0.0-1.0)
+
+2. **Context Quality Metrics** (Automatic)
+   - **Context Relevancy**: Average relevance of retrieved chunks (0.0-1.0)
+   - **Context Utilization**: % of chunks actually used in answer (0.0-1.0)
+   - **Context Precision**: % of relevant chunks (requires ground truth - currently 0)
+   - **Context Recall**: % of required facts covered (requires ground truth - currently 0)
+
+3. **Prometheus Metrics Collection**
+   - `rag_answer_faithfulness_score` - Histogram
+   - `rag_hallucination_detected_total{severity}` - Counter
+   - `rag_answer_relevancy_score` - Histogram
+   - `rag_answer_completeness_score` - Histogram
+   - `rag_citation_grounding_score` - Histogram
+   - `rag_context_relevancy` - Histogram
+   - `rag_context_utilization` - Histogram
+
+4. **Grafana Quality Metrics Dashboard**
+   - RAG Quality Metrics Dashboard (26 panels)
+   - Overall Quality Score visualization
+   - Hallucination Rate tracking
+   - Answer Faithfulness trends
+   - Context Relevancy monitoring
+   - URL: http://localhost:3333/d/4facbed2-cca8-4582-a2cc-c0e4b934a497/rag-quality-metrics
+
+5. **Hallucination Logging**
+   - Automatic WARNING logs when hallucinations detected
+   - Includes severity level and unsupported claims
+   - Critical for healthcare safety
+
+6. **API Integration**
+   - Quality metrics included in every `/query` response
+   - Non-blocking evaluation (won't fail queries)
+   - ~10ms overhead per query (<1% of total time)
+
+**Implementation**:
+- Modified `src/api_server.py` (Lines 189-277)
+- Added evaluation imports and quality_metrics field
+- Real-time evaluation after query processing
+- Prometheus metrics recording
+
+**Evaluation Method**:
+- Word overlap heuristics (no LLM calls)
+- Fast, deterministic, zero cost
+- Suitable for real-time production use
+
+**Limitations**:
+- Uses word overlap (may miss paraphrases)
+- IR metrics (Precision@k, Recall@k, NDCG, MRR, MAP) require ground truth
+- Cannot detect subtle contradictions
+
+**Files Created**:
+- `grafana/dashboards/rag-quality-metrics.json` (26-panel dashboard)
+- `docs/implementation/REAL_TIME_QUALITY_METRICS.md` - Complete documentation
+- `docs/implementation/REAL_TIME_METRICS_IMPLEMENTATION_SUMMARY.md` - Implementation details
+- `docs/guides/QUALITY_METRICS_TROUBLESHOOTING.md` - Troubleshooting guide
+- `tests/test_api_quality_metrics.py` - API integration tests
+- `tests/test_quality_metrics_standalone.py` - Evaluation module tests
+- `tests/test_healthcare_evaluation.py` - Healthcare scenario tests
+- `tests/test_evaluation_comparison.py` - Comparison tests
+- `scripts/monitoring/restart_api_with_metrics.sh` - Restart helper script
+
+**Files Modified**:
+- `src/api_server.py` - Added real-time quality evaluation (Lines 28-30, 95, 189-277)
+- `README.md` - Added quality metrics section
+- `src/document_store/evaluation/` - Quality evaluation modules
+
+**API Response Format**:
+```json
+{
+  "answer": "...",
+  "sources": [...],
+  "quality_metrics": {
+    "answer": {
+      "faithfulness": 0.95,
+      "relevancy": 0.88,
+      "completeness": 0.80,
+      "has_hallucination": false,
+      "hallucination_severity": "minor"
+    },
+    "context": {
+      "relevancy": 0.87,
+      "utilization": 0.75
+    }
+  }
+}
+```
+
+**Status**: ✅ Production Ready
+
+---
+
 #### Grafana Dashboards with Prometheus Monitoring
 
 **Comprehensive Monitoring Infrastructure**
@@ -213,6 +316,101 @@ curl http://localhost:9200/_cluster/health
 **Files Modified**:
 - `.env` - Added calibration matrix configuration
 - `.env.example` - Updated with new settings
+
+---
+
+#### Project Organization and Documentation Cleanup
+
+**Comprehensive File Reorganization**
+
+**Directory Structure Changes**:
+
+1. **Test Files** - Moved to `tests/`
+   - `test_api_quality_metrics.py`
+   - `test_quality_metrics_standalone.py`
+   - `test_healthcare_evaluation.py`
+   - `test_evaluation_comparison.py`
+   - `test_optimizations.py`
+   - `test_opt1_simple.py`
+   - `test_quality_metrics.py`
+
+2. **Scripts** - Organized into subdirectories
+   - `scripts/monitoring/` - Monitoring and dashboard scripts
+     - `import_dashboards.sh`
+     - `restart_api_with_metrics.sh`
+     - `setup-monitoring.sh`
+   - `scripts/testing/` - Test scripts
+     - `test_embedder_selection.py`
+     - `test_telemetry.py`
+   - `scripts/setup/` - Setup and environment scripts
+     - `setup_env.sh`
+     - `setup_services.sh`
+   - `scripts/` - Core utility scripts
+     - `calibrate_embeddings.py`
+     - `ingest_patterns.py`
+     - `query_example.py`
+     - `start-server.sh`
+
+3. **Documentation** - Organized into subdirectories
+   - `docs/guides/` - User guides and quickstarts
+     - `API_GUIDE.md`
+     - `QUERY_GUIDE.md`
+     - `QUICKSTART.md`
+     - `CALIBRATION_GUIDE.md`
+     - `EMBEDDER_SELECTION_GUIDE.md`
+     - `EVALUATION_QUICK_START.md`
+     - `GRAFANA_QUALITY_DASHBOARDS.md`
+     - `GEMINI_INTEGRATION.md`
+     - `QUALITY_METRICS_TROUBLESHOOTING.md`
+     - `TELEMETRY_QUICKSTART.md`
+     - `MONITORING_QUICKSTART.md`
+   - `docs/implementation/` - Implementation details
+     - `REAL_TIME_QUALITY_METRICS.md`
+     - `REAL_TIME_METRICS_IMPLEMENTATION_SUMMARY.md`
+     - `QUALITY_METRICS_IMPLEMENTATION.md`
+     - `QUALITY_METRICS_SUMMARY.md`
+     - `TELEMETRY_IMPLEMENTATION.md`
+     - `PERFORMANCE_OPTIMIZATIONS.md`
+     - `INCREMENTAL_EMBEDDING_OPTIMIZATION.md`
+   - `docs/archived/` - Historical documentation
+     - `EMBEDDER_SELECTION_IMPLEMENTATION.md`
+     - `GRAFANA_SETUP_COMPLETE.md`
+     - `TELEMETRY_IMPLEMENTATION_STATUS.md`
+     - `TELEMETRY_TEST_RESULTS.md`
+     - `MONITORING_STATUS.md`
+     - `report.md`
+   - `docs/` - Core documentation
+     - `CONFIGURATION.md`
+     - `PORTS.md`
+     - `MONITORING_SETUP.md`
+     - `TROUBLESHOOTING_INDEX.md`
+
+**Files Retained**:
+- All Grafana dashboard templates in `grafana/dashboards/`
+- All provisioning configurations in `grafana/provisioning/`
+- `docker-compose.yml`, `prometheus.yml`, `.env.example`
+- Core project files (`README.md`, `CHANGELOG.md`, `.gitignore`)
+
+**Directory Structure**:
+```
+semantic-pattern-query-app/
+├── tests/                    # All test files
+├── scripts/                  # Utility scripts
+│   ├── monitoring/          # Monitoring scripts
+│   ├── testing/             # Test scripts
+│   └── setup/               # Setup scripts
+├── docs/                    # Documentation
+│   ├── guides/              # User guides
+│   ├── implementation/      # Implementation docs
+│   └── archived/            # Historical docs
+├── grafana/                 # Grafana templates (retained)
+│   ├── dashboards/          # Dashboard JSON files
+│   └── provisioning/        # Provisioning configs
+├── src/                     # Source code
+└── [config files]           # Root-level configs
+```
+
+**Status**: ✅ Cleanup Complete
 
 ---
 

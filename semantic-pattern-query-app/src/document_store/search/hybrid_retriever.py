@@ -8,11 +8,13 @@ Hybrid retrieval optimized for pattern queries:
 - Step 4: Cross-encoder reranking
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 import logging
 
 from .two_step_retrieval import TwoStepRetrieval
 from .bm25_search import BM25Search
+from ..monitoring.metrics import MetricsCollector
+from ..evaluation.ir_metrics import evaluate_retrieval_quality
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +53,9 @@ class HealthcareHybridRetriever:
         query: str,
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
-        embedder_type: Optional[str] = None
+        embedder_type: Optional[str] = None,
+        relevant_doc_ids: Optional[Set[str]] = None,
+        relevance_scores: Optional[Dict[str, float]] = None
     ) -> List[Dict[str, Any]]:
         """
         Hybrid retrieval with two-step vector search and BM25.
@@ -62,6 +66,8 @@ class HealthcareHybridRetriever:
             filters: Optional metadata filters
             embedder_type: Which premium embedder to use ("ollama" or "gemini")
                           If None, uses the embedder's default
+            relevant_doc_ids: Optional ground truth relevant document IDs for IR metrics evaluation
+            relevance_scores: Optional graded relevance scores for NDCG calculation
 
         Returns:
             List of result dictionaries
@@ -89,9 +95,19 @@ class HealthcareHybridRetriever:
         
         # Stage 4: Cross-encoder rerank (top 20 only)
         reranked = self._cross_encode_rerank(query, fused[:20])
-        
+
         # Return top-k
-        return reranked[:top_k]
+        final_results = reranked[:top_k]
+
+        # Evaluate retrieval quality if ground truth is provided
+        if relevant_doc_ids:
+            self._evaluate_and_record_metrics(
+                final_results,
+                relevant_doc_ids,
+                relevance_scores
+            )
+
+        return final_results
     
     def _rrf_fusion(
         self,
@@ -181,6 +197,64 @@ class HealthcareHybridRetriever:
             key=lambda x: x.get("rrf_score", x.get("similarity_score", x.get("score", 0))),
             reverse=True
         )
-        
+
         return reranked
+
+    def _evaluate_and_record_metrics(
+        self,
+        results: List[Dict[str, Any]],
+        relevant_doc_ids: Set[str],
+        relevance_scores: Optional[Dict[str, float]] = None
+    ):
+        """
+        Evaluate retrieval quality and record IR metrics to Prometheus.
+
+        This method is called when ground truth relevance judgments are provided
+        (typically during testing/evaluation, not production).
+
+        Args:
+            results: Retrieved documents
+            relevant_doc_ids: Ground truth relevant document IDs
+            relevance_scores: Optional graded relevance scores for NDCG
+        """
+        # Extract retrieved document IDs in ranked order
+        retrieved_doc_ids = []
+        for result in results:
+            doc_id = result.get("id") or result.get("metadata", {}).get("document_id")
+            if doc_id:
+                retrieved_doc_ids.append(doc_id)
+
+        if not retrieved_doc_ids:
+            logger.warning("No document IDs found in results for IR metrics evaluation")
+            return
+
+        # Evaluate all IR metrics
+        try:
+            metrics = evaluate_retrieval_quality(
+                retrieved_doc_ids=retrieved_doc_ids,
+                relevant_doc_ids=relevant_doc_ids,
+                relevance_scores=relevance_scores,
+                k_values=[1, 3, 5, 10]
+            )
+
+            # Record metrics to Prometheus
+            MetricsCollector.record_ir_metrics(
+                precision_at_k=metrics['precision@k'],
+                recall_at_k=metrics['recall@k'],
+                hit_rate_at_k=metrics['hit_rate@k'],
+                mrr=metrics['mrr'],
+                map_score=metrics['map'],
+                ndcg_at_k=metrics['ndcg@k']
+            )
+
+            logger.info(
+                f"IR Metrics - Precision@5: {metrics['precision@k'].get(5, 0):.3f}, "
+                f"Recall@5: {metrics['recall@k'].get(5, 0):.3f}, "
+                f"NDCG@5: {metrics['ndcg@k'].get(5, 0):.3f}, "
+                f"MRR: {metrics['mrr']:.3f}, "
+                f"MAP: {metrics['map']:.3f}"
+            )
+
+        except Exception as e:
+            logger.error(f"Failed to evaluate IR metrics: {e}", exc_info=True)
 

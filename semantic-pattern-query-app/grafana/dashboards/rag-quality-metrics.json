@@ -1,0 +1,701 @@
+{
+  "dashboard": {
+    "title": "RAG Quality Metrics",
+    "tags": ["rag", "quality", "evaluation", "metrics"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "📊 Quality Overview",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Overall Quality Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(avg(rag_retrieval_precision_at_k{k_value=\"5\"}) + avg(rag_answer_faithfulness_score) + avg(rag_context_relevancy)) / 3",
+            "legendFormat": "Quality Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.7, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 1}
+      },
+      {
+        "id": 3,
+        "title": "Hallucination Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(rag_hallucination_detected_total[5m])",
+            "legendFormat": "Hallucinations/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 0.01, "color": "yellow"},
+                {"value": 0.05, "color": "red"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1}
+      },
+      {
+        "id": 4,
+        "title": "Retrieval Precision@5",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_precision_at_k{k_value=\"5\"})",
+            "legendFormat": "Precision@5"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.4, "color": "yellow"},
+                {"value": 0.6, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1}
+      },
+      {
+        "id": 5,
+        "title": "Answer Faithfulness",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(rag_answer_faithfulness_score)",
+            "legendFormat": "Faithfulness"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.7, "color": "yellow"},
+                {"value": 0.9, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1}
+      },
+      {
+        "id": 6,
+        "title": "Hallucination Severity Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (severity) (rag_hallucination_detected_total)",
+            "legendFormat": "{{severity}}"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 5}
+      },
+      {
+        "id": 7,
+        "title": "Context Relevancy",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(rag_context_relevancy)",
+            "legendFormat": "Relevancy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.7, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 5}
+      },
+      {
+        "id": 8,
+        "title": "Context Utilization",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(rag_context_utilization)",
+            "legendFormat": "Utilization"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.7, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 5}
+      },
+      {
+        "id": 10,
+        "title": "🎯 Retrieval Quality Metrics",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9},
+        "collapsed": false
+      },
+      {
+        "id": 11,
+        "title": "Precision@k Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_precision_at_k{k_value=\"1\"})",
+            "legendFormat": "Precision@1"
+          },
+          {
+            "expr": "avg(rag_retrieval_precision_at_k{k_value=\"3\"})",
+            "legendFormat": "Precision@3"
+          },
+          {
+            "expr": "avg(rag_retrieval_precision_at_k{k_value=\"5\"})",
+            "legendFormat": "Precision@5"
+          },
+          {
+            "expr": "avg(rag_retrieval_precision_at_k{k_value=\"10\"})",
+            "legendFormat": "Precision@10"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10}
+      },
+      {
+        "id": 12,
+        "title": "Recall@k Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_recall_at_k{k_value=\"1\"})",
+            "legendFormat": "Recall@1"
+          },
+          {
+            "expr": "avg(rag_retrieval_recall_at_k{k_value=\"3\"})",
+            "legendFormat": "Recall@3"
+          },
+          {
+            "expr": "avg(rag_retrieval_recall_at_k{k_value=\"5\"})",
+            "legendFormat": "Recall@5"
+          },
+          {
+            "expr": "avg(rag_retrieval_recall_at_k{k_value=\"10\"})",
+            "legendFormat": "Recall@10"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10}
+      },
+      {
+        "id": 13,
+        "title": "NDCG@k (Ranking Quality)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_ndcg_at_k{k_value=\"1\"})",
+            "legendFormat": "NDCG@1"
+          },
+          {
+            "expr": "avg(rag_retrieval_ndcg_at_k{k_value=\"3\"})",
+            "legendFormat": "NDCG@3"
+          },
+          {
+            "expr": "avg(rag_retrieval_ndcg_at_k{k_value=\"5\"})",
+            "legendFormat": "NDCG@5"
+          },
+          {
+            "expr": "avg(rag_retrieval_ndcg_at_k{k_value=\"10\"})",
+            "legendFormat": "NDCG@10"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 18}
+      },
+      {
+        "id": 14,
+        "title": "MRR (Mean Reciprocal Rank)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_mrr)",
+            "legendFormat": "MRR"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 18}
+      },
+      {
+        "id": 15,
+        "title": "MAP (Mean Average Precision)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_map)",
+            "legendFormat": "MAP"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 18}
+      },
+      {
+        "id": 20,
+        "title": "📝 Context Quality Metrics",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 26},
+        "collapsed": false
+      },
+      {
+        "id": 21,
+        "title": "Context Precision Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_context_precision)",
+            "legendFormat": "Context Precision"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 27}
+      },
+      {
+        "id": 22,
+        "title": "Context Recall Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_context_recall)",
+            "legendFormat": "Context Recall"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 27}
+      },
+      {
+        "id": 23,
+        "title": "Context Relevancy Trend",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_context_relevancy)",
+            "legendFormat": "Avg Relevancy"
+          },
+          {
+            "expr": "quantile(0.95, rag_context_relevancy)",
+            "legendFormat": "P95 Relevancy"
+          },
+          {
+            "expr": "quantile(0.50, rag_context_relevancy)",
+            "legendFormat": "P50 Relevancy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 35}
+      },
+      {
+        "id": 24,
+        "title": "Context Utilization Trend",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_context_utilization)",
+            "legendFormat": "Avg Utilization"
+          },
+          {
+            "expr": "quantile(0.95, rag_context_utilization)",
+            "legendFormat": "P95 Utilization"
+          },
+          {
+            "expr": "quantile(0.50, rag_context_utilization)",
+            "legendFormat": "P50 Utilization"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 35}
+      },
+      {
+        "id": 30,
+        "title": "✅ Answer Quality Metrics",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 43},
+        "collapsed": false
+      },
+      {
+        "id": 31,
+        "title": "Answer Faithfulness Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_answer_faithfulness_score)",
+            "legendFormat": "Avg Faithfulness"
+          },
+          {
+            "expr": "quantile(0.95, rag_answer_faithfulness_score)",
+            "legendFormat": "P95 Faithfulness"
+          },
+          {
+            "expr": "quantile(0.05, rag_answer_faithfulness_score)",
+            "legendFormat": "P5 Faithfulness (Low)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 44}
+      },
+      {
+        "id": 32,
+        "title": "Answer Relevancy Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_answer_relevancy_score)",
+            "legendFormat": "Avg Relevancy"
+          },
+          {
+            "expr": "quantile(0.95, rag_answer_relevancy_score)",
+            "legendFormat": "P95 Relevancy"
+          },
+          {
+            "expr": "quantile(0.50, rag_answer_relevancy_score)",
+            "legendFormat": "P50 Relevancy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 44}
+      },
+      {
+        "id": 33,
+        "title": "Hallucination Detection Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(rag_hallucination_detected_total{severity=\"minor\"}[5m])",
+            "legendFormat": "Minor Hallucinations"
+          },
+          {
+            "expr": "rate(rag_hallucination_detected_total{severity=\"moderate\"}[5m])",
+            "legendFormat": "Moderate Hallucinations"
+          },
+          {
+            "expr": "rate(rag_hallucination_detected_total{severity=\"severe\"}[5m])",
+            "legendFormat": "Severe Hallucinations"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops"
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 52}
+      },
+      {
+        "id": 34,
+        "title": "Answer Completeness",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_answer_completeness_score)",
+            "legendFormat": "Avg Completeness"
+          },
+          {
+            "expr": "quantile(0.95, rag_answer_completeness_score)",
+            "legendFormat": "P95 Completeness"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 52}
+      },
+      {
+        "id": 35,
+        "title": "Citation Grounding",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg(rag_citation_grounding_score)",
+            "legendFormat": "Avg Citation Grounding"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 52}
+      },
+      {
+        "id": 40,
+        "title": "🚨 Quality Alerts & Trends",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 60},
+        "collapsed": false
+      },
+      {
+        "id": 41,
+        "title": "Quality Score Trend (7 Days)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "avg_over_time(((avg(rag_retrieval_precision_at_k{k_value=\"5\"}) + avg(rag_answer_faithfulness_score) + avg(rag_context_relevancy)) / 3)[7d:])",
+            "legendFormat": "7-Day Avg Quality"
+          },
+          {
+            "expr": "(avg(rag_retrieval_precision_at_k{k_value=\"5\"}) + avg(rag_answer_faithfulness_score) + avg(rag_context_relevancy)) / 3",
+            "legendFormat": "Current Quality"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.7, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 61}
+      },
+      {
+        "id": 42,
+        "title": "Critical Issues (Last Hour)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(rag_hallucination_detected_total{severity=\"severe\"}[1h]))",
+            "legendFormat": "Severe Hallucinations"
+          },
+          {
+            "expr": "sum(rag_answer_faithfulness_score < 0.5) or vector(0)",
+            "legendFormat": "Low Faithfulness"
+          },
+          {
+            "expr": "sum(rag_retrieval_precision_at_k{k_value=\"5\"} < 0.3) or vector(0)",
+            "legendFormat": "Poor Retrieval"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 5, "color": "red"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 61}
+      },
+      {
+        "id": 43,
+        "title": "Precision vs Recall Correlation",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg(rag_retrieval_precision_at_k{k_value=\"5\"})",
+            "legendFormat": "Precision@5"
+          },
+          {
+            "expr": "avg(rag_retrieval_recall_at_k{k_value=\"5\"})",
+            "legendFormat": "Recall@5"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "yaxes": [
+          {"format": "percentunit", "min": 0, "max": 1},
+          {"format": "percentunit", "min": 0, "max": 1}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 69}
+      },
+      {
+        "id": 44,
+        "title": "Context Quality vs Answer Quality",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg(rag_context_relevancy)",
+            "legendFormat": "Context Relevancy"
+          },
+          {
+            "expr": "avg(rag_answer_faithfulness_score)",
+            "legendFormat": "Answer Faithfulness"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "yaxes": [
+          {"format": "percentunit", "min": 0, "max": 1},
+          {"format": "percentunit", "min": 0, "max": 1}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 69}
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "Prometheus",
+          "enable": true,
+          "iconColor": "blue",
+          "tags": ["deployment"]
+        },
+        {
+          "name": "Quality Incidents",
+          "datasource": "Prometheus",
+          "enable": true,
+          "iconColor": "red",
+          "tags": ["quality", "incident"]
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}

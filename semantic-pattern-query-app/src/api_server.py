@@ -26,7 +26,8 @@ import time
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from src.document_store.orchestrator import SemanticPatternOrchestrator
-from src.document_store.monitoring import QueryTelemetry, StructuredLogger
+from src.document_store.monitoring import QueryTelemetry, StructuredLogger, MetricsCollector
+from src.document_store.evaluation import evaluate_answer_quality, evaluate_context_quality
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -92,6 +93,7 @@ class QueryResponse(BaseModel):
     cache_hit: bool
     retrieved_docs: int
     context_docs_used: Optional[int] = None
+    quality_metrics: Optional[Dict[str, Any]] = None  # Real-time quality metrics
 
 
 class StatsResponse(BaseModel):
@@ -185,14 +187,104 @@ async def query(request: QueryRequest):
             query_embedder_type=request.query_embedder_type,
             telemetry=telemetry  # Pass telemetry context
         )
-        
+
+        # Evaluate quality metrics in real-time (runs on every query)
+        quality_metrics = {}
+        try:
+            answer = result.get("answer", "")
+            sources = result.get("sources", [])
+
+            # Get raw retrieved documents for quality evaluation
+            # We need to retrieve again to get the actual text chunks
+            # (the generator compactifies them into citations)
+            retrieved_docs = orchestrator.hybrid_retriever.retrieve(
+                request.query,
+                top_k=request.top_k,
+                embedder_type=request.query_embedder_type
+            )
+
+            # Extract context chunks from retrieved docs
+            context_chunks = []
+            chunk_relevance_scores = []
+            for doc in retrieved_docs:
+                if "text" in doc:
+                    context_chunks.append(doc["text"])
+                    # Get score from any available field
+                    score = doc.get("score") or doc.get("similarity_score") or doc.get("rrf_score", 0.5)
+                    chunk_relevance_scores.append(score)
+
+            # Evaluate answer quality (no ground truth needed)
+            if answer and context_chunks:
+                answer_metrics = evaluate_answer_quality(
+                    query=request.query,
+                    answer=answer,
+                    context_chunks=context_chunks
+                )
+
+                # Record to Prometheus (automatic monitoring)
+                MetricsCollector.record_answer_quality(
+                    faithfulness=answer_metrics['faithfulness'],
+                    relevancy=answer_metrics['relevancy'],
+                    completeness=answer_metrics['completeness'],
+                    citation_grounding=answer_metrics['citation_grounding'],
+                    has_hallucination=answer_metrics['has_hallucination'],
+                    hallucination_severity=answer_metrics['hallucination_severity']
+                )
+
+                # Evaluate context quality (no ground truth needed for relevancy & utilization)
+                context_metrics = evaluate_context_quality(
+                    query=request.query,
+                    retrieved_chunks=context_chunks,
+                    generated_answer=answer,
+                    chunk_relevance_scores=chunk_relevance_scores
+                )
+
+                # Record to Prometheus
+                MetricsCollector.record_context_quality(
+                    precision=context_metrics['context_precision'],
+                    recall=context_metrics['context_recall'],
+                    relevancy=context_metrics['context_relevancy'],
+                    utilization=context_metrics['context_utilization']
+                )
+
+                # Add to response (optional - can be disabled for production)
+                quality_metrics = {
+                    "answer": {
+                        "faithfulness": answer_metrics['faithfulness'],
+                        "relevancy": answer_metrics['relevancy'],
+                        "completeness": answer_metrics['completeness'],
+                        "has_hallucination": answer_metrics['has_hallucination'],
+                        "hallucination_severity": answer_metrics['hallucination_severity']
+                    },
+                    "context": {
+                        "relevancy": context_metrics['context_relevancy'],
+                        "utilization": context_metrics['context_utilization']
+                    }
+                }
+
+                # Log hallucinations (important for healthcare)
+                if answer_metrics['has_hallucination']:
+                    logger.warning(
+                        f"Hallucination detected - Query: {request.query[:100]}, "
+                        f"Severity: {answer_metrics['hallucination_severity']}, "
+                        f"Unsupported claims: {answer_metrics['unsupported_claims']}"
+                    )
+
+        except Exception as e:
+            # Don't fail the query if quality evaluation fails
+            logger.error(f"Quality metrics evaluation failed: {e}", exc_info=True)
+            quality_metrics = {"error": str(e)}
+
+        # Add quality metrics to result
+        result["quality_metrics"] = quality_metrics
+
         # Record final metrics
         telemetry.finish(
             status="success",
             answer=result.get("answer"),
             sources=result.get("sources", [])
         )
-        
+
         return QueryResponse(**result)
     
     except HTTPException:
