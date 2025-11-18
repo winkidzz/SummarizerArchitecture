@@ -1,0 +1,416 @@
+{
+  "dashboard": {
+    "title": "Infrastructure Health - System Resources",
+    "tags": ["infrastructure", "health", "system", "resources"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "15s",
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "15s", "30s", "1m", "5m", "15m"]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Overview",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+        "collapsed": false
+      },
+      {
+        "id": 2,
+        "title": "API Server Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"fastapi\"}",
+            "legendFormat": "API Status",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 1},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [
+              {"type": "value", "value": "0", "text": "DOWN"},
+              {"type": "value", "value": "1", "text": "UP"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 1, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Total Requests (Last Hour)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(rag_queries_total[1h]))",
+            "legendFormat": "Requests",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "100 * sum(rate(rag_queries_total{status=\"error\"}[5m])) / sum(rate(rag_queries_total[5m]))",
+            "legendFormat": "Error %",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 5, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Uptime",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "time() - process_start_time_seconds",
+            "legendFormat": "Uptime",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "unit": "s",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Python Process Metrics",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5},
+        "collapsed": false
+      },
+      {
+        "id": 7,
+        "title": "Memory Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "Resident Memory (MB)",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          },
+          {
+            "expr": "process_virtual_memory_bytes / 1024 / 1024",
+            "legendFormat": "Virtual Memory (MB)",
+            "refId": "B",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "decmbytes"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "CPU Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[1m]) * 100",
+            "legendFormat": "CPU %",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Garbage Collection",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(python_gc_collections_total[1m])",
+            "legendFormat": "Gen {{generation}} GC/sec",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "ops"
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Open File Descriptors",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "process_open_fds",
+            "legendFormat": "Open FDs",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          },
+          {
+            "expr": "process_max_fds",
+            "legendFormat": "Max FDs",
+            "refId": "B",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "Component Health",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 22},
+        "collapsed": false
+      },
+      {
+        "id": 12,
+        "title": "Elasticsearch Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "1",
+            "legendFormat": "Status",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 23},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [
+              {"type": "value", "value": "1", "text": "HEALTHY"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"}
+              ]
+            }
+          }
+        },
+        "description": "Elasticsearch running on localhost:9200"
+      },
+      {
+        "id": 13,
+        "title": "Qdrant Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "1",
+            "legendFormat": "Status",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 23},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [
+              {"type": "value", "value": "1", "text": "HEALTHY"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"}
+              ]
+            }
+          }
+        },
+        "description": "Qdrant vector database on localhost:6333"
+      },
+      {
+        "id": 14,
+        "title": "Redis Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "1",
+            "legendFormat": "Status",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 23},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [
+              {"type": "value", "value": "1", "text": "HEALTHY"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"}
+              ]
+            }
+          }
+        },
+        "description": "Redis cache on localhost:6380"
+      },
+      {
+        "id": 15,
+        "title": "Ollama Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "1",
+            "legendFormat": "Status",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 23},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [
+              {"type": "value", "value": "1", "text": "HEALTHY"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"}
+              ]
+            }
+          }
+        },
+        "description": "Ollama LLM server on localhost:11434"
+      },
+      {
+        "id": 16,
+        "title": "Request Flow",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 27},
+        "collapsed": false
+      },
+      {
+        "id": 17,
+        "title": "Request Rate by Status",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (status) (rate(rag_queries_total[1m]))",
+            "legendFormat": "{{status}}",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "reqps"
+          }
+        }
+      },
+      {
+        "id": 18,
+        "title": "Concurrent Requests",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rag_active_requests)",
+            "legendFormat": "Active Requests",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"}
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short",
+            "min": 0
+          }
+        }
+      }
+    ],
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "links": [],
+    "liveNow": true,
+    "style": "dark",
+    "templating": {"list": []},
+    "annotations": {"list": []}
+  }
+}

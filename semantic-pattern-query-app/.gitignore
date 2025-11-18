@@ -1,5 +1,7 @@
 # Environment files with secrets
 .env
+.env.bak
+*.bak
 
 # Python
 __pycache__/
@@ -48,6 +50,10 @@ alignment_matrix*.npy
 
 # Logs
 *.log
+
+# Frontend builds
+node_modules/
+web-ui/dist/
 
 # OS
 .DS_Store
