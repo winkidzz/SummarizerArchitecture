@@ -4,6 +4,7 @@ FastAPI Server for Semantic Pattern Query App
 REST API for querying the pattern library using the 7-layer RAG architecture.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -48,7 +49,18 @@ def get_orchestrator() -> SemanticPatternOrchestrator:
     """Get or create orchestrator instance."""
     global _orchestrator
     if _orchestrator is None:
-        _orchestrator = SemanticPatternOrchestrator()
+        # Read configuration from environment variables
+        ollama_model = os.getenv("OLLAMA_MODEL", "nomic-embed-text")
+        ollama_generation_model = os.getenv("OLLAMA_GENERATION_MODEL", "qwen3:14b")
+        ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+
+        logger.info(f"Creating orchestrator with ollama_model={ollama_model}, generation_model={ollama_generation_model}")
+
+        _orchestrator = SemanticPatternOrchestrator(
+            ollama_model=ollama_model,
+            ollama_generation_model=ollama_generation_model,
+            ollama_base_url=ollama_base_url
+        )
     return _orchestrator
 
 

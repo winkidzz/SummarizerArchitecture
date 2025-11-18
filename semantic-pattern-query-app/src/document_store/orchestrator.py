@@ -45,17 +45,19 @@ class SemanticPatternOrchestrator:
         qdrant_url: Optional[str] = None,
         elasticsearch_url: Optional[str] = None,
         redis_host: Optional[str] = None,
-        ollama_model: str = "qwen3:14b",
+        ollama_model: str = "nomic-embed-text",
+        ollama_generation_model: str = "qwen3:14b",
         ollama_base_url: str = "http://localhost:11434"
     ):
         """
         Initialize orchestrator with all components.
-        
+
         Args:
             qdrant_url: Qdrant URL
             elasticsearch_url: Elasticsearch URL
             redis_host: Redis host
-            ollama_model: Ollama model name
+            ollama_model: Ollama embedding model name
+            ollama_generation_model: Ollama generation/chat model name
             ollama_base_url: Ollama API base URL
         """
         # Layer 1: Document Processing
@@ -98,7 +100,7 @@ class SemanticPatternOrchestrator:
         
         # Layer 6: Generation
         self.generator = HealthcareRAGGenerator(
-            model=ollama_model,
+            model=ollama_generation_model,
             base_url=ollama_base_url
         )
         
