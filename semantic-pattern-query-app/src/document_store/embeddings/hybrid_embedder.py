@@ -162,6 +162,11 @@ class HealthcareHybridEmbedder:
         # Use specified embedder type or default
         embedder_type = embedder_type or self.query_embedder_type
 
+        logger.info(
+            f"embed_query using embedder_type='{embedder_type}' "
+            f"(requested: {embedder_type or 'None'}, default: {self.query_embedder_type})"
+        )
+
         # Get embedder from dictionary
         premium_embedder = self.premium_embedders.get(embedder_type)
         if not premium_embedder:
@@ -169,6 +174,8 @@ class HealthcareHybridEmbedder:
                 f"Embedder type '{embedder_type}' not available. "
                 f"Available types: {list(self.premium_embedders.keys())}"
             )
+
+        logger.info(f"Using premium embedder: {type(premium_embedder).__name__}")
 
         # Step 1: Embed with selected premium model
         premium_embedding = premium_embedder.embed_query(query)
@@ -249,6 +256,11 @@ class HealthcareHybridEmbedder:
         # Use specified embedder type or default
         embedder_type = embedder_type or self.query_embedder_type
 
+        logger.info(
+            f"re_embed_candidates using embedder_type='{embedder_type}' "
+            f"(requested: {embedder_type or 'None'}, default: {self.query_embedder_type})"
+        )
+
         # Get embedder from dictionary
         premium_embedder = self.premium_embedders.get(embedder_type)
         if not premium_embedder:
@@ -256,6 +268,8 @@ class HealthcareHybridEmbedder:
                 f"Embedder type '{embedder_type}' not available. "
                 f"Available types: {list(self.premium_embedders.keys())}"
             )
+
+        logger.info(f"Using premium embedder: {type(premium_embedder).__name__}")
 
         # Re-embed candidates with selected premium model
         candidate_embeddings = premium_embedder.embed(candidate_texts)

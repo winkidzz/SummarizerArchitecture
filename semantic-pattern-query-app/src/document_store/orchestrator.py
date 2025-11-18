@@ -68,10 +68,14 @@ class SemanticPatternOrchestrator:
         )
         
         # Layer 3: Hybrid Embedding
+        query_embedder_type = os.getenv("QUERY_EMBEDDER_TYPE", "ollama")
+        logger.info(f"Initializing HybridEmbedder with default embedder type: {query_embedder_type}")
+
         self.embedder = HealthcareHybridEmbedder(
             local_model_name="all-MiniLM-L12-v2",
             qwen_model=ollama_model,
-            ollama_base_url=ollama_base_url
+            ollama_base_url=ollama_base_url,
+            query_embedder_type=query_embedder_type
         )
         
         # Layer 4: Vector Database
