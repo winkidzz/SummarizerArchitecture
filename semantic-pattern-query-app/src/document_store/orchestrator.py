@@ -9,6 +9,7 @@ from pathlib import Path
 import logging
 import os
 import hashlib
+import time
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
@@ -23,8 +24,10 @@ from .search.bm25_search import BM25Search
 from .search.hybrid_retriever import HealthcareHybridRetriever
 from .generation.rag_generator import HealthcareRAGGenerator
 from .cache.semantic_cache import HealthcareSemanticCache
+from .monitoring import QueryTelemetry, MetricsCollector
 
 logger = logging.getLogger(__name__)
+metrics = MetricsCollector()
 
 
 class SemanticPatternOrchestrator:
@@ -99,6 +102,7 @@ class SemanticPatternOrchestrator:
         )
         
         # Layer 6: Generation
+        self.ollama_generation_model = ollama_generation_model  # Store for later use
         self.generator = HealthcareRAGGenerator(
             model=ollama_generation_model,
             base_url=ollama_base_url
@@ -349,7 +353,8 @@ class SemanticPatternOrchestrator:
         top_k: int = 10,
         use_cache: bool = True,
         user_context: Optional[Dict[str, Any]] = None,
-        query_embedder_type: Optional[str] = None
+        query_embedder_type: Optional[str] = None,
+        telemetry: Optional[QueryTelemetry] = None
     ) -> Dict[str, Any]:
         """
         Query the RAG system.
@@ -369,13 +374,31 @@ class SemanticPatternOrchestrator:
 
         # Layer 7: Check cache
         if use_cache:
+            cache_start = time.time()
             # Embed query with specified or default embedder type
+            embed_start = time.time()
             query_embedding = self.embedder.embed_query(query, embedder_type=query_embedder_type)
+            embed_duration = time.time() - embed_start
+            
+            # Record embedding metrics
+            if telemetry:
+                telemetry.record_embedding(
+                    embedder_type=query_embedder_type or "default",
+                    duration=embed_duration
+                )
+            
             cached_result = self.cache.get(
                 query,
                 query_embedding,
                 user_context
             )
+            cache_duration = time.time() - cache_start
+            
+            # Record cache metrics
+            if telemetry:
+                telemetry.record_cache(hit=bool(cached_result))
+                telemetry.record_stage("cache_check", cache_duration)
+            metrics.record_cache("semantic", "get", hit=bool(cached_result))
 
             if cached_result:
                 logger.info("Cache hit - returning cached result")
@@ -385,12 +408,31 @@ class SemanticPatternOrchestrator:
                 }
 
         # Layer 5: Hybrid Retrieval
+        retrieval_start = time.time()
         # Pass embedder_type parameter through retrieval chain
         retrieved_docs = self.hybrid_retriever.retrieve(
             query,
             top_k=top_k,
             embedder_type=query_embedder_type
         )
+        retrieval_duration = time.time() - retrieval_start
+        
+        # Calculate average similarity score if available
+        avg_score = None
+        if retrieved_docs and hasattr(retrieved_docs[0], 'get'):
+            scores = [doc.get('score', 0) for doc in retrieved_docs if isinstance(doc, dict)]
+            if scores:
+                avg_score = sum(scores) / len(scores)
+        
+        # Record retrieval metrics
+        if telemetry:
+            telemetry.record_retrieval(
+                retriever_type="hybrid",
+                stage="final",
+                duration=retrieval_duration,
+                doc_count=len(retrieved_docs) if retrieved_docs else 0,
+                avg_score=avg_score
+            )
         
         if not retrieved_docs:
             return {
@@ -401,11 +443,25 @@ class SemanticPatternOrchestrator:
             }
         
         # Layer 6: Generate Response
+        generation_start = time.time()
         result = self.generator.generate(
             query,
             retrieved_docs,
             user_context
         )
+        generation_duration = time.time() - generation_start
+        
+        # Estimate token usage (rough approximation)
+        # In production, get actual token counts from the LLM response
+        estimated_tokens = len(result.get("answer", "").split()) * 1.3  # Rough estimate
+        
+        # Record generation metrics
+        if telemetry:
+            telemetry.record_generation(
+                model_type=self.ollama_generation_model,
+                duration=generation_duration,
+                tokens=int(estimated_tokens)
+            )
         
         # Layer 7: Cache result
         if use_cache:
@@ -416,6 +472,7 @@ class SemanticPatternOrchestrator:
                 result,
                 user_context
             )
+            metrics.record_cache("semantic", "set", hit=None)
         
         return {
             **result,
