@@ -1,192 +1,89 @@
 # Semantic Pattern Query App
 
-**Production-ready RAG system implementing the complete 7-layer architecture for querying the Healthcare AI Pattern Library.**
+Production-ready RAG system with **dual performance optimizations** for querying the Healthcare AI Pattern Library.
 
-This application implements a production-grade Retrieval-Augmented Generation (RAG) system using 100% open-source components and Ollama Qwen models. It follows the architecture documented in `pattern-query-app/docs/RAG Architecture.md`.
+## Key Features
 
-## 🏗️ Architecture
+- **Two-Phase Hybrid RAG**: Local embeddings (384D) for Phase 1 broad search, premium embeddings (768D Ollama/Gemini) for Phase 2 precise re-ranking
+- **Multi-Embedder Support**: Switch between Ollama and Gemini embeddings via configuration
+- **Hash-Based Incremental Re-Embedding**: Skip unchanged documents using SHA256 comparison
+- **Production Architecture**: 7-layer system with vector search, BM25, reranking, and semantic caching
+- **100% Open Source Stack**: Qdrant, Elasticsearch, Redis, Ollama, Sentence Transformers
 
-The system implements 7 layers:
-
-1. **Document Processing**: Multi-stage extraction with fallbacks (pypdf → pdfplumber)
-2. **Semantic Chunking**: Structure-aware chunking preserving markdown structure
-3. **Hybrid Embedding**: Local model for indexing + Qwen for queries and re-embedding
-4. **Vector Database**: Qdrant with scalar quantization (4x memory reduction)
-5. **Hybrid Retrieval**: Two-step vector search + BM25 + RRF + reranking
-6. **Context Management**: Intelligent context packing with citations
-7. **Semantic Caching**: Redis-based cache for similar queries
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.12+
-- Docker and Docker Compose
-- Ollama installed and running
-- 8GB+ RAM recommended
+## Quick Start
 
 ### 1. Setup Services
 
-Start all required services (Qdrant, Elasticsearch, Redis):
-
 ```bash
 cd semantic-pattern-query-app
-./scripts/setup_services.sh
-```
-
-Or manually:
-
-```bash
 docker-compose up -d
 ```
 
-### 2. Setup Ollama
+This starts Qdrant (vector DB), Elasticsearch (BM25), and Redis (caching).
 
-Make sure Ollama is running and pull the Qwen model:
+### 2. Configure Environment
+
+Copy `.env.example` to `.env` and configure:
 
 ```bash
-# Start Ollama (if not running)
-ollama serve
-
-# Pull Qwen model
-ollama pull qwen3:14b
+cp .env.example .env
 ```
 
-### 3. Install Dependencies
+**Required configuration**:
+- `GEMINI_API_KEY` - Get from https://makersuite.google.com/app/apikey
+- `OLLAMA_MODEL=nomic-embed-text` - For embeddings (must support embeddings)
+- `OLLAMA_GENERATION_MODEL=qwen3:14b` - For text generation
+- `QUERY_EMBEDDER_TYPE=ollama` - Default embedder ("ollama" or "gemini")
+
+See [.env.example](.env.example) for all options.
+
+### 3. Install Dependencies & Setup Ollama
 
 ```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Pull Ollama models
+ollama pull nomic-embed-text   # Embedding model
+ollama pull qwen3:14b          # Generation model
 ```
 
 ### 4. Ingest Pattern Library
-
-Ingest all patterns from the pattern-library directory:
 
 ```bash
 python scripts/ingest_patterns.py
 ```
 
-This will:
-- Extract all markdown files from `../pattern-library/`
-- Chunk them semantically
-- Generate embeddings (local model for indexing)
-- Store in Qdrant and Elasticsearch
+This processes all markdown files from `../pattern-library/` and creates embeddings.
 
-### 5. Query the System
-
-**CLI:**
-```bash
-python scripts/query_example.py "What is RAPTOR RAG?"
-```
-
-**API Server:**
-```bash
-python src/api_server.py
-# Then visit http://localhost:8000/docs for API documentation
-```
-
-**Python:**
-```python
-from src.document_store.orchestrator import SemanticPatternOrchestrator
-
-orchestrator = SemanticPatternOrchestrator()
-result = orchestrator.query("What is RAPTOR RAG?", top_k=5)
-print(result["answer"])
-```
-
-## 📁 Project Structure
-
-```
-semantic-pattern-query-app/
-├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
-├── docker-compose.yml                  # Service definitions
-├── src/
-│   └── document_store/
-│       ├── orchestrator.py            # Main orchestration layer
-│       ├── processors/
-│       │   ├── robust_extractor.py    # Layer 1: Multi-stage extraction
-│       │   └── semantic_chunker.py   # Layer 2: Structure-aware chunking
-│       ├── embeddings/
-│       │   ├── hybrid_embedder.py     # Layer 3: Hybrid embedding strategy
-│       │   └── qwen_embedder.py       # Ollama Qwen embedding wrapper
-│       ├── storage/
-│       │   └── qdrant_store.py        # Layer 4: Qdrant vector store
-│       ├── search/
-│       │   ├── hybrid_retriever.py   # Layer 5: Hybrid retrieval orchestration
-│       │   ├── bm25_search.py        # Elasticsearch BM25 integration
-│       │   └── two_step_retrieval.py # Two-step vector search
-│       ├── generation/
-│       │   └── rag_generator.py      # Layer 6: Context management & generation
-│       ├── cache/
-│       │   └── semantic_cache.py     # Layer 7: Semantic caching
-│       └── api_server.py             # FastAPI REST API
-├── scripts/
-│   ├── ingest_patterns.py            # Ingest pattern-library directory
-│   ├── setup_services.sh              # Setup Elasticsearch, Qdrant, Redis
-│   └── query_example.py               # CLI query example
-└── examples/
-    └── query_patterns.py              # Usage examples
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env` file or set environment variables:
+### 5. Start API Server
 
 ```bash
-# Ollama Configuration
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=qwen3:14b
-
-# Qdrant Configuration
-QDRANT_URL=http://localhost:6333
-QDRANT_COLLECTION_NAME=pattern_documents
-
-# Elasticsearch Configuration
-ELASTICSEARCH_URL=http://localhost:9200
-ELASTICSEARCH_INDEX_NAME=pattern_documents
-
-# Redis Configuration
-REDIS_HOST=localhost
-REDIS_PORT=6379
-CACHE_TTL=3600
-CACHE_SIMILARITY_THRESHOLD=0.92
-
-# Data Source
-PATTERN_LIBRARY_PATH=../pattern-library
+./venv/bin/python3 src/api_server.py
 ```
 
-### Service URLs
+Server runs at http://localhost:8000
 
-- **Qdrant**: http://localhost:6333
-- **Elasticsearch**: http://localhost:9200
-- **Redis**: localhost:6379
-- **API Server**: http://localhost:8000
+Visit http://localhost:8000/docs for interactive API documentation.
 
-## 📊 Features
+## Usage Examples
 
-### Production-Ready Architecture
+### Query via API
 
-- ✅ **Multi-stage extraction**: Handles PDFs, markdown, and text files
-- ✅ **Semantic chunking**: Preserves document structure and context
-- ✅ **Hybrid embeddings**: Cost-optimized two-step strategy
-- ✅ **Quantized storage**: 4x memory reduction with Qdrant
-- ✅ **Hybrid retrieval**: Combines semantic and keyword search
-- ✅ **Intelligent context**: Smart token management and citations
-- ✅ **Semantic caching**: 40%+ cache hit rate for similar queries
+```bash
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What is RAPTOR RAG?",
+    "top_k": 5
+  }'
+```
 
-### Performance Targets
-
-- **Average latency**: <500ms
-- **Retrieval recall@10**: >85%
-- **Cache hit rate**: >40%
-- **Memory usage**: <12GB (with quantization)
-
-## 🔍 Usage Examples
-
-### Basic Query
+### Query via Python
 
 ```python
 from src.document_store.orchestrator import SemanticPatternOrchestrator
@@ -196,80 +93,105 @@ result = orchestrator.query("What is RAPTOR RAG?", top_k=5)
 
 print(result["answer"])
 print(f"Sources: {len(result['sources'])}")
-print(f"Cache hit: {result['cache_hit']}")
 ```
 
-### Ingest Custom Documents
+### Interactive API Docs
 
-```python
-orchestrator = SemanticPatternOrchestrator()
+Visit http://localhost:8000/docs to try queries in your browser.
 
-# Ingest a single document
-orchestrator.ingest_document("path/to/document.md")
+## Architecture
 
-# Ingest a directory
-orchestrator.ingest_directory("path/to/documents", pattern="**/*.md")
+**7-Layer Production RAG System**:
+
+1. **Document Processing**: Multi-stage PDF/markdown extraction with fallbacks
+2. **Semantic Chunking**: Structure-aware chunking preserving markdown hierarchy
+3. **Hybrid Embedding**: Two-phase strategy (local 384D → premium 768D re-ranking)
+4. **Vector Database**: Qdrant with scalar quantization (4x memory reduction)
+5. **Hybrid Retrieval**: Vector search + BM25 + RRF + reranking
+6. **Context Management**: Token-aware context packing with citations
+7. **Semantic Caching**: Redis-based cache for similar queries (40%+ hit rate)
+
+## Dual Performance Optimizations
+
+### 1. Two-Phase Hybrid Embeddings
+
+**Phase 1 - Broad Search** (cost-effective):
+- Uses local model (all-MiniLM-L12-v2, 384 dimensions)
+- Retrieves top-K candidates (e.g., 50 documents)
+- Fast approximate search
+
+**Phase 2 - Precise Re-Ranking** (high-quality):
+- Re-embeds top candidates with premium embedder (Ollama/Gemini, 768 dimensions)
+- Precise similarity scoring in high-dimensional space
+- Returns top results (e.g., 10 documents)
+
+**Benefits**:
+- 90%+ cost reduction (only re-embed top candidates)
+- Better accuracy from premium embeddings on final ranking
+- Configurable via `QUERY_EMBEDDER_TYPE` environment variable
+
+### 2. Hash-Based Incremental Re-Embedding
+
+When switching embedders or re-ingesting:
+- Computes SHA256 hash of document content
+- Skips re-embedding if content unchanged
+- Only processes new/modified documents
+
+**Benefits**:
+- 10x faster re-ingestion for unchanged documents
+- Seamless embedder switching (Ollama ↔ Gemini)
+- Preserves vector DB consistency
+
+## Configuration
+
+See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed configuration options.
+
+**Key environment variables**:
+- `GEMINI_API_KEY` - Gemini API key
+- `OLLAMA_MODEL` - Ollama embedding model (default: nomic-embed-text)
+- `OLLAMA_GENERATION_MODEL` - Ollama generation model (default: qwen3:14b)
+- `QUERY_EMBEDDER_TYPE` - Default embedder: "ollama" or "gemini"
+- `QDRANT_URL` - Qdrant endpoint (default: http://localhost:6333)
+- `ELASTICSEARCH_URL` - Elasticsearch endpoint (default: http://localhost:9200)
+- `REDIS_HOST` - Redis host (default: localhost)
+
+## Documentation
+
+- [QUICKSTART.md](docs/QUICKSTART.md) - Step-by-step setup guide
+- [API_GUIDE.md](docs/API_GUIDE.md) - API endpoints and examples
+- [CONFIGURATION.md](docs/CONFIGURATION.md) - Environment variables reference
+- [CALIBRATION_GUIDE.md](docs/CALIBRATION_GUIDE.md) - Embedding calibration for cross-space mapping
+- [GEMINI_INTEGRATION.md](docs/GEMINI_INTEGRATION.md) - Using Gemini embeddings
+- [QUERY_GUIDE.md](docs/QUERY_GUIDE.md) - Advanced query patterns
+
+## Project Structure
+
+```
+semantic-pattern-query-app/
+├── README.md                    # This file
+├── requirements.txt             # Python dependencies
+├── docker-compose.yml            # Service definitions
+├── .env.example                 # Configuration template
+├── src/
+│   └── document_store/
+│       ├── orchestrator.py      # Main orchestrator
+│       ├── embeddings/          # Hybrid embedding layer
+│       ├── storage/             # Qdrant vector store
+│       ├── search/              # Hybrid retrieval
+│       ├── generation/          # RAG generation
+│       └── cache/               # Semantic caching
+├── scripts/
+│   ├── ingest_patterns.py       # Pattern ingestion
+│   └── query_example.py         # CLI query example
+└── docs/                        # Documentation
 ```
 
-### API Usage
+## Troubleshooting
 
-Start the API server:
+### Services Not Starting
 
 ```bash
-python src/api_server.py
-```
-
-Query via HTTP:
-
-```bash
-curl -X POST "http://localhost:8000/query" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What is RAPTOR RAG?", "top_k": 5}'
-```
-
-## 🧪 Testing
-
-### Check Service Health
-
-```bash
-# Qdrant
-curl http://localhost:6333/health
-
-# Elasticsearch
-curl http://localhost:9200/_cluster/health
-
-# Redis
-redis-cli ping
-
-# API
-curl http://localhost:8000/health
-```
-
-### Get System Stats
-
-```python
-orchestrator = SemanticPatternOrchestrator()
-stats = orchestrator.get_stats()
-print(stats)
-```
-
-## 🐛 Troubleshooting
-
-### Quick Reference
-
-For detailed troubleshooting guides, see:
-- **[Troubleshooting Index](docs/TROUBLESHOOTING_INDEX.md)** - Quick reference to all troubleshooting docs
-- **[Gemini Embedding Issues](docs/GEMINI_EMBEDDING_TROUBLESHOOTING.md)** - Dimension mismatch, batch handling, array shape errors
-- **[Gemini Integration Guide](GEMINI_INTEGRATION.md)** - Setup and configuration
-- **[Calibration Guide](CALIBRATION_GUIDE.md)** - Embedding calibration mapping
-- **[Environment Setup](ENV_SETUP.md)** - API keys and configuration
-
-### Common Issues
-
-#### Services Not Starting
-
-```bash
-# Check Docker is running
+# Check Docker status
 docker ps
 
 # Check service logs
@@ -281,107 +203,52 @@ docker-compose logs redis
 docker-compose restart
 ```
 
-#### Ollama Connection Issues
+### Ollama Connection Issues
 
 ```bash
 # Check Ollama is running
 curl http://localhost:11434/api/tags
 
-# Verify model is available
+# Verify models are available
 ollama list
 
-# Pull model if missing
+# Pull missing models
+ollama pull nomic-embed-text
 ollama pull qwen3:14b
 ```
 
-#### Embedding Errors
+### Embedding Errors
 
-If you encounter embedding dimension mismatches:
+**"Model does not support embeddings"**:
+- Ensure `OLLAMA_MODEL` is set to an embedding model (nomic-embed-text)
+- Ensure `OLLAMA_GENERATION_MODEL` is set to a generation model (qwen3:14b)
+- Check `.env` configuration matches model capabilities
 
-1. Check that the local embedding model matches the Qdrant vector size
-2. Verify Qwen model supports embeddings (some models may not)
-3. Check alignment matrix if using two-step retrieval
-4. **For Gemini**: See [Gemini Embedding Troubleshooting](docs/GEMINI_EMBEDDING_TROUBLESHOOTING.md)
+**Dimension mismatch**:
+- See [docs/GEMINI_INTEGRATION.md](docs/GEMINI_INTEGRATION.md) for Gemini-specific issues
+- See [docs/CALIBRATION_GUIDE.md](docs/CALIBRATION_GUIDE.md) for cross-space mapping
 
-#### Memory Issues
+### API Key Issues
 
-- Enable Qdrant quantization (already enabled by default)
-- Reduce `top_k_approximate` in retrieval
-- Use smaller embedding models
-- Increase Docker memory limits
+- Copy `.env.example` to `.env`
+- Add your Gemini API key to `GEMINI_API_KEY`
+- Never commit `.env` to git (protected by .gitignore)
 
-## 📚 Architecture Details
+## Related Projects
 
-### Layer 1: Document Processing
+- [Pattern Library](../pattern-library/) - Healthcare AI architecture blueprints
+- [Pattern Query App](../pattern-query-app/) - Alternative implementation using ChromaDB
 
-Multi-stage extraction with confidence scoring:
-- **Stage 1**: Fast extraction (pypdf) - confidence > 0.85
-- **Stage 2**: Table-aware extraction (pdfplumber) - confidence > 0.75
-- **Fallback**: Basic extraction with lower confidence
+## Built With
 
-### Layer 2: Semantic Chunking
-
-Structure-aware chunking:
-- Detects markdown sections (headers, code blocks)
-- Preserves atomic sections
-- Adds overlap only when needed
-- Respects sentence boundaries
-
-### Layer 3: Hybrid Embedding
-
-Cost-optimized strategy:
-- **Bulk indexing**: Local model (all-MiniLM-L12-v2) - FREE
-- **Queries**: Ollama Qwen embeddings - low volume
-- **Re-embedding**: Top candidates with Qwen for precision
-
-### Layer 4: Vector Database
-
-Qdrant configuration:
-- Scalar quantization (int8) - 4x memory reduction
-- On-disk storage for large datasets
-- Payload filtering for metadata queries
-
-### Layer 5: Hybrid Retrieval
-
-Multi-stage retrieval:
-1. Two-step vector search (local approximate + Qwen re-embedding)
-2. BM25 keyword search (Elasticsearch)
-3. Reciprocal Rank Fusion (RRF)
-4. Cross-encoder reranking
-
-### Layer 6: Context Management
-
-Intelligent context packing:
-- Respects token limits (8000 tokens default)
-- Prioritizes high-scoring documents
-- Tracks citations
-- Structured prompt building
-
-### Layer 7: Semantic Caching
-
-Redis-based cache:
-- Cosine similarity matching (threshold: 0.92)
-- TTL management (1 hour default)
-- Context-aware cache keys
-
-## 🔗 Related Projects
-
-- **[Pattern Library](../pattern-library/)**: The documentation this app queries
-- **[Pattern Query App](../pattern-query-app/)**: Alternative implementation using ChromaDB and ADK
-
-## 📝 License
-
-Part of the AI Summarization Reference Architecture project. See root README for license.
-
-## 🤝 Contributing
-
-Contributions welcome! Areas of focus:
-- Performance optimizations
-- Additional document formats
-- Improved reranking models
-- Monitoring and observability
+- **Qdrant** - Vector database with scalar quantization
+- **Elasticsearch** - BM25 keyword search
+- **Redis** - Semantic caching layer
+- **Ollama** - Local LLM inference (Qwen models)
+- **Google Gemini** - Premium embeddings (optional)
+- **Sentence Transformers** - Local embedding models
+- **FastAPI** - REST API framework
 
 ---
 
-**Built with**: Qdrant, Elasticsearch, Redis, Ollama, Sentence Transformers, FastAPI
-
+**Part of the AI Summarization Reference Architecture project**
