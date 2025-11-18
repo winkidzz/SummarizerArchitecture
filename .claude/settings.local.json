@@ -60,7 +60,11 @@
       "Bash(OLLAMA_MODEL=\"llama3.2:1b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" ../../../../venv312/bin/adk web:*)",
       "Bash(OLLAMA_MODEL=\"llama3.2:1b\" OLLAMA_BASE_URL=\"http://localhost:11434/v1\" /Users/sanantha/SummarizerArchitecture/venv312/bin/adk web:*)",
       "Bash(/Users/sanantha/SummarizerArchitecture/venv312/bin/python3:*)",
-      "Bash(source venv/bin/activate)"
+      "Bash(source venv/bin/activate)",
+      "Bash(kill:*)",
+      "Bash(source:*)",
+      "Bash(./venv/bin/python3:*)",
+      "Bash(ollama pull:*)"
     ],
     "deny": [],
     "ask": []
