@@ -13,42 +13,18 @@ Production-ready RAG system with **dual performance optimizations** for querying
 
 ## Quick Start
 
-### 1. Setup Services
+### Startup Sequence
+
+**Scripts must be started in this order:**
+
+#### 1. **Prerequisites** (One-time setup)
 
 ```bash
 cd semantic-pattern-query-app
-docker-compose up -d
-```
 
-This starts all infrastructure services:
-- **Qdrant** (vector DB) - Port 6333
-- **Elasticsearch** (BM25 search) - Port 9200
-- **Redis** (caching) - Port 6380
-- **Prometheus** (metrics) - Port 9090
-- **Grafana** (dashboards) - Port 3333
-
-### 2. Configure Environment
-
-Copy `.env.example` to `.env` and configure:
-
-```bash
-cp .env.example .env
-```
-
-**Required configuration**:
-- `GEMINI_API_KEY` - Get from https://makersuite.google.com/app/apikey
-- `OLLAMA_MODEL=nomic-embed-text` - For embeddings (must support embeddings)
-- `OLLAMA_GENERATION_MODEL=qwen3:14b` - For text generation
-- `QUERY_EMBEDDER_TYPE=ollama` - Default embedder ("ollama" or "gemini")
-
-See [.env.example](.env.example) for all options.
-
-### 3. Install Dependencies & Setup Ollama
-
-```bash
 # Create virtual environment
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -56,38 +32,94 @@ pip install -r requirements.txt
 # Pull Ollama models
 ollama pull nomic-embed-text   # Embedding model
 ollama pull qwen3:14b          # Generation model
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
 ```
 
-### 4. Ingest Pattern Library
+**Required configuration** in `.env`:
+- `GEMINI_API_KEY` - Get from https://makersuite.google.com/app/apikey
+- `OLLAMA_MODEL=nomic-embed-text` - Embedding model
+- `OLLAMA_GENERATION_MODEL=qwen3:14b` - Generation model
+- `QUERY_EMBEDDER_TYPE=ollama` - Default embedder ("ollama" or "gemini")
+
+#### 2. **Start Infrastructure Services** (Always first)
 
 ```bash
+# Start Docker services
+docker-compose up -d
+```
+
+This starts:
+- **Elasticsearch** (BM25 search) - Port 9200, 9300
+- **Qdrant** (vector DB) - Port 6333, 6334
+- **Redis** (caching) - Port 6380
+- **Prometheus** (metrics) - Port 9090
+- **Grafana** (dashboards) - Port 3333
+
+Wait ~15 seconds for services to become healthy.
+
+#### 3. **Ingest Documents** (One-time or when patterns update)
+
+```bash
+# Ingest pattern library
 python scripts/ingest_patterns.py
+
+# Optional: Calibrate embeddings for cross-space mapping
+python scripts/calibrate_embeddings.py
 ```
 
-This processes all markdown files from `../pattern-library/` and creates embeddings.
-
-### 5. Start API Server
+#### 4. **Start API Server** (Always after Docker services)
 
 ```bash
-./venv/bin/python3 src/api_server.py
+# Start the API server
+./scripts/start-server.sh
 ```
 
-Server runs at http://localhost:8000
+Server runs at http://localhost:8000 - Visit http://localhost:8000/docs for API documentation.
 
-Visit http://localhost:8000/docs for interactive API documentation.
-
-### 6. Launch the React UI
-
-The repository now includes a React dashboard for issuing queries via the REST API.
+#### 5. **Start Web UI** (Optional)
 
 ```bash
 cd web-ui
-cp .env.example .env     # Optional: edit VITE_API_BASE_URL
-npm install
+npm install              # First time only
 npm run dev
 ```
 
-Open http://localhost:5173 (Vite default port). The UI sends requests to `/query` and `/stats`, so make sure the FastAPI service is running first.
+Open http://localhost:5173 - The UI requires the API server to be running.
+
+### Daily Workflow
+
+**Most common usage** (after initial setup):
+
+```bash
+# Start
+docker-compose up -d              # Start infrastructure
+./scripts/start-server.sh         # Start API server
+
+# Work with the system...
+
+# Stop
+./scripts/stop-server.sh          # Stop API server
+docker-compose down               # Optional: stop infrastructure
+```
+
+### Complete Startup Script
+
+Run all services in sequence:
+
+```bash
+# Start infrastructure
+docker-compose up -d
+sleep 15
+
+# Ingest documents (skip if already done)
+python scripts/ingest_patterns.py
+
+# Start API server
+./scripts/start-server.sh
+```
 
 ## Quick Access Links
 
@@ -103,6 +135,37 @@ Once all services are running:
 - **Qdrant**: http://localhost:6333/dashboard
 
 See [docs/PORTS.md](docs/PORTS.md) for complete port configuration.
+
+### Shutdown Sequence
+
+**Stop services in reverse order:**
+
+```bash
+# 1. Stop Web UI (Ctrl+C in terminal)
+
+# 2. Stop API server
+./scripts/stop-server.sh
+
+# 3. Stop Docker services (optional)
+docker-compose down
+```
+
+### Available Scripts
+
+| Script | Purpose | When to Run |
+|--------|---------|-------------|
+| `scripts/start-server.sh` | Start API server | After Docker services |
+| `scripts/stop-server.sh` | Stop API server | When finished |
+| `scripts/ingest_patterns.py` | Load pattern documents | Once or when patterns update |
+| `scripts/calibrate_embeddings.py` | Calibrate cross-space mapping | Once or when switching embedders |
+| `scripts/query_example.py` | Test CLI query | After server starts |
+| `scripts/monitoring/setup-monitoring.sh` | Setup monitoring stack | One-time |
+| `scripts/monitoring/import_dashboards.sh` | Import Grafana dashboards | One-time or when dashboards update |
+| `scripts/monitoring/restart_api_with_metrics.sh` | Restart API with updated code | After code changes |
+| `scripts/testing/test_embedder_selection.py` | Test embedder switching | Verify embedder config |
+| `scripts/testing/test_telemetry.py` | Test telemetry system | Verify metrics collection |
+| `scripts/setup/setup_env.sh` | Environment setup | Initial setup |
+| `scripts/setup/setup_services.sh` | Service configuration | Initial setup |
 
 ## Usage Examples
 
