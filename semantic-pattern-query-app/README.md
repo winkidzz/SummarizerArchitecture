@@ -94,6 +94,18 @@ Open http://localhost:5173 - The UI requires the API server to be running.
 **Most common usage** (after initial setup):
 
 ```bash
+# Quick Start - One command (skip ingestion if already done)
+./scripts/start-all.sh --skip-ingest
+
+# Work with the system...
+
+# Quick Stop - One command
+./scripts/stop-all.sh
+```
+
+**Manual approach** (for more control):
+
+```bash
 # Start
 docker-compose up -d              # Start infrastructure
 ./scripts/start-server.sh         # Start API server
@@ -107,7 +119,17 @@ docker-compose down               # Optional: stop infrastructure
 
 ### Complete Startup Script
 
-Run all services in sequence:
+**Option 1: One-command startup** (recommended):
+
+```bash
+# Start everything (includes document ingestion)
+./scripts/start-all.sh
+
+# Start everything (skip ingestion if already done)
+./scripts/start-all.sh --skip-ingest
+```
+
+**Option 2: Manual startup** (for more control):
 
 ```bash
 # Start infrastructure
@@ -138,7 +160,14 @@ See [docs/PORTS.md](docs/PORTS.md) for complete port configuration.
 
 ### Shutdown Sequence
 
-**Stop services in reverse order:**
+**Option 1: One-command shutdown** (recommended):
+
+```bash
+# Stop all services (API, Web UI, Docker)
+./scripts/stop-all.sh
+```
+
+**Option 2: Manual shutdown** (for more control):
 
 ```bash
 # 1. Stop Web UI (Ctrl+C in terminal)
@@ -150,20 +179,66 @@ See [docs/PORTS.md](docs/PORTS.md) for complete port configuration.
 docker-compose down
 ```
 
+### Cleanup and Maintenance
+
+**Clean cache and logs** (keeps indexed data):
+
+```bash
+./scripts/clean-all.sh
+```
+
+**Full cleanup** (WARNING: Deletes all indexed data):
+
+```bash
+./scripts/clean-all.sh --full
+```
+
+After full cleanup, you'll need to re-ingest documents:
+
+```bash
+./scripts/start-all.sh  # Automatically re-ingests
+```
+
 ### Available Scripts
+
+#### Main Management Scripts
 
 | Script | Purpose | When to Run |
 |--------|---------|-------------|
-| `scripts/start-server.sh` | Start API server | After Docker services |
-| `scripts/stop-server.sh` | Stop API server | When finished |
+| `scripts/start-all.sh` | **Start all services** (Docker + API) | Daily startup |
+| `scripts/stop-all.sh` | **Stop all services** | Daily shutdown |
+| `scripts/clean-all.sh` | **Clean cache/logs** | Maintenance |
+| `scripts/clean-all.sh --full` | **Full cleanup** (deletes data) | Reset system |
+
+#### Individual Service Scripts
+
+| Script | Purpose | When to Run |
+|--------|---------|-------------|
+| `scripts/start-server.sh` | Start API server only | Manual control |
+| `scripts/stop-server.sh` | Stop API server only | Manual control |
 | `scripts/ingest_patterns.py` | Load pattern documents | Once or when patterns update |
 | `scripts/calibrate_embeddings.py` | Calibrate cross-space mapping | Once or when switching embedders |
 | `scripts/query_example.py` | Test CLI query | After server starts |
+
+#### Monitoring Scripts
+
+| Script | Purpose | When to Run |
+|--------|---------|-------------|
 | `scripts/monitoring/setup-monitoring.sh` | Setup monitoring stack | One-time |
 | `scripts/monitoring/import_dashboards.sh` | Import Grafana dashboards | One-time or when dashboards update |
 | `scripts/monitoring/restart_api_with_metrics.sh` | Restart API with updated code | After code changes |
+
+#### Testing Scripts
+
+| Script | Purpose | When to Run |
+|--------|---------|-------------|
 | `scripts/testing/test_embedder_selection.py` | Test embedder switching | Verify embedder config |
 | `scripts/testing/test_telemetry.py` | Test telemetry system | Verify metrics collection |
+
+#### Setup Scripts
+
+| Script | Purpose | When to Run |
+|--------|---------|-------------|
 | `scripts/setup/setup_env.sh` | Environment setup | Initial setup |
 | `scripts/setup/setup_services.sh` | Service configuration | Initial setup |
 

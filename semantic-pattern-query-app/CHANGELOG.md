@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added - 2025-11-18
 
+#### Management Scripts (New)
+
+**One-Command System Management**
+
+**New Scripts**:
+
+1. **scripts/start-all.sh** - Complete system startup
+   - Checks prerequisites (venv, .env, Ollama)
+   - Starts Docker services (Elasticsearch, Qdrant, Redis, Prometheus, Grafana)
+   - Waits for services to become healthy
+   - Verifies all service endpoints
+   - Ingests pattern documents (optional --skip-ingest flag)
+   - Starts API server
+   - Displays access URLs and test commands
+   - Usage: `./scripts/start-all.sh` or `./scripts/start-all.sh --skip-ingest`
+
+2. **scripts/stop-all.sh** - Complete system shutdown
+   - Stops API server (port 8000)
+   - Stops Web UI (port 5173)
+   - Stops Docker services
+   - Usage: `./scripts/stop-all.sh`
+
+3. **scripts/clean-all.sh** - System cleanup and maintenance
+   - Stops all services
+   - Flushes Redis cache
+   - Removes log files (/tmp/api_server.log)
+   - Clears Python cache (__pycache__, *.pyc)
+   - Optional --full flag removes Docker volumes (WARNING: deletes all indexed data)
+   - Usage: `./scripts/clean-all.sh` or `./scripts/clean-all.sh --full`
+
+**Benefits**:
+- Simplified daily workflow (one command to start/stop)
+- Automatic health checks and service verification
+- Safe cleanup with data preservation option
+- Clear status messages and error handling
+- Helpful access URLs and quick start commands
+
 #### Real-Time Quality Metrics System
 
 **Automatic Quality Evaluation on Every Query**

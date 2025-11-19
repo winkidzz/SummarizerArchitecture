@@ -75,7 +75,13 @@
       "Bash(docker info:*)",
       "Bash(./scripts/import_dashboards.sh:*)",
       "Bash(do)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(./scripts/stop-server.sh:*)",
+      "Bash(docker ps:*)",
+      "Bash(redis-cli:*)",
+      "Bash(docker exec:*)",
+      "Bash(./scripts/stop-all.sh:*)",
+      "Bash(./scripts/start-all.sh:*)"
     ],
     "deny": [],
     "ask": []
