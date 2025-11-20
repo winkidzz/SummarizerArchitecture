@@ -42,6 +42,7 @@ class HealthcareHybridEmbedder:
         query_embedder_type: Literal["ollama", "gemini"] = "ollama",
         qwen_model: str = "qwen3:14b",
         ollama_base_url: str = "http://localhost:11434",
+        ollama_keep_alive: str = "10m",
         gemini_model: str = "models/embedding-001",
         gemini_api_key: Optional[str] = None
     ):
@@ -74,7 +75,8 @@ class HealthcareHybridEmbedder:
         try:
             self.premium_embedders["ollama"] = QwenEmbedder(
                 model=qwen_model,
-                base_url=ollama_base_url
+                base_url=ollama_base_url,
+                keep_alive=ollama_keep_alive
             )
             logger.info(f"✓ Loaded Ollama embedder: {qwen_model}")
         except Exception as e:

@@ -7,6 +7,7 @@ interface QueryFormProps {
 }
 
 type EmbedderOption = "auto" | "ollama" | "gemini";
+type WebModeOption = "parallel" | "on_low_confidence";
 
 const QueryForm = ({ loading, onSubmit }: QueryFormProps) => {
   const [query, setQuery] = useState("");
@@ -14,6 +15,8 @@ const QueryForm = ({ loading, onSubmit }: QueryFormProps) => {
   const [useCache, setUseCache] = useState(true);
   const [embedder, setEmbedder] = useState<EmbedderOption>("auto");
   const [userNotes, setUserNotes] = useState("");
+  const [enableWebSearch, setEnableWebSearch] = useState(true);
+  const [webMode, setWebMode] = useState<WebModeOption>("on_low_confidence");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,6 +28,8 @@ const QueryForm = ({ loading, onSubmit }: QueryFormProps) => {
       query: query.trim(),
       top_k: topK,
       use_cache: useCache,
+      enable_web_search: enableWebSearch,
+      web_mode: webMode,
     };
 
     if (embedder !== "auto") {
@@ -103,6 +108,31 @@ const QueryForm = ({ loading, onSubmit }: QueryFormProps) => {
             disabled={loading}
           />
           Use cache for repeated questions
+        </label>
+      </div>
+
+      <div className="field-grid">
+        <label className="input-label checkbox-field">
+          <input
+            type="checkbox"
+            checked={enableWebSearch}
+            onChange={(event) => setEnableWebSearch(event.target.checked)}
+            disabled={loading}
+          />
+          Enable web search (3-tier retrieval)
+        </label>
+
+        <label className="input-label" htmlFor="web-mode-input">
+          Web search mode
+          <select
+            id="web-mode-input"
+            value={webMode}
+            onChange={(event) => setWebMode(event.target.value as WebModeOption)}
+            disabled={loading || !enableWebSearch}
+          >
+            <option value="on_low_confidence">On low confidence (conditional)</option>
+            <option value="parallel">Parallel (always search all tiers)</option>
+          </select>
         </label>
       </div>
 

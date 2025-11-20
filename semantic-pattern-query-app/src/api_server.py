@@ -64,14 +64,20 @@ def get_orchestrator() -> SemanticPatternOrchestrator:
         # Read Elasticsearch URL from environment
         # Default to local Elasticsearch instance
         elasticsearch_url = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
-        
-        logger.info(f"Creating orchestrator with ollama_model={ollama_model}, generation_model={ollama_generation_model}, elasticsearch_url={elasticsearch_url}")
+
+        # Read web search configuration
+        enable_web_search = os.getenv("ENABLE_WEB_SEARCH", "false").lower() == "true"
+        web_search_provider = os.getenv("WEB_SEARCH_PROVIDER", "duckduckgo")
+
+        logger.info(f"Creating orchestrator with ollama_model={ollama_model}, generation_model={ollama_generation_model}, elasticsearch_url={elasticsearch_url}, enable_web_search={enable_web_search}")
 
         _orchestrator = SemanticPatternOrchestrator(
             ollama_model=ollama_model,
             ollama_generation_model=ollama_generation_model,
             ollama_base_url=ollama_base_url,
-            elasticsearch_url=elasticsearch_url
+            elasticsearch_url=elasticsearch_url,
+            enable_web_search=enable_web_search,
+            web_search_provider_type=web_search_provider
         )
     return _orchestrator
 
@@ -84,6 +90,8 @@ class QueryRequest(BaseModel):
     use_cache: bool = True
     user_context: Optional[Dict[str, Any]] = None
     query_embedder_type: Optional[str] = None  # "ollama" or "gemini"
+    enable_web_search: bool = False  # Enable web search augmentation
+    web_mode: str = "on_low_confidence"  # "parallel" or "on_low_confidence"
 
 
 class QueryResponse(BaseModel):
@@ -94,6 +102,8 @@ class QueryResponse(BaseModel):
     retrieved_docs: int
     context_docs_used: Optional[int] = None
     quality_metrics: Optional[Dict[str, Any]] = None  # Real-time quality metrics
+    citations: Optional[List[Dict[str, Any]]] = None  # Phase 2: Citations for audit/compliance
+    retrieval_stats: Optional[Dict[str, Any]] = None  # Phase 2: Tier breakdown
 
 
 class StatsResponse(BaseModel):
@@ -154,11 +164,13 @@ async def health():
 async def query(request: QueryRequest):
     """
     Query the pattern library with telemetry tracking.
-    
+
     Args:
         request: Query request with query text and options
             - query_embedder_type: "ollama" (default) or "gemini" for query space embeddings
-        
+            - enable_web_search: Enable web search augmentation (default: False)
+            - web_mode: "parallel" (always search web) or "on_low_confidence" (conditional)
+
     Returns:
         Query response with answer, sources, and metadata
     """
@@ -168,13 +180,20 @@ async def query(request: QueryRequest):
         user_context=request.user_context or {}
     )
     telemetry.start()
-    
+
     try:
         # Validate query_embedder_type
         if request.query_embedder_type and request.query_embedder_type not in ["ollama", "gemini"]:
             raise HTTPException(
                 status_code=400,
                 detail=f"query_embedder_type must be 'ollama' or 'gemini', got: {request.query_embedder_type}"
+            )
+
+        # Validate web_mode
+        if request.web_mode not in ["parallel", "on_low_confidence"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"web_mode must be 'parallel' or 'on_low_confidence', got: {request.web_mode}"
             )
         
         # Pass telemetry to orchestrator
@@ -185,7 +204,9 @@ async def query(request: QueryRequest):
             use_cache=request.use_cache,
             user_context=request.user_context,
             query_embedder_type=request.query_embedder_type,
-            telemetry=telemetry  # Pass telemetry context
+            telemetry=telemetry,  # Pass telemetry context
+            enable_web_search=request.enable_web_search,  # NEW: Pass web search flag
+            web_mode=request.web_mode  # NEW: Pass web search mode
         )
 
         # Evaluate quality metrics in real-time (runs on every query)
@@ -200,7 +221,9 @@ async def query(request: QueryRequest):
             retrieved_docs = orchestrator.hybrid_retriever.retrieve(
                 request.query,
                 top_k=request.top_k,
-                embedder_type=request.query_embedder_type
+                embedder_type=request.query_embedder_type,
+                enable_web_search=request.enable_web_search,
+                web_mode=request.web_mode
             )
 
             # Extract context chunks from retrieved docs

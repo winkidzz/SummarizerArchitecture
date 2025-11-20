@@ -30,35 +30,40 @@ class QwenEmbedder:
     def __init__(
         self,
         model: str = "qwen3:14b",
-        base_url: str = "http://localhost:11434"
+        base_url: str = "http://localhost:11434",
+        keep_alive: str = "10m"
     ):
         """
         Initialize Qwen embedder.
-        
+
         Args:
             model: Ollama model name
             base_url: Ollama API base URL
+            keep_alive: How long to keep model loaded (e.g., "10m", "1h").
+                       Prevents model unloading between requests for better stability.
         """
         if not OLLAMA_AVAILABLE:
             raise ImportError(
                 "ollama package is not installed. "
                 "Install it with: pip install ollama"
             )
-        
+
         self.model = model
         self.base_url = base_url
+        self.keep_alive = keep_alive
         self.client = ollama.Client(host=base_url)
-        
+
         # Check if model supports embeddings
         self._verify_embedding_support()
     
     def _verify_embedding_support(self):
         """Verify that the model supports embeddings."""
         try:
-            # Try a test embedding
+            # Try a test embedding (also warms up the model)
             test_response = self.client.embeddings(
                 model=self.model,
-                prompt="test"
+                prompt="test",
+                keep_alive=self.keep_alive
             )
             if "embedding" in test_response:
                 self.embedding_dimension = len(test_response["embedding"])
@@ -101,7 +106,8 @@ class QwenEmbedder:
                 try:
                     response = self.client.embeddings(
                         model=self.model,
-                        prompt=text
+                        prompt=text,
+                        keep_alive=self.keep_alive
                     )
                     
                     if "embedding" in response:

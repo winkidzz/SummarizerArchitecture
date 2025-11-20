@@ -6,10 +6,14 @@ Production-ready RAG system with **dual performance optimizations** for querying
 
 - **Two-Phase Hybrid RAG**: Local embeddings (384D) for Phase 1 broad search, premium embeddings (768D Ollama/Gemini) for Phase 2 precise re-ranking
 - **Multi-Embedder Support**: Switch between Ollama and Gemini embeddings via configuration
+- **3-Tier Web Architecture**: Pattern Library → Web Knowledge Base (cached) → Live Web Search with weighted RRF fusion
+- **Web Knowledge Base**: Persistent cache with audit trail, citations, and reinforcement learning (Phase 2)
+- **Web Search Augmentation**: Trafilatura (primary) for full content extraction + DuckDuckGo (fallback) for URL discovery (Phase 1)
+- **Citation System**: APA-formatted citations with full provenance tracking for compliance
 - **Hash-Based Incremental Re-Embedding**: Skip unchanged documents using SHA256 comparison
 - **Production Architecture**: 7-layer system with vector search, BM25, reranking, and semantic caching
 - **Real-Time Quality Metrics**: Automatic hallucination detection and quality monitoring on every query
-- **100% Open Source Stack**: Qdrant, Elasticsearch, Redis, Ollama, Sentence Transformers
+- **100% Open Source Stack**: Qdrant, Elasticsearch, Redis, Ollama, Trafilatura, Sentence Transformers
 
 ## Quick Start
 
@@ -43,6 +47,9 @@ cp .env.example .env
 - `OLLAMA_MODEL=nomic-embed-text` - Embedding model
 - `OLLAMA_GENERATION_MODEL=qwen3:14b` - Generation model
 - `QUERY_EMBEDDER_TYPE=ollama` - Default embedder ("ollama" or "gemini")
+- `ENABLE_WEB_SEARCH=false` - Enable web search augmentation (optional)
+- `ENABLE_WEB_KNOWLEDGE_BASE=true` - Enable persistent web cache with citations (Phase 2, optional)
+- `WEB_KB_TTL_DAYS=30` - Time-to-live for cached web results (default: 30 days)
 
 #### 2. **Start Infrastructure Services** (Always first)
 
@@ -246,6 +253,8 @@ After full cleanup, you'll need to re-ingest documents:
 
 ### Query via API
 
+**Basic Query**:
+
 ```bash
 curl -X POST "http://localhost:8000/query" \
   -H "Content-Type: application/json" \
@@ -255,7 +264,28 @@ curl -X POST "http://localhost:8000/query" \
   }'
 ```
 
+**Query with Web Search** (requires `ENABLE_WEB_SEARCH=true` in `.env`):
+
+```bash
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What are the latest RAG patterns in 2025?",
+    "top_k": 10,
+    "enable_web_search": true,
+    "web_mode": "parallel"
+  }'
+```
+
+**Web Search Modes**:
+- `parallel` - Always search web in parallel with local search
+- `on_low_confidence` - Only search web when local results have low confidence (recommended)
+
+See [docs/guides/WEB_SEARCH_GUIDE.md](docs/guides/WEB_SEARCH_GUIDE.md) for detailed web search documentation.
+
 ### Query via Python
+
+**Basic Query**:
 
 ```python
 from src.document_store.orchestrator import SemanticPatternOrchestrator
@@ -265,6 +295,33 @@ result = orchestrator.query("What is RAPTOR RAG?", top_k=5)
 
 print(result["answer"])
 print(f"Sources: {len(result['sources'])}")
+```
+
+**Query with Web Search** (Trafilatura + DuckDuckGo):
+
+```python
+from src.document_store.orchestrator import SemanticPatternOrchestrator
+
+# Initialize with hybrid web search (RECOMMENDED)
+# Trafilatura extracts full content, DuckDuckGo provides URLs
+orchestrator = SemanticPatternOrchestrator(
+    enable_web_search=True,
+    web_search_provider_type="hybrid"  # Trafilatura + DuckDuckGo
+)
+
+# Query with parallel web search (always search web)
+result = orchestrator.query(
+    query="What are the latest RAG patterns in 2025?",
+    top_k=10,
+    enable_web_search=True,
+    web_mode="parallel"
+)
+
+# Check for web sources in results
+for source in result["sources"]:
+    source_type = source.get("metadata", {}).get("source_type", "local")
+    extraction_method = source.get("metadata", {}).get("extraction_method", "unknown")
+    print(f"- {source['title']} (from: {source_type}, method: {extraction_method})")
 ```
 
 ### Interactive API Docs
@@ -355,6 +412,8 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed configuration op
 - `OLLAMA_MODEL` - Ollama embedding model (default: nomic-embed-text)
 - `OLLAMA_GENERATION_MODEL` - Ollama generation model (default: qwen3:14b)
 - `QUERY_EMBEDDER_TYPE` - Default embedder: "ollama" or "gemini"
+- `ENABLE_WEB_SEARCH` - Enable web search augmentation: "true" or "false" (default: false)
+- `WEB_SEARCH_PROVIDER` - Web search provider: "hybrid" (Trafilatura + DuckDuckGo, recommended), "trafilatura", "duckduckgo"
 - `QDRANT_URL` - Qdrant endpoint (default: http://localhost:6333)
 - `ELASTICSEARCH_URL` - Elasticsearch endpoint (default: http://localhost:9200)
 - `REDIS_HOST` - Redis host (default: localhost)
@@ -370,6 +429,7 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed configuration op
 ### Usage & Features
 - [docs/guides/API_GUIDE.md](docs/guides/API_GUIDE.md) - API endpoints and examples
 - [docs/guides/QUERY_GUIDE.md](docs/guides/QUERY_GUIDE.md) - Advanced query patterns
+- [docs/guides/WEB_SEARCH_GUIDE.md](docs/guides/WEB_SEARCH_GUIDE.md) - Web search integration guide
 - [docs/guides/EMBEDDER_SELECTION_GUIDE.md](docs/guides/EMBEDDER_SELECTION_GUIDE.md) - Choosing embedders
 - [docs/guides/EVALUATION_QUICK_START.md](docs/guides/EVALUATION_QUICK_START.md) - Quality metrics evaluation
 
@@ -406,6 +466,7 @@ semantic-pattern-query-app/
 │       ├── embeddings/         # Hybrid embedding (local + premium)
 │       ├── storage/            # Qdrant vector store
 │       ├── search/             # Hybrid retrieval (vector + BM25)
+│       ├── web/                # Web search providers (DuckDuckGo)
 │       ├── generation/         # RAG generation with citations
 │       ├── cache/              # Semantic caching (Redis)
 │       ├── monitoring/         # Prometheus metrics & telemetry
@@ -415,6 +476,7 @@ semantic-pattern-query-app/
 │   ├── test_quality_metrics_standalone.py # Evaluation module tests
 │   ├── test_healthcare_evaluation.py      # Healthcare scenario tests
 │   ├── test_evaluation_comparison.py      # Comparison tests
+│   ├── test_web_search_integration.py     # Web search tests
 │   └── test_optimizations.py              # Performance tests
 ├── scripts/
 │   ├── ingest_patterns.py      # Pattern ingestion
@@ -524,6 +586,8 @@ ollama pull qwen3:14b
 - **Redis** - Semantic caching layer
 - **Ollama** - Local LLM inference (Qwen models)
 - **Google Gemini** - Premium embeddings (optional)
+- **Trafilatura** - Web content extraction (primary)
+- **DuckDuckGo** - Web search (fallback)
 - **Sentence Transformers** - Local embedding models
 - **FastAPI** - REST API framework
 

@@ -4,16 +4,26 @@ Comprehensive guide for the one-command management scripts that simplify daily o
 
 ## Overview
 
-Three powerful scripts for complete system lifecycle management:
+Four powerful scripts for complete system lifecycle management:
 
-1. **start-all.sh** - Start everything in correct sequence
-2. **stop-all.sh** - Stop everything gracefully
-3. **clean-all.sh** - Clean cache, logs, and optionally data
+1. **system-monitor.sh** - Monitor and manage all services (NEW!)
+2. **start-all.sh** - Start everything in correct sequence
+3. **stop-all.sh** - Stop everything gracefully
+4. **clean-all.sh** - Clean cache, logs, and optionally data
 
 ## Quick Reference
 
 ```bash
-# Daily Workflow
+# Check System Status
+./scripts/system-monitor.sh status      # Check which services are up/down
+./scripts/system-monitor.sh monitor     # Continuous monitoring (Ctrl+C to exit)
+
+# Service Management
+./scripts/system-monitor.sh start       # Start all services
+./scripts/system-monitor.sh stop        # Stop all services
+./scripts/system-monitor.sh restart     # Restart all services
+
+# Daily Workflow (Legacy)
 ./scripts/start-all.sh --skip-ingest    # Start (skip re-ingestion)
 ./scripts/stop-all.sh                   # Stop
 
@@ -26,6 +36,127 @@ Three powerful scripts for complete system lifecycle management:
 ```
 
 ## Detailed Documentation
+
+### system-monitor.sh (NEW!)
+
+**Purpose**: Real-time health monitoring and service management for all system dependencies
+
+**Usage**:
+```bash
+# Check status of all services
+./scripts/system-monitor.sh status
+
+# Start all services
+./scripts/system-monitor.sh start
+
+# Stop all services
+./scripts/system-monitor.sh stop
+
+# Restart all services
+./scripts/system-monitor.sh restart
+
+# Continuous monitoring (refreshes every 30s)
+./scripts/system-monitor.sh monitor
+```
+
+**What it monitors**:
+
+1. **Ollama** (http://localhost:11434)
+   - LLM generation and embeddings
+   - Shows process PID
+   - Checks API health
+
+2. **Qdrant** (http://localhost:6333)
+   - Vector database for Pattern Library and Web KB
+   - Checks collections endpoint
+   - Shows port status
+
+3. **Elasticsearch** (http://localhost:9200)
+   - BM25 sparse search
+   - Checks cluster health
+   - Shows port status
+
+4. **Redis** (localhost:6380)
+   - Caching layer
+   - Uses redis-cli ping
+   - Detects unresponsive states
+
+5. **API Server** (http://localhost:8000)
+   - FastAPI RAG endpoint
+   - Shows process PID
+   - Checks /health endpoint
+
+6. **UI Server** (http://localhost:5173)
+   - Vite dev server (React/Vue)
+   - Shows port status
+   - Checks HTTP response
+
+**Output Example**:
+```
+═══════════════════════════════════════════════════
+  System Status Check
+═══════════════════════════════════════════════════
+
+✓ Ollama is UP (http://localhost:11434)
+  ℹ Process: PID 79273
+
+✓ Qdrant is UP (http://localhost:6333)
+  ℹ Port 6333 is in use
+
+✓ Elasticsearch is UP (http://localhost:9200)
+  ℹ Port 9200 is in use
+
+✗ Redis is DOWN
+  ⚠ Port 6380 is in use but not responding
+
+✓ API Server is UP (http://localhost:8000)
+  ℹ Process: PID 53377
+
+✗ UI Server is DOWN
+
+═══════════════════════════════════════════════════
+⚠ 4/6 services are running
+  Run './scripts/system-monitor.sh start' to start missing services
+═══════════════════════════════════════════════════
+```
+
+**Features**:
+- Color-coded status (Green=UP, Red=DOWN, Yellow=Warning)
+- Process PID tracking
+- Port usage detection
+- Intelligent error messages
+- Automatic Docker container management
+- Cross-platform (macOS and Linux)
+- Non-blocking health checks (2s timeout)
+
+**Troubleshooting**:
+
+1. **Service shows DOWN but port is in use**
+   - Service may be starting up or unresponsive
+   - Check logs: `tail -f logs/*.log`
+   - Try restart: `./scripts/system-monitor.sh restart`
+
+2. **Redis "port in use but not responding"**
+   - Redis may be hung
+   - Stop and restart: `docker stop redis && docker start redis`
+
+3. **UI Server not starting**
+   - Check dependencies: `cd ../summarizer-ui && npm install`
+   - View logs: `tail -f /tmp/ui_server.log`
+
+4. **All services show DOWN but were working**
+   - Docker may have stopped
+   - Check Docker: `docker ps`
+   - Start Docker Desktop if needed
+
+**When to use**:
+- ✅ Quick health check before running queries
+- ✅ Debugging "connection refused" errors
+- ✅ Starting/stopping all services at once
+- ✅ Continuous monitoring during development
+- ✅ Finding which service is causing issues
+
+---
 
 ### start-all.sh
 

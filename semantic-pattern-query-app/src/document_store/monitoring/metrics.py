@@ -301,12 +301,54 @@ citation_grounding_score = Histogram(
 )
 
 # ============================================================================
+# Web Search Metrics (Phase 1)
+# ============================================================================
+
+web_search_queries = Counter(
+    'rag_web_search_queries_total',
+    'Total web search queries',
+    ['mode', 'status']  # mode: parallel/on_low_confidence, status: success/error
+)
+
+web_search_results = Histogram(
+    'rag_web_search_results',
+    'Number of web search results returned',
+    buckets=[0, 1, 3, 5, 10, 20]
+)
+
+web_search_duration = Histogram(
+    'rag_web_search_duration_seconds',
+    'Web search query duration',
+    ['provider'],  # provider: duckduckgo, tavily, etc.
+    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
+)
+
+web_search_trust_scores = Histogram(
+    'rag_web_search_trust_scores',
+    'Web search result trust scores',
+    buckets=[0.0, 0.3, 0.5, 0.7, 0.9, 1.0]
+)
+
+web_source_ratio = Histogram(
+    'rag_web_source_ratio',
+    'Ratio of web results in final ranking (0.0-1.0)',
+    buckets=[0.0, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0]
+)
+
+# ============================================================================
 # Helper Functions
 # ============================================================================
 
 class MetricsCollector:
     """Helper class for collecting metrics with context."""
-    
+
+    # Web search metrics as class attributes (Phase 1)
+    web_search_queries = web_search_queries
+    web_search_results = web_search_results
+    web_search_duration = web_search_duration
+    web_search_trust_scores = web_search_trust_scores
+    web_source_ratio = web_source_ratio
+
     @staticmethod
     def record_query(
         embedder_type: str,

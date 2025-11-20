@@ -25,6 +25,8 @@ from .search.hybrid_retriever import HealthcareHybridRetriever
 from .generation.rag_generator import HealthcareRAGGenerator
 from .cache.semantic_cache import HealthcareSemanticCache
 from .monitoring import QueryTelemetry, MetricsCollector
+from .web.providers import DuckDuckGoProvider, TrafilaturaProvider, WebSearchConfig
+from .web.knowledge_base import WebKnowledgeBaseManager, WebKnowledgeBaseConfig
 
 logger = logging.getLogger(__name__)
 metrics = MetricsCollector()
@@ -50,7 +52,10 @@ class SemanticPatternOrchestrator:
         redis_host: Optional[str] = None,
         ollama_model: str = "nomic-embed-text",
         ollama_generation_model: str = "qwen3:14b",
-        ollama_base_url: str = "http://localhost:11434"
+        ollama_base_url: str = "http://localhost:11434",
+        # Web search configuration (Phase 1)
+        enable_web_search: bool = False,
+        web_search_provider_type: str = "duckduckgo"
     ):
         """
         Initialize orchestrator with all components.
@@ -62,6 +67,8 @@ class SemanticPatternOrchestrator:
             ollama_model: Ollama embedding model name
             ollama_generation_model: Ollama generation/chat model name
             ollama_base_url: Ollama API base URL
+            enable_web_search: Enable web search integration (default: False)
+            web_search_provider_type: Web search provider ("duckduckgo")
         """
         # Layer 1: Document Processing
         self.extractor = RobustDocumentExtractor()
@@ -74,12 +81,14 @@ class SemanticPatternOrchestrator:
         
         # Layer 3: Hybrid Embedding
         query_embedder_type = os.getenv("QUERY_EMBEDDER_TYPE", "ollama")
+        ollama_keep_alive = os.getenv("OLLAMA_KEEP_ALIVE", "10m")
         logger.info(f"Initializing HybridEmbedder with default embedder type: {query_embedder_type}")
 
         self.embedder = HealthcareHybridEmbedder(
             local_model_name="all-MiniLM-L12-v2",
             qwen_model=ollama_model,
             ollama_base_url=ollama_base_url,
+            ollama_keep_alive=ollama_keep_alive,
             query_embedder_type=query_embedder_type
         )
         
@@ -96,9 +105,85 @@ class SemanticPatternOrchestrator:
         )
         
         self.bm25_search = BM25Search(url=elasticsearch_url)
+
+        # Web search provider (optional, Phase 1)
+        # Trafilatura is PRIMARY, DuckDuckGo is fallback
+        self.web_search_provider = None
+        if enable_web_search:
+            web_config = WebSearchConfig(
+                default_provider=web_search_provider_type,
+                # Trafilatura settings
+                trafilatura_timeout=int(os.getenv("WEB_SEARCH_TRAFILATURA_TIMEOUT", "10")),
+                trafilatura_favor_recall=os.getenv("WEB_SEARCH_TRAFILATURA_FAVOR_RECALL", "true").lower() == "true",
+                # DuckDuckGo settings
+                ddg_max_results=int(os.getenv("WEB_SEARCH_MAX_RESULTS", "5")),
+                ddg_region=os.getenv("WEB_SEARCH_REGION", "wt-wt"),
+                ddg_safesearch=os.getenv("WEB_SEARCH_SAFESEARCH", "moderate"),
+                # Trust scoring
+                enable_trust_scoring=os.getenv("WEB_SEARCH_TRUST_SCORING", "true").lower() == "true",
+                trusted_domains=os.getenv("WEB_SEARCH_TRUSTED_DOMAINS", ".gov,.edu,.org").split(","),
+                max_queries_per_minute=int(os.getenv("WEB_SEARCH_MAX_QUERIES_PER_MINUTE", "10")),
+                # Hybrid mode
+                trafilatura_fallback_to_ddg=True,
+                use_trafilatura_with_ddg_urls=True
+            )
+
+            if web_search_provider_type in ["trafilatura", "hybrid"]:
+                try:
+                    # Initialize DuckDuckGo as fallback
+                    ddg_provider = DuckDuckGoProvider(config=web_config)
+                    # Initialize Trafilatura with DuckDuckGo fallback
+                    self.web_search_provider = TrafilaturaProvider(
+                        config=web_config,
+                        ddg_fallback=ddg_provider
+                    )
+                    logger.info("Web search enabled with Trafilatura (primary) + DuckDuckGo (fallback)")
+                except Exception as e:
+                    logger.warning(f"Could not initialize Trafilatura, falling back to DuckDuckGo only: {e}")
+                    try:
+                        self.web_search_provider = DuckDuckGoProvider(config=web_config)
+                        logger.info("Web search enabled with DuckDuckGo provider only")
+                    except Exception as e2:
+                        logger.warning(f"Could not initialize DuckDuckGo either: {e2}")
+                        logger.warning("Web search will be disabled")
+            elif web_search_provider_type == "duckduckgo":
+                try:
+                    self.web_search_provider = DuckDuckGoProvider(config=web_config)
+                    logger.info("Web search enabled with DuckDuckGo provider only")
+                except Exception as e:
+                    logger.warning(f"Could not initialize web search: {e}")
+                    logger.warning("Web search will be disabled")
+            else:
+                logger.warning(f"Unknown web search provider: {web_search_provider_type}")
+
+        # Web Knowledge Base (Phase 2 - Tier 2)
+        self.web_kb_manager = None
+        enable_web_kb = os.getenv("ENABLE_WEB_KNOWLEDGE_BASE", "true").lower() == "true"
+        if enable_web_search and enable_web_kb:
+            try:
+                web_kb_config = WebKnowledgeBaseConfig(
+                    qdrant_url=qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333"),
+                    collection_name=os.getenv("WEB_KB_COLLECTION_NAME", "web_knowledge"),
+                    vector_size=self.embedder.local_dimension,
+                    ttl_days=int(os.getenv("WEB_KB_TTL_DAYS", "30")),
+                    max_documents=int(os.getenv("WEB_KB_MAX_SIZE", "10000")),
+                    enable_auto_ingest=os.getenv("WEB_KB_ENABLE_AUTO_INGEST", "true").lower() == "true",
+                    tier_weight=float(os.getenv("TIER_WEB_KB_WEIGHT", "0.9"))
+                )
+                self.web_kb_manager = WebKnowledgeBaseManager(
+                    config=web_kb_config,
+                    embedder=self.embedder
+                )
+                logger.info("Web Knowledge Base (Tier 2) initialized")
+            except Exception as e:
+                logger.warning(f"Could not initialize Web Knowledge Base: {e}")
+                logger.warning("Web KB will be disabled, only live web search available")
+
         self.hybrid_retriever = HealthcareHybridRetriever(
             two_step_retriever=self.two_step_retriever,
-            bm25_search=self.bm25_search
+            bm25_search=self.bm25_search,
+            web_search_provider=self.web_search_provider,
+            web_kb_manager=self.web_kb_manager
         )
         
         # Layer 6: Generation
@@ -354,11 +439,14 @@ class SemanticPatternOrchestrator:
         use_cache: bool = True,
         user_context: Optional[Dict[str, Any]] = None,
         query_embedder_type: Optional[str] = None,
-        telemetry: Optional[QueryTelemetry] = None
+        telemetry: Optional[QueryTelemetry] = None,
+        # Web search parameters (Phase 1)
+        enable_web_search: bool = False,
+        web_mode: str = "on_low_confidence"
     ) -> Dict[str, Any]:
         """
-        Query the RAG system.
-        
+        Query the RAG system with optional web search.
+
         Args:
             query: User query
             top_k: Number of results
@@ -366,7 +454,10 @@ class SemanticPatternOrchestrator:
             user_context: Optional user context
             query_embedder_type: Premium embedder to use ("ollama" or "gemini")
                 If None, uses the default embedder configured at initialization
-            
+            telemetry: Optional telemetry object for tracking
+            enable_web_search: Enable live web search (default: False)
+            web_mode: Web search mode - "parallel" or "on_low_confidence"
+
         Returns:
             Dictionary with answer, sources, and metadata
         """
@@ -409,11 +500,13 @@ class SemanticPatternOrchestrator:
 
         # Layer 5: Hybrid Retrieval
         retrieval_start = time.time()
-        # Pass embedder_type parameter through retrieval chain
+        # Pass embedder_type and web search parameters through retrieval chain
         retrieved_docs = self.hybrid_retriever.retrieve(
             query,
             top_k=top_k,
-            embedder_type=query_embedder_type
+            embedder_type=query_embedder_type,
+            enable_web_search=enable_web_search,
+            web_mode=web_mode
         )
         retrieval_duration = time.time() - retrieval_start
         
@@ -439,9 +532,56 @@ class SemanticPatternOrchestrator:
                 "answer": "I couldn't find any relevant information in the pattern library.",
                 "sources": [],
                 "cache_hit": False,
-                "retrieved_docs": 0
+                "retrieved_docs": 0,
+                "citations": [],
+                "retrieval_stats": {
+                    "tier_1_results": 0,
+                    "tier_2_results": 0,
+                    "tier_3_results": 0
+                }
             }
-        
+
+        # Phase 2: Extract citations and retrieval stats
+        citations = []
+        retrieval_stats = {
+            "tier_1_results": 0,  # Pattern Library
+            "tier_2_results": 0,  # Web KB
+            "tier_3_results": 0,  # Live Web
+            "cache_hit": False
+        }
+
+        citation_id = 1
+        for doc in retrieved_docs:
+            metadata = doc.get("metadata", {})
+            # Check both 'layer' (old) and 'source_type' (new) for backwards compatibility
+            source = metadata.get("source_type") or metadata.get("layer", "pattern_library")
+
+            # Count by tier
+            if source == "web_knowledge_base":
+                retrieval_stats["tier_2_results"] += 1
+                retrieval_stats["cache_hit"] = True
+            elif source == "web_search":
+                retrieval_stats["tier_3_results"] += 1
+            else:
+                retrieval_stats["tier_1_results"] += 1
+
+            # Extract citation if available
+            citation_text = metadata.get("citation_text")
+            if citation_text:
+                citation = {
+                    "id": citation_id,
+                    "citation_apa": citation_text,
+                    "source_type": source,  # Use the normalized source
+                    "trust_score": metadata.get("trust_score", 1.0),
+                    "url": metadata.get("url"),
+                    "title": metadata.get("title"),
+                    "access_date": metadata.get("fetched_timestamp") or metadata.get("access_date")
+                }
+                # Remove None values
+                citation = {k: v for k, v in citation.items() if v is not None}
+                citations.append(citation)
+                citation_id += 1
+
         # Layer 6: Generate Response
         generation_start = time.time()
         result = self.generator.generate(
@@ -477,7 +617,9 @@ class SemanticPatternOrchestrator:
         return {
             **result,
             "cache_hit": False,
-            "retrieved_docs": len(retrieved_docs)
+            "retrieved_docs": len(retrieved_docs),
+            "citations": citations,  # Phase 2: Citations for audit/compliance
+            "retrieval_stats": retrieval_stats  # Phase 2: Tier breakdown
         }
     
     def ingest_directory(
