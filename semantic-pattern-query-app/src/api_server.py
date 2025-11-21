@@ -99,7 +99,7 @@ class QueryResponse(BaseModel):
     answer: str
     sources: List[Dict[str, Any]]
     cache_hit: bool
-    retrieved_docs: int
+    retrieved_docs: Optional[int] = None
     context_docs_used: Optional[int] = None
     quality_metrics: Optional[Dict[str, Any]] = None  # Real-time quality metrics
     citations: Optional[List[Dict[str, Any]]] = None  # Phase 2: Citations for audit/compliance
@@ -180,6 +180,13 @@ async def query(request: QueryRequest):
         user_context=request.user_context or {}
     )
     telemetry.start()
+
+    # Log incoming request parameters for debugging
+    logger.info(
+        f"Query request received: enable_web_search={request.enable_web_search}, "
+        f"web_mode={request.web_mode}, top_k={request.top_k}, "
+        f"query_embedder_type={request.query_embedder_type}, use_cache={request.use_cache}"
+    )
 
     try:
         # Validate query_embedder_type

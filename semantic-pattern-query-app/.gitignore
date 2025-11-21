@@ -58,3 +58,4 @@ web-ui/dist/
 # OS
 .DS_Store
 Thumbs.db
+logs/

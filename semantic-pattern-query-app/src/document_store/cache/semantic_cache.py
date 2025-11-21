@@ -35,11 +35,11 @@ class HealthcareSemanticCache:
     def __init__(
         self,
         host: Optional[str] = None,
-        port: int = 6379,
+        port: Optional[int] = None,
         password: Optional[str] = None,
-        db: int = 0,
-        cache_ttl: int = 3600,
-        similarity_threshold: float = 0.92
+        db: Optional[int] = None,
+        cache_ttl: Optional[int] = None,
+        similarity_threshold: Optional[float] = None
     ):
         """
         Initialize semantic cache.
@@ -66,6 +66,8 @@ class HealthcareSemanticCache:
         self.similarity_threshold = similarity_threshold or float(
             os.getenv("CACHE_SIMILARITY_THRESHOLD", "0.92")
         )
+
+        logger.info(f"Attempting Redis connection to {self.host}:{self.port} (password={'set' if self.password else 'none'})")
         
         # Initialize Redis client
         # For local development, don't require password
