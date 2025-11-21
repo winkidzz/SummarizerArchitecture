@@ -102,7 +102,14 @@
       "Bash(npm run build:*)",
       "Bash(if lsof -i :8000)",
       "Bash(then echo '✅ API Server is running')",
-      "Bash(else echo \"❌ API Server not running\")"
+      "Bash(else echo \"❌ API Server not running\")",
+      "Bash(colima status:*)",
+      "Bash(colima delete:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(npm run dev:*)",
+      "Bash(.gitignore)",
+      "Bash(xargs ps:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

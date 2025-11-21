@@ -70,3 +70,21 @@ export async function fetchStats(): Promise<SystemStats> {
   const response = await fetch(`${API_BASE_URL}/stats`);
   return handleResponse<SystemStats>(response);
 }
+
+export async function fetchDocumentContent(
+  documentPath: string
+): Promise<{ content: string; metadata: Record<string, unknown> }> {
+  const response = await fetch(
+    `${API_BASE_URL}/document/content?path=${encodeURIComponent(documentPath)}`
+  );
+  return handleResponse<{ content: string; metadata: Record<string, unknown> }>(response);
+}
+
+export async function fetchDirectoryContents(
+  directoryPath: string
+): Promise<{ items: Array<{ name: string; path: string; type: "file" | "directory"; extension?: string }> }> {
+  const response = await fetch(
+    `${API_BASE_URL}/directory/contents?path=${encodeURIComponent(directoryPath)}`
+  );
+  return handleResponse<{ items: Array<{ name: string; path: string; type: "file" | "directory"; extension?: string }> }>(response);
+}

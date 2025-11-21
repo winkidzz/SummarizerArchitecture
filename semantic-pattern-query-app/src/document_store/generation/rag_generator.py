@@ -244,13 +244,26 @@ Answer:"""
                 if 0 <= doc_index < len(context):
                     doc = context[doc_index]
                     metadata = doc.get("metadata", {})
-                    citations.append({
+                    # Extract source_type for tier identification
+                    source_type = metadata.get("source_type") or metadata.get("layer", "pattern_library")
+
+                    # Get score from any available field
+                    score = doc.get("score") or doc.get("similarity_score") or doc.get("rrf_score")
+
+                    citation = {
                         "doc_index": doc_index,
                         "document_id": metadata.get("document_id", ""),
                         "source_path": metadata.get("source_path", ""),
                         "document_type": metadata.get("document_type", "unknown"),
+                        "source_type": source_type,  # Add tier metadata
                         "relevance": "cited"
-                    })
+                    }
+
+                    # Add score if available
+                    if score is not None:
+                        citation["score"] = score
+
+                    citations.append(citation)
             except ValueError:
                 continue
         

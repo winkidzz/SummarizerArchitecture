@@ -139,14 +139,42 @@ for i in {1..10}; do
 done
 echo ""
 
+# Start Web UI
+echo "8️⃣  Starting Web UI..."
+# Check if node_modules exists
+if [ ! -d "web-ui/node_modules" ]; then
+    echo "  📦 Installing Web UI dependencies..."
+    (cd web-ui && npm install)
+fi
+
+# Start Web UI in background
+(cd web-ui && nohup npm run dev > ../logs/web-ui.log 2>&1 &)
+echo "  ✅ Web UI starting (check logs/web-ui.log for output)"
+echo ""
+
+# Wait for Web UI to be ready
+echo "9️⃣  Waiting for Web UI to be ready..."
+for i in {1..15}; do
+    if curl -s http://localhost:5173/ > /dev/null 2>&1; then
+        echo "  ✅ Web UI is ready"
+        break
+    fi
+    sleep 1
+    if [ $i -eq 15 ]; then
+        echo "  ⚠️  Web UI may still be starting (check logs/web-ui.log)"
+    else
+        echo "  ⏳ Waiting... ($i/15)"
+    fi
+done
+echo ""
+
 # Final status
 echo "✅ All services started successfully!"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🌐 Quick Access Links"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  📊 Web UI:              http://localhost:5173"
-echo "                         (Run: cd web-ui && npm run dev)"
+echo "  🌐 Web UI:              http://localhost:5173"
 echo ""
 echo "  🔌 API Server:          http://localhost:8000"
 echo "  📖 API Docs:            http://localhost:8000/docs"

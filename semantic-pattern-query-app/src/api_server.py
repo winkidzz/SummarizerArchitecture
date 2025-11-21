@@ -349,7 +349,7 @@ async def metrics():
 async def stats():
     """
     Get system statistics.
-    
+
     Returns:
         System statistics
     """
@@ -360,6 +360,161 @@ async def stats():
     except Exception as e:
         logger.error(f"Stats error: {e}")
         raise HTTPException(status_code=500, detail=f"Stats failed: {str(e)}")
+
+
+def get_allowed_directories():
+    """Get list of allowed base directories for security."""
+    import os
+    from pathlib import Path
+
+    return [
+        Path(os.getenv("PATTERN_LIBRARY_PATH", "../pattern-library")).resolve(),
+        Path("./docs").resolve(),
+        Path("./semantic-pattern-query-app/docs").resolve(),
+    ]
+
+
+def validate_path_security(path: str, allowed_dirs: List[Path]) -> Path:
+    """
+    Validate that a path is within allowed directories.
+
+    Args:
+        path: Path to validate
+        allowed_dirs: List of allowed base directories
+
+    Returns:
+        Resolved absolute path
+
+    Raises:
+        HTTPException: If path is outside allowed directories
+    """
+    from pathlib import Path
+
+    # Resolve to absolute path
+    resolved_path = Path(path).resolve()
+
+    # Security: Verify path is within allowed directories
+    is_allowed = any(
+        str(resolved_path).startswith(str(allowed_dir))
+        for allowed_dir in allowed_dirs
+    )
+
+    if not is_allowed:
+        logger.warning(f"Blocked access to unauthorized path: {path} (resolved to {resolved_path})")
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied: Path outside allowed directories"
+        )
+
+    return resolved_path
+
+
+@app.get("/directory/contents")
+async def get_directory_contents(path: str = ""):
+    """
+    List contents of a directory within allowed base directories.
+
+    Args:
+        path: Relative path within allowed directories (empty string for root)
+
+    Returns:
+        List of files and directories
+    """
+    from pathlib import Path
+    import os
+
+    try:
+        allowed_dirs = get_allowed_directories()
+
+        # If path is empty, return the allowed base directories as options
+        if not path:
+            items = []
+            for base_dir in allowed_dirs:
+                if base_dir.exists():
+                    items.append({
+                        "name": base_dir.name,
+                        "path": str(base_dir),
+                        "type": "directory"
+                    })
+            return {"items": items}
+
+        # Validate and resolve the requested path
+        dir_path = validate_path_security(path, allowed_dirs)
+
+        # Check if directory exists
+        if not dir_path.exists() or not dir_path.is_dir():
+            raise HTTPException(status_code=404, detail=f"Directory not found: {path}")
+
+        # List directory contents
+        items = []
+        for item in sorted(dir_path.iterdir(), key=lambda x: (x.is_file(), x.name)):
+            item_info = {
+                "name": item.name,
+                "path": str(item),
+                "type": "directory" if item.is_dir() else "file"
+            }
+
+            if item.is_file():
+                item_info["extension"] = item.suffix.lstrip('.')
+
+            items.append(item_info)
+
+        return {"items": items}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reading directory {path}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error reading directory: {str(e)}")
+
+
+@app.get("/document/content")
+async def get_document_content(path: str):
+    """
+    Fetch the full content of a document by its file path.
+
+    Args:
+        path: File path to the document
+
+    Returns:
+        Document content and metadata
+    """
+    try:
+        allowed_dirs = get_allowed_directories()
+
+        # Validate and resolve the requested path
+        doc_path = validate_path_security(path, allowed_dirs)
+
+        # Check if file exists
+        if not doc_path.exists() or not doc_path.is_file():
+            raise HTTPException(status_code=404, detail=f"Document not found: {path}")
+
+        # Read file content
+        try:
+            with open(doc_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except UnicodeDecodeError:
+            # If UTF-8 fails, try binary read
+            with open(doc_path, 'rb') as f:
+                content = f.read().decode('utf-8', errors='replace')
+
+        metadata = {
+            "path": str(doc_path),
+            "name": doc_path.name,
+            "size": doc_path.stat().st_size,
+            "extension": doc_path.suffix,
+        }
+
+        return {
+            "content": content,
+            "metadata": metadata
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reading document {path}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error reading document: {str(e)}")
 
 
 @app.post("/ingest", response_model=IngestResponse)

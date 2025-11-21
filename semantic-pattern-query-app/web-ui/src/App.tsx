@@ -3,6 +3,7 @@ import "./App.css";
 import QueryForm from "./components/QueryForm";
 import AnswerCard from "./components/AnswerCard";
 import SourcesList from "./components/SourcesList";
+import TierBreakdown from "./components/TierBreakdown";
 import StatsPanel from "./components/StatsPanel";
 import type { QueryPayload, QueryResponse, SystemStats } from "./lib/api";
 import { API_BASE_URL, fetchStats, sendQuery } from "./lib/api";
@@ -87,6 +88,7 @@ function App() {
           {result ? (
             <>
               <AnswerCard result={result} />
+              <TierBreakdown sources={result.sources} />
               <SourcesList sources={result.sources} />
             </>
           ) : (
