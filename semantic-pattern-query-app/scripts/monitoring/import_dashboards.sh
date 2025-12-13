@@ -3,7 +3,7 @@
 # Import Grafana dashboards via API
 # Usage: ./import_dashboards.sh
 
-GRAFANA_URL="http://localhost:3333"
+GRAFANA_URL="http://grogu:3333"
 GRAFANA_USER="admin"
 GRAFANA_PASSWORD="admin"
 DASHBOARD_DIR="/Users/sanantha/SummarizerArchitecture/semantic-pattern-query-app/grafana/dashboards"

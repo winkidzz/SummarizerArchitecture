@@ -550,20 +550,86 @@ class SemanticPatternOrchestrator:
             "cache_hit": False
         }
 
+        # Collect detailed metrics for each retrieved document
+        retrieval_metrics = {
+            "documents": [],
+            "tier_breakdown": {
+                "tier_1": {"count": 0, "avg_score": 0, "max_score": 0, "documents": []},
+                "tier_2": {"count": 0, "avg_score": 0, "max_score": 0, "documents": []},
+                "tier_3": {"count": 0, "avg_score": 0, "max_score": 0, "documents": []}
+            },
+            "decision_path": {
+                "cache_checked": use_cache,
+                "cache_hit": False,
+                "vector_search_used": True,
+                "bm25_search_used": True,
+                "web_kb_used": enable_web_search,
+                "web_live_used": enable_web_search,
+                "rrf_fusion_used": True,
+                "reranking_used": True
+            },
+            "search_parameters": {
+                "query": query,
+                "top_k": top_k,
+                "embedder_type": query_embedder_type or "default",
+                "enable_web_search": enable_web_search,
+                "web_mode": web_mode if enable_web_search else None
+            }
+        }
+
         citation_id = 1
-        for doc in retrieved_docs:
+        for rank, doc in enumerate(retrieved_docs, 1):
             metadata = doc.get("metadata", {})
             # Check both 'layer' (old) and 'source_type' (new) for backwards compatibility
             source = metadata.get("source_type") or metadata.get("layer", "pattern_library")
 
-            # Count by tier
+            # Get all possible scores
+            score = doc.get("score") or doc.get("similarity_score") or doc.get("rrf_score", 0.0)
+
+            # Determine tier
+            tier = "tier_1"
+            tier_num = 1
             if source == "web_knowledge_base":
                 retrieval_stats["tier_2_results"] += 1
                 retrieval_stats["cache_hit"] = True
+                tier = "tier_2"
+                tier_num = 2
             elif source == "web_search":
                 retrieval_stats["tier_3_results"] += 1
+                tier = "tier_3"
+                tier_num = 3
             else:
                 retrieval_stats["tier_1_results"] += 1
+
+            # Collect document metrics
+            doc_metrics = {
+                "rank": rank,
+                "tier": tier_num,
+                "source_type": source,
+                "document_id": metadata.get("document_id", "Unknown"),
+                "source_path": metadata.get("source_path", "Unknown"),
+                "score": score,
+                "rrf_score": doc.get("rrf_score"),
+                "similarity_score": doc.get("similarity_score") or doc.get("score"),
+                "trust_score": metadata.get("trust_score"),
+                "url": metadata.get("url"),
+                "title": metadata.get("title", "Untitled"),
+                "chunk_text": doc.get("text", "")[:200] + "..." if doc.get("text") else ""
+            }
+
+            # Remove None values
+            doc_metrics = {k: v for k, v in doc_metrics.items() if v is not None}
+            retrieval_metrics["documents"].append(doc_metrics)
+
+            # Update tier breakdown
+            retrieval_metrics["tier_breakdown"][tier]["count"] += 1
+            retrieval_metrics["tier_breakdown"][tier]["documents"].append(doc_metrics)
+
+            # Update tier scores
+            tier_scores = [d["score"] for d in retrieval_metrics["tier_breakdown"][tier]["documents"] if "score" in d]
+            if tier_scores:
+                retrieval_metrics["tier_breakdown"][tier]["avg_score"] = sum(tier_scores) / len(tier_scores)
+                retrieval_metrics["tier_breakdown"][tier]["max_score"] = max(tier_scores)
 
             # Extract citation if available
             citation_text = metadata.get("citation_text")
@@ -619,7 +685,8 @@ class SemanticPatternOrchestrator:
             "cache_hit": False,
             "retrieved_docs": len(retrieved_docs),
             "citations": citations,  # Phase 2: Citations for audit/compliance
-            "retrieval_stats": retrieval_stats  # Phase 2: Tier breakdown
+            "retrieval_stats": retrieval_stats,  # Phase 2: Tier breakdown
+            "retrieval_metrics": retrieval_metrics  # Detailed metrics for UI display
         }
     
     def ingest_directory(

@@ -111,12 +111,35 @@ class HealthcareRAGGenerator:
         
         # Extract citations
         citations = self._extract_citations(answer, context)
-        
+
+        # Build generation reasoning
+        generation_reasoning = {
+            "context_selection": {
+                "total_retrieved": len(docs),
+                "used_in_prompt": len(context),
+                "truncated_docs": sum(1 for doc in context if doc.get("truncated", False)),
+                "reasoning": f"Selected top {len(context)} documents out of {len(docs)} retrieved, fitting within {self.max_context_tokens} token limit"
+            },
+            "document_ranking": {
+                "sort_method": "score_based",
+                "description": "Documents sorted by relevance score (similarity_score, rrf_score, or score field)"
+            },
+            "prompt_structure": {
+                "type": "citation_based",
+                "instructions": "Answer using ONLY provided context, cite sources as [Doc X]",
+                "temperature": self.temperature,
+                "max_response_tokens": self.max_response_tokens
+            },
+            "citations_found": len(citations),
+            "model_used": self.model
+        }
+
         return {
             "answer": answer,
             "sources": citations,
             "context_docs_used": len(context),
-            "total_docs_retrieved": len(docs)
+            "total_docs_retrieved": len(docs),
+            "generation_reasoning": generation_reasoning
         }
     
     def _pack_context(

@@ -109,7 +109,15 @@
       "Bash(npm run dev:*)",
       "Bash(.gitignore)",
       "Bash(xargs ps:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(/tmp/query_response.json)",
+      "Bash(docker-compose stop:*)",
+      "Bash(ssh grogu \"ollama pull qwen3:14b && ollama pull nomic-embed-text\")",
+      "Bash(bash scripts/monitoring/import_dashboards.sh:*)",
+      "Bash(ssh:*)",
+      "Bash(/tmp/test_query_output.json)",
+      "Bash(git init:*)",
+      "Bash(README.md)"
     ],
     "deny": [],
     "ask": []

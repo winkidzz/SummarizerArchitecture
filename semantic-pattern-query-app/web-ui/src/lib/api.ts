@@ -18,6 +18,81 @@ export interface RetrievalStats {
   cache_hit?: boolean;
 }
 
+export interface RetrievalMetrics {
+  documents: Array<{
+    rank: number;
+    tier: number;
+    source_type: string;
+    document_id: string;
+    source_path: string;
+    score: number;
+    rrf_score?: number;
+    similarity_score?: number;
+    trust_score?: number;
+    url?: string;
+    title: string;
+    chunk_text: string;
+  }>;
+  tier_breakdown: {
+    tier_1: {
+      count: number;
+      avg_score: number;
+      max_score: number;
+      documents: any[];
+    };
+    tier_2: {
+      count: number;
+      avg_score: number;
+      max_score: number;
+      documents: any[];
+    };
+    tier_3: {
+      count: number;
+      avg_score: number;
+      max_score: number;
+      documents: any[];
+    };
+  };
+  decision_path: {
+    cache_checked: boolean;
+    cache_hit: boolean;
+    vector_search_used: boolean;
+    bm25_search_used: boolean;
+    web_kb_used: boolean;
+    web_live_used: boolean;
+    rrf_fusion_used: boolean;
+    reranking_used: boolean;
+  };
+  search_parameters: {
+    query: string;
+    top_k: number;
+    embedder_type: string;
+    enable_web_search: boolean;
+    web_mode: string | null;
+  };
+}
+
+export interface GenerationReasoning {
+  context_selection: {
+    total_retrieved: number;
+    used_in_prompt: number;
+    truncated_docs: number;
+    reasoning: string;
+  };
+  document_ranking: {
+    sort_method: string;
+    description: string;
+  };
+  prompt_structure: {
+    type: string;
+    instructions: string;
+    temperature: number;
+    max_response_tokens: number;
+  };
+  citations_found: number;
+  model_used: string;
+}
+
 export interface QueryResponse {
   answer: string;
   sources: SourceDocument[];
@@ -25,6 +100,8 @@ export interface QueryResponse {
   retrieved_docs: number;
   context_docs_used?: number;
   retrieval_stats?: RetrievalStats;
+  retrieval_metrics?: RetrievalMetrics;
+  generation_reasoning?: GenerationReasoning;
 }
 
 export interface QueryPayload {

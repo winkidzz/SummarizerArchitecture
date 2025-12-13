@@ -4,6 +4,7 @@ import QueryForm from "./components/QueryForm";
 import AnswerCard from "./components/AnswerCard";
 import SourcesList from "./components/SourcesList";
 import TierBreakdown from "./components/TierBreakdown";
+import SearchMetrics from "./components/SearchMetrics";
 import StatsPanel from "./components/StatsPanel";
 import type { QueryPayload, QueryResponse, SystemStats } from "./lib/api";
 import { API_BASE_URL, fetchStats, sendQuery } from "./lib/api";
@@ -89,6 +90,10 @@ function App() {
             <>
               <AnswerCard result={result} />
               <TierBreakdown sources={result.sources} />
+              <SearchMetrics
+                retrieval_metrics={result.retrieval_metrics}
+                generation_reasoning={result.generation_reasoning}
+              />
               <SourcesList sources={result.sources} />
             </>
           ) : (
