@@ -66,6 +66,16 @@ Use this guide to select the right RAG pattern for your use case:
 - **Agentic RAG**: Agent orchestration required
 - **Adaptive RAG**: Dynamic strategy selection
 
+## RAG Pipeline Engineering
+
+These retrieval patterns depend on a well-built pipeline. For the engineering patterns that power ingestion, chunking, embedding, indexing, and freshness management, see:
+
+**[RAG Pipeline Engineering Patterns](../rag-pipeline/)** — 10 patterns covering:
+- Source Connectors, Document Extraction
+- Chunking Strategies, Embedding Model Selection, Vectorization
+- Vector Database Selection, Index Architecture, Index Freshness
+- Pipeline Orchestration, RAG Evaluation
+
 ## Pattern Index
 
 See [Pattern Index](./pattern-index.md) for a complete table of all patterns with quick selection guide.

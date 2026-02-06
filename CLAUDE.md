@@ -20,6 +20,9 @@ You are working on the **AI Summarization Reference Architecture** project - a c
 
 1. **Create Healthcare Architecture Blueprints**: Document detailed architecture patterns for healthcare summarization use cases
 2. **RAG Pattern Library**: Build a comprehensive library of RAG patterns with detailed explanations
+2b. **RAG Pipeline Engineering**: Document pipeline building patterns (ingestion, chunking, embedding, indexing, freshness, evaluation) that power RAG retrieval strategies
+2c. **Agentic AI Patterns**: Document agent design patterns (tool use, ReAct, plan-and-execute, multi-agent, memory, guardrails, evaluation)
+2d. **LLM Training & Fine-Tuning**: Document the full training lifecycle — pre-training (data curation), fine-tuning (SFT, LoRA, instruction tuning, synthetic data), and post-training alignment (RLHF, DPO)
 3. **Full Vendor Support**: Document patterns that support ALL vendors (Gemini, Anthropic, GCP, Azure, AWS, enterprise platforms, local models) - NO restrictions
 4. **Cost-Effective Options**: Show cost-effective designs (local models, efficient architectures) as alternatives, not constraints
 5. **Healthcare Use Case Guidance**: Provide clear guidance for healthcare summarization scenarios
@@ -59,6 +62,35 @@ When working on this project:
 - Add architecture diagrams
 - Show enterprise cloud platform implementations as primary examples
 
+### Adding a New RAG Pipeline Pattern
+- Use the dedicated template at `pattern-library/templates/rag-pipeline-template.md`
+- Place new patterns in `pattern-library/patterns/rag-pipeline/`
+- Indicate which pipeline stage(s) the pattern covers (ingestion, chunking, embedding, indexing, freshness, orchestration, evaluation)
+- Include data flow diagrams showing input → transformation → output
+- Document configuration parameters and their impact on quality
+- Provide cost-per-document estimates
+- Include healthcare-specific considerations (HIPAA, PHI, clinical data formats)
+- Update the pattern index at `pattern-library/patterns/rag-pipeline/pattern-index.md`
+- **Key distinction**: RAG patterns (`patterns/rag/`) cover retrieval *strategies*; RAG pipeline patterns (`patterns/rag-pipeline/`) cover pipeline *engineering infrastructure*
+
+### Adding a New Agent Pattern
+- Place new patterns in `pattern-library/patterns/agents/`
+- Follow the existing structure: Overview, Architecture (Mermaid), Key Concepts, Implementation (multi-framework), Healthcare Use Case, Related Patterns
+- Include implementations for major frameworks (ADK, LangGraph, CrewAI, Claude Agent SDK)
+- Document agent safety considerations (guardrails, HITL, scope boundaries)
+- Include healthcare-specific agent scenarios
+- Update the pattern index at `pattern-library/patterns/agents/pattern-index.md`
+- Categories: Core (tool use, ReAct), Orchestration (plan-and-execute, multi-agent), Memory, Safety
+
+### Adding a New Training Pattern
+- Place new patterns in `pattern-library/patterns/ai-design/training/`
+- Indicate which training phase the pattern covers: **Pre-Training**, **Fine-Tuning (Mid-Training)**, or **Post-Training (Alignment)**
+- Include code examples using standard frameworks (HuggingFace Transformers, TRL, Vertex AI)
+- Document compute requirements and cost estimates
+- Include healthcare-specific training data considerations
+- Update the training README at `pattern-library/patterns/ai-design/training/README.md`
+- **Key distinction**: General ML training patterns (federated, few-shot, active learning) vs. LLM-specific patterns (SFT, LoRA, RLHF, DPO)
+
 ### Updating Existing Patterns
 - Maintain backward compatibility
 - Clearly mark deprecated approaches
@@ -78,6 +110,15 @@ When working on this project:
 - `docs/patterns/`: Pattern documentation
 - `docs/use-cases/`: Use case documentation
 - `examples/`: Working code examples
+- `pattern-library/patterns/rag/`: RAG retrieval architecture patterns (24 patterns)
+- `pattern-library/patterns/rag-pipeline/`: RAG pipeline engineering patterns (10 patterns)
+- `pattern-library/patterns/agents/`: Agentic AI patterns (8 patterns — tool use, ReAct, multi-agent, memory, guardrails)
+- `pattern-library/patterns/ai-design/`: AI design patterns (70 patterns — deployment, training, security, etc.)
+- `pattern-library/patterns/ai-design/training/`: Training patterns with pre/mid/post lifecycle (14 patterns — general ML + LLM-specific)
+- `pattern-library/templates/`: Documentation templates (pattern, RAG pipeline, ADR, research, use case)
+- `pattern-library/framework/`: Architecture framework, prompt engineering guide, LLMOps guide, and other guidance documents
+- `pattern-library/vendor-guides/`: Vendor-specific implementation guides
+- `pattern-library/topics.md`: Comprehensive topic map with coverage status and gap analysis
 
 ## Communication Style
 

@@ -137,7 +137,8 @@ Each pattern document includes:
 
 ## Related Documentation
 
-- [RAG Patterns](../patterns/README.md): RAG-specific patterns
+- [RAG Patterns](../rag/): RAG retrieval architecture patterns
+- [RAG Pipeline Patterns](../rag-pipeline/): RAG pipeline engineering patterns (ingestion, chunking, embedding, indexing, evaluation)
 - [AI Development Techniques](../ai-development-techniques.md): Techniques and methodologies
 - [Technical Tools & Frameworks](../technical-tools-framework.md): Tools for implementing patterns
 - [Architecture Framework](../architecture-framework.md): Well-Architected Framework principles

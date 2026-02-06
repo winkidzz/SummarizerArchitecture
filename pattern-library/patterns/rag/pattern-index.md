@@ -39,9 +39,17 @@ Complete index of all RAG patterns documented in this reference architecture.
 | Pattern | Description | Complexity | Use Case |
 |---------|------------|------------|----------|
 | [Graph RAG](./graph-rag.md) | Graph-based knowledge retrieval | High | Entity relationships, knowledge graphs |
-| [Reranking RAG](./reranking-rag.md) | Multi-stage reranking | Medium | High precision requirements |
+| [Reranking RAG](./reranking-rag.md) | Multi-stage reranking with BAR-RAG | Medium | High precision requirements |
 | [Streaming RAG](./streaming-rag.md) | Real-time streaming | Medium | Live data, real-time requirements |
 | [Recursive RAG](./recursive-rag.md) | Recursive query decomposition | High | Complex document processing |
+
+## Healthcare & Privacy Patterns (New - Feb 2026)
+
+| Pattern | Description | Complexity | Use Case |
+|---------|------------|------------|----------|
+| [Medical RAG](./medical-rag.md) | Healthcare-optimized RAG with clinical validation | High | Clinical decision support, medical literature |
+| [Local RAG](./local-rag.md) | Privacy-preserving on-device RAG (CUBO) | Medium | HIPAA/GDPR compliance, air-gapped environments |
+| [Multi-Modal RAG](./multi-modal-rag.md) | Images, audio, video with OmniRAG-Agent | High | Medical imaging, radiology, pathology |
 
 ## Quick Selection Guide
 
@@ -58,10 +66,37 @@ Complete index of all RAG patterns documented in this reference architecture.
 - **Large Documents** → [Parent-Child RAG](./parent-child-rag.md), [Small-to-Big RAG](./small-to-big-rag.md)
 - **Complex Relationships** → [Graph RAG](./graph-rag.md)
 - **Agent Workflows** → [Agentic RAG](./agentic-rag.md), [Adaptive RAG](./adaptive-rag.md)
+- **Healthcare/Medical** → [Medical RAG](./medical-rag.md), [Multi-Modal RAG](./multi-modal-rag.md)
+- **Privacy/HIPAA/GDPR** → [Local RAG](./local-rag.md)
+- **Medical Imaging** → [Multi-Modal RAG](./multi-modal-rag.md)
+
+## RAG Pipeline Engineering Patterns
+
+These retrieval patterns are powered by pipeline infrastructure. For patterns on building, operating, and optimizing the pipeline itself, see:
+
+**[RAG Pipeline Pattern Index](../rag-pipeline/pattern-index.md)** — 10 patterns covering ingestion, chunking, embedding, indexing, freshness, orchestration, and evaluation.
+
+| Pipeline Pattern | Complements These RAG Patterns |
+|-----------------|-------------------------------|
+| [Chunking Strategies](../rag-pipeline/chunking-strategies.md) | Parent-Child RAG, Small-to-Big RAG |
+| [Embedding Model Selection](../rag-pipeline/embedding-model-selection.md) | Hybrid RAG, Multi-Modal RAG |
+| [Vector Database Selection](../rag-pipeline/vector-database-selection.md) | Basic RAG, Graph RAG |
+| [Index Freshness Patterns](../rag-pipeline/index-freshness-patterns.md) | Streaming RAG, Corrective RAG |
+| [RAG Evaluation Patterns](../rag-pipeline/rag-evaluation-patterns.md) | Self-RAG, Reranking RAG |
 
 ## Reference
 
-Based on comprehensive RAG strategies analysis.
+Based on comprehensive RAG strategies analysis and latest 2026 research.
+
+### Key Research Papers (2026)
+
+| Paper | arXiv | Key Contribution |
+|-------|-------|------------------|
+| Medical RAG Best Practices | [2602.03368](https://arxiv.org/abs/2602.03368) | Industrial best practices for healthcare RAG |
+| A-RAG: Agentic RAG | [2602.03442](https://arxiv.org/abs/2602.03442) | Hierarchical retrieval interfaces for agents |
+| BAR-RAG: Boundary-Aware Reranking | [2602.03689](https://arxiv.org/abs/2602.03689) | Evidence selection suitable for generators |
+| OmniRAG-Agent | [2602.03707](https://arxiv.org/abs/2602.03707) | Agentic multi-modal RAG for long audio-video |
+| CUBO: Local RAG | [2602.03731](https://arxiv.org/abs/2602.03731) | Privacy-preserving RAG on consumer hardware |
 
 **Video Reference**: [RAG Strategies Overview](https://youtu.be/tLMViADvSNE?si=C8Zq1H0Uww_FpxZ7)
 

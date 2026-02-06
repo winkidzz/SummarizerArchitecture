@@ -10,7 +10,7 @@ This is the **pattern documentation** component of the AI Summarization Referenc
 
 ## 📚 What's in This Library?
 
-This library contains **116 pattern documents** organized into:
+This library contains **155+ pattern documents** organized into:
 
 ### 🎯 RAG Patterns (`patterns/rag/`)
 **24 patterns** for Retrieval-Augmented Generation (RAG) systems:
@@ -22,8 +22,28 @@ This library contains **116 pattern documents** organized into:
 
 [📖 Browse RAG Patterns](patterns/rag/)
 
+### 🔧 RAG Pipeline Engineering Patterns (`patterns/rag-pipeline/`)
+**10 patterns** for building, operating, and optimizing RAG pipelines:
+- **Ingestion & Extraction**: Source Connectors, Document Extraction
+- **Chunking & Embedding**: Chunking Strategies, Embedding Model Selection, Vectorization
+- **Indexing & Maintenance**: Vector Database Selection, Index Architecture, Index Freshness
+- **Operations & Quality**: Pipeline Orchestration, RAG Evaluation
+
+> **How this differs from RAG Patterns**: RAG patterns cover *retrieval architecture strategies* (basic, hybrid, agentic). Pipeline patterns cover the *engineering infrastructure* — ingestion, chunking, vectorization, indexing, freshness, and evaluation — that those strategies depend on.
+
+[📖 Browse RAG Pipeline Patterns](patterns/rag-pipeline/)
+
+### 🤖 Agent Patterns (`patterns/agents/`)
+**8 patterns** for building autonomous AI agent systems:
+- **Core**: Tool Use / Function Calling, ReAct (Reason + Act)
+- **Orchestration**: Plan-and-Execute, Multi-Agent Systems, Agent Frameworks
+- **Memory**: Agent Memory (working, episodic, semantic, long-term)
+- **Safety**: Agent Guardrails, Agent Evaluation
+
+[📖 Browse Agent Patterns](patterns/agents/)
+
 ### 🔧 AI Design Patterns (`patterns/ai-design/`)
-**63 patterns** covering the full ML lifecycle:
+**70 patterns** covering the full ML lifecycle:
 - **Deployment** (8): A/B Testing, Canary, Blue-Green, Edge Deployment
 - **Explainability** (6): SHAP/LIME, Feature Importance, XAI
 - **Integration** (6): API Gateway, Microservices, Event-Driven
@@ -32,7 +52,7 @@ This library contains **116 pattern documents** organized into:
 - **Monitoring** (6): Drift Detection, Anomaly Detection, Alerting
 - **Performance** (7): Caching, Batching, Quantization, Pruning
 - **Security** (6): Differential Privacy, Homomorphic Encryption
-- **Training** (7): Federated Learning, Few-Shot, Active Learning
+- **Training** (14): Federated Learning, Few-Shot, Active Learning + **LLM Training**: SFT, LoRA/QLoRA, RLHF, DPO, Instruction Tuning, Synthetic Data, Data Curation
 
 [📖 Browse AI Design Patterns](patterns/ai-design/)
 
@@ -61,6 +81,8 @@ This library contains **116 pattern documents** organized into:
 - Security Best Practices (HIPAA, encryption, PHI)
 - Testing Guide (Unit, integration, E2E)
 - Architecture Framework (Well-Architected principles)
+- **Prompt Engineering Guide** (CoT, few-shot, system prompts, structured output)
+- **LLMOps Guide** (prompt management, cost control, observability, reliability)
 - Deployment Guide
 - Glossary (60+ terms)
 
@@ -117,6 +139,18 @@ Each pattern document includes:
 | Multi-modal (text + images + ECG) | [Multi-Modal RAG](patterns/rag/multi-modal-rag.md) | Handle medical imaging, pathology |
 | 200K-2M token contexts | [Long Context Strategies](patterns/rag/long-context-strategies.md) | Full patient histories |
 | Cost optimization | [Query Routing](patterns/rag/query-routing.md) | 30-60% cost savings |
+| Build a RAG pipeline from scratch | [RAG Pipeline Patterns](patterns/rag-pipeline/) | End-to-end pipeline engineering |
+| Choose a chunking strategy | [Chunking Strategies](patterns/rag-pipeline/chunking-strategies.md) | Most impactful pipeline decision |
+| Pick a vector database | [Vector Database Selection](patterns/rag-pipeline/vector-database-selection.md) | Compare Pinecone, Qdrant, ChromaDB, pgvector |
+| Fix stale/outdated RAG answers | [Index Freshness Patterns](patterns/rag-pipeline/index-freshness-patterns.md) | Prevent hallucinations from stale data |
+| Build an AI agent with tools | [Tool Use Pattern](patterns/agents/tool-use-pattern.md) | Function calling across providers |
+| Multi-step autonomous workflows | [Plan-and-Execute](patterns/agents/plan-and-execute-pattern.md) | Agent decomposes and executes tasks |
+| Multiple agents collaborating | [Multi-Agent Pattern](patterns/agents/multi-agent-pattern.md) | Supervisor, peer-to-peer, pipeline |
+| Fine-tune an LLM for healthcare | [SFT Pattern](patterns/ai-design/training/sft-pattern.md) | Standard supervised fine-tuning |
+| Fine-tune on a single GPU | [LoRA & PEFT](patterns/ai-design/training/lora-peft-pattern.md) | QLoRA fits 70B models on 24GB |
+| Align model with clinical preferences | [DPO Pattern](patterns/ai-design/training/dpo-pattern.md) | Simpler alternative to RLHF |
+| Design effective prompts | [Prompt Engineering Guide](framework/prompt-engineering-guide.md) | CoT, few-shot, system prompts |
+| Operate LLMs in production | [LLMOps Guide](framework/llmops-guide.md) | Cost, observability, reliability |
 
 ---
 
@@ -149,12 +183,12 @@ Patterns show implementation examples for multiple vendors, allowing you to choo
 
 ## 📊 Pattern Statistics
 
-- **Total Patterns**: 87 (24 RAG + 63 AI Design)
+- **Total Patterns**: 112 (24 RAG + 10 RAG Pipeline + 8 Agents + 70 AI Design)
 - **Use Cases**: 3 healthcare scenarios
 - **Vendor Guides**: 6 major platforms
-- **Framework Docs**: 10 guidance documents
-- **Templates**: 4 documentation templates
-- **Total Documentation**: 116 markdown files
+- **Framework Docs**: 12 guidance documents
+- **Templates**: 5 documentation templates
+- **Total Documentation**: 155+ markdown files
 
 ---
 
@@ -169,7 +203,7 @@ We welcome contributions! To add a new pattern:
 5. Add architecture diagrams (Mermaid)
 6. Submit a pull request
 
-See [`templates/pattern-template.md`](templates/pattern-template.md) for the full structure.
+See [`templates/pattern-template.md`](templates/pattern-template.md) for the general pattern structure, [`templates/rag-pipeline-template.md`](templates/rag-pipeline-template.md) for RAG pipeline patterns. For agent patterns, follow the structure in [`patterns/agents/`](patterns/agents/).
 
 ---
 
