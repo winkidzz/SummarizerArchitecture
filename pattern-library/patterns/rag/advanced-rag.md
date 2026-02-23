@@ -165,8 +165,12 @@ graph TD
 - [Recursive RAG](./recursive-rag.md) - Recursive decomposition
 
 ## References
-- [RAG Strategies Video](https://youtu.be/tLMViADvSNE?si=C8Zq1H0Uww_FpxZ7)
+- [Retrieval-Augmented Generation for Large Language Models: A Survey](https://arxiv.org/abs/2312.10997)
+- [A Comprehensive Survey of RAG: Evolution and Future Directions (Oct 2024)](https://arxiv.org/abs/2410.12837)
+- [RQ-RAG: Multi-hop Query Decomposition with Latent Sub-questions](https://arxiv.org/abs/2402.14992)
+- [A Systematic Review of Key RAG Systems: Progress, Gaps, and Future Directions (Jul 2025)](https://arxiv.org/html/2507.18910v1)
 
 ## Version History
 - **v1.0** (2025-11-08): Initial version
+- **v1.1** (2026-02-04): Added research references
 

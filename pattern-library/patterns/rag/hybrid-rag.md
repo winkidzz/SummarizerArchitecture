@@ -122,8 +122,12 @@ graph TD
 - [Reranking RAG](./reranking-rag.md) - Advanced re-ranking
 
 ## References
-- [RAG Strategies Video](https://youtu.be/tLMViADvSNE?si=C8Zq1H0Uww_FpxZ7)
+- [RAG-Fusion: Combining Multiple Queries with Reciprocal Rank Fusion](https://arxiv.org/abs/2402.03367)
+- [A Comprehensive Survey of RAG: Evolution, Current Landscape and Future Directions (Oct 2024)](https://arxiv.org/abs/2410.12837)
+- [Anthropic Contextual Retrieval + BM25 for 67% Error Reduction](https://www.anthropic.com/news/contextual-retrieval)
+- [Retrieval-Augmented Generation: A Survey of Architectures and Robustness (Jun 2025)](https://arxiv.org/abs/2506.00054)
 
 ## Version History
 - **v1.0** (2025-11-08): Initial version
+- **v1.1** (2026-02-04): Added research references and survey citations
 

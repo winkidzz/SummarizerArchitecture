@@ -283,14 +283,19 @@ See [ADR Template](../templates/adr-template.md) for full ADR format.
 - [Advanced RAG](./advanced-rag.md) - For complex queries requiring multi-step retrieval
 - [Self-RAG](./self-rag.md) - When quality control is needed
 - [Hybrid RAG](./hybrid-rag.md) - When combining multiple retrieval strategies
+- [Medical RAG](./medical-rag.md) - Healthcare-specific optimizations
+- [Local RAG](./local-rag.md) - Privacy-preserving on-device RAG
 
 ## References
+- [A Comprehensive Survey of RAG: Evolution and Future Directions (Oct 2024)](https://arxiv.org/abs/2410.12837)
+- [Retrieval-Augmented Generation: A Survey of Architectures and Robustness (Jun 2025)](https://arxiv.org/abs/2506.00054)
+- [A Systematic Review of Key RAG Systems (Jul 2025)](https://arxiv.org/html/2507.18910v1)
 - [Google Cloud Well-Architected Framework](https://docs.cloud.google.com/architecture/framework/printable)
-- [RAG Strategies Video](https://youtu.be/tLMViADvSNE?si=C8Zq1H0Uww_FpxZ7)
-- LangChain RAG Documentation
-- ChromaDB Vector Store
+- [LangChain RAG Documentation](https://python.langchain.com/docs/tutorials/rag/)
+- [ChromaDB Vector Store](https://docs.trychroma.com/)
 
 ## Version History
 - **v1.0** (2025-11-08): Initial version
 - **v1.1** (2025-11-08): Added Well-Architected Framework alignment
+- **v1.2** (2026-02-04): Added 2026 research references and related patterns
 

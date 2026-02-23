@@ -478,6 +478,72 @@ playwright install chromium
 - No PHI stored in ChromaDB
 - Pattern examples use synthetic data
 
+## Documentation Update Principles
+
+**CRITICAL**: When updating pattern documentation based on new research, follow these principles:
+
+### 1. Papers Augment, They Don't Replace
+
+A single paper should NEVER replace an entire concept. Existing patterns represent accumulated knowledge from multiple sources, real-world implementations, and industry best practices.
+
+**Wrong approach**:
+- Reading a new paper about "A-RAG" (Agentic RAG variation)
+- Rewriting the entire `agentic-rag.md` to focus only on A-RAG
+
+**Correct approach**:
+- The `agentic-rag.md` pattern remains a GENERIC Agentic RAG concept
+- A-RAG is added as ONE technique/variation with its specific advantages and limitations
+- Reader can decide when to use A-RAG vs other agentic approaches
+
+### 2. Minimal Rewrites Preferred
+
+When incorporating new research:
+- Add a new section for the specific technique
+- Update references and citations
+- Add comparison tables showing when to use what
+- Keep existing content that remains valid
+
+### 3. Separate Concepts Stay Separate
+
+If research introduces a fundamentally different concept (not a variation of existing patterns):
+- Create a NEW pattern file
+- Don't force-fit it into existing patterns
+- Link related patterns appropriately
+
+### 4. Reader Decision Making
+
+Documentation should enable readers to:
+- Understand the generic concept first
+- Learn about specific techniques/variations
+- Evaluate advantages and disadvantages
+- Decide which approach fits their use case
+
+### Example: How to Add Research to Patterns
+
+```markdown
+## Agentic RAG Techniques
+
+### A-RAG: Hierarchical Retrieval Interfaces (2026)
+
+The A-RAG framework introduces hierarchical retrieval interfaces...
+
+**When to Use A-RAG**:
+- Queries requiring different retrieval strategies
+- Need for granular control...
+
+**Advantages**:
+- Reduces over-retrieval...
+
+**Limitations**:
+- Requires well-indexed document store...
+
+**Reference**: [arXiv:2602.03442](https://arxiv.org/abs/2602.03442)
+```
+
+This approach allows the pattern to remain comprehensive while incorporating new research appropriately.
+
+---
+
 ## Contributing
 
 When adding new skills:

@@ -557,6 +557,119 @@ results = hybrid_reranker.hybrid_retrieve_and_rerank(
 )
 ```
 
+## BAR-RAG: Boundary-Aware Reranking (February 2026)
+
+A significant advancement in reranking comes from **BAR-RAG** (arXiv:2602.03689), which reframes the reranker as a boundary-aware evidence selector rather than just a relevance scorer.
+
+### Key Insight
+
+> "Retrievers and rerankers optimize solely for relevance, often selecting either trivial, answer-revealing passages or evidence that lacks the critical information required to answer the question, without considering whether the evidence is suitable for the generator."
+
+### BAR-RAG Approach
+
+Traditional rerankers select passages based on relevance to the query. BAR-RAG instead selects passages that:
+1. Contain the **boundary information** needed to answer the question
+2. Are **suitable for the generator** (not just relevant)
+3. Avoid **trivial passages** that reveal answers without supporting evidence
+
+```python
+class BoundaryAwareReranker:
+    """
+    BAR-RAG: Boundary-aware evidence selection.
+
+    Based on arXiv:2602.03689 (February 2026)
+    """
+
+    def __init__(self):
+        self.cross_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+        self.client = anthropic.Anthropic()
+
+    def rerank_with_boundary_awareness(
+        self,
+        query: str,
+        candidates: List[str],
+        n_final: int = 5
+    ) -> List[str]:
+        """
+        Rerank considering both relevance AND generator suitability.
+
+        Args:
+            query: User question
+            candidates: Retrieved passages
+            n_final: Number of final passages
+
+        Returns:
+            Boundary-aware reranked passages
+        """
+
+        # Stage 1: Standard cross-encoder relevance scoring
+        query_doc_pairs = [[query, doc] for doc in candidates]
+        relevance_scores = self.cross_encoder.predict(query_doc_pairs)
+
+        # Stage 2: Boundary-awareness filtering
+        # Filter out trivial/answer-revealing passages
+        # Keep passages with substantive evidence
+
+        boundary_scores = []
+        for doc in candidates:
+            score = self._score_boundary_awareness(query, doc)
+            boundary_scores.append(score)
+
+        # Combine scores: relevance + boundary awareness
+        combined_scores = [
+            0.6 * rel + 0.4 * bound
+            for rel, bound in zip(relevance_scores, boundary_scores)
+        ]
+
+        # Sort and return top passages
+        ranked = sorted(
+            zip(candidates, combined_scores),
+            key=lambda x: x[1],
+            reverse=True
+        )
+
+        return [doc for doc, score in ranked[:n_final]]
+
+    def _score_boundary_awareness(self, query: str, passage: str) -> float:
+        """
+        Score passage for boundary awareness.
+
+        Checks if passage contains substantive evidence vs trivial content.
+        """
+
+        # Use fast model to assess evidence quality
+        message = self.client.messages.create(
+            model="claude-3-5-haiku-20241022",
+            max_tokens=100,
+            messages=[{
+                "role": "user",
+                "content": f"""Rate this passage's evidence quality for answering the question.
+
+Question: {query}
+Passage: {passage[:500]}
+
+Rate 0.0-1.0 where:
+- 0.0 = Trivial/off-topic, no useful evidence
+- 0.5 = Relevant but incomplete evidence
+- 1.0 = Contains critical information needed to answer
+
+Return only the number."""
+            }]
+        )
+
+        try:
+            return float(message.content[0].text.strip())
+        except:
+            return 0.5
+```
+
+### When to Use BAR-RAG
+
+- Questions where retrievers return "relevant but unhelpful" passages
+- Complex queries requiring specific evidence boundaries
+- Healthcare/legal domains where evidence completeness matters
+- When standard reranking still produces poor generation quality
+
 ## Cross-Encoder vs. Bi-Encoder
 
 ### Bi-Encoder (Stage 1)
@@ -589,6 +702,7 @@ score = cross_encoder.predict([[query, document]])  # Accurate but slow
 - [HyDE RAG](./hyde-rag.md) - Can rerank HyDE-retrieved candidates
 
 ## References
+- [BAR-RAG: Boundary-Aware Evidence Selection for Robust RAG (Feb 2026)](https://arxiv.org/abs/2602.03689) - Reframes reranker as boundary-aware evidence selector
 - [Cross-Encoders for Semantic Search](https://www.sbert.net/examples/applications/cross-encoder/README.html)
 - [Cohere Rerank API](https://docs.cohere.com/reference/rerank)
 - [MS MARCO Cross-Encoder Models](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2)
@@ -596,3 +710,4 @@ score = cross_encoder.predict([[query, document]])  # Accurate but slow
 
 ## Version History
 - **v1.0** (2025-01-09): Comprehensive reranking RAG pattern with cross-encoder details, healthcare examples, hybrid approaches, and commercial API integration
+- **v1.1** (2026-02-04): Added BAR-RAG boundary-aware reranking from arXiv:2602.03689

@@ -123,8 +123,12 @@ graph TD
 - [Adaptive RAG](./adaptive-rag.md) - Adaptive strategies
 
 ## References
-- [RAG Strategies Video](https://youtu.be/tLMViADvSNE?si=C8Zq1H0Uww_FpxZ7)
+- [Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection](https://arxiv.org/abs/2310.11511)
+- [CRAG: Corrective Retrieval Augmented Generation](https://arxiv.org/abs/2401.15884)
+- [Enhancing RAG: A Study of Best Practices (Jan 2025)](https://arxiv.org/abs/2501.07391)
+- [RAG Evaluation in the Era of LLMs: A Comprehensive Survey (Apr 2025)](https://arxiv.org/abs/2504.14891)
 
 ## Version History
 - **v1.0** (2025-11-08): Initial version
+- **v1.1** (2026-02-04): Added research references
 

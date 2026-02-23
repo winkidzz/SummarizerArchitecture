@@ -728,6 +728,154 @@ estimate_vision_cost(num_images=10, avg_tokens_per_image=150)
 # Output: $0.0045 for 10 images
 ```
 
+## OmniRAG-Agent: Agentic Multi-Modal RAG (February 2026)
+
+Recent research introduces **OmniRAG-Agent** (arXiv:2602.03707), an agentic approach to multi-modal RAG that addresses key challenges in long audio-video question answering.
+
+### Key Innovations from OmniRAG-Agent
+
+> "Long-horizon omnimodal question answering answers questions by reasoning over text, images, audio, and video. Despite recent progress on OmniLLMs, low-resource long audio-video QA still suffers from costly dense encoding, weak fine-grained retrieval, limited proactive planning, and no clear end-to-end optimization."
+
+### OmniRAG-Agent Architecture
+
+```python
+class OmniRAGAgent:
+    """
+    Agentic omnimodal RAG based on arXiv:2602.03707.
+
+    Key components:
+    - Budgeted reasoning for long content
+    - Fine-grained retrieval across modalities
+    - Proactive planning for complex queries
+    """
+
+    def __init__(self):
+        self.client = anthropic.Anthropic()
+        self.image_retriever = MultiModalVectorStore()
+        self.audio_transcriber = None  # Audio-to-text component
+        self.video_processor = None    # Video frame extraction
+
+    def query_long_video(
+        self,
+        query: str,
+        video_path: str,
+        max_frames: int = 10,
+        include_audio: bool = True
+    ) -> Dict:
+        """
+        Answer questions about long videos with budgeted reasoning.
+
+        Args:
+            query: Question about the video
+            video_path: Path to video file
+            max_frames: Maximum frames to analyze (budget control)
+            include_audio: Whether to include audio transcript
+
+        Returns:
+            Answer with supporting frames and timestamps
+        """
+
+        # Step 1: Proactive planning - determine what to retrieve
+        plan = self._plan_retrieval(query, video_path)
+
+        # Step 2: Budgeted frame retrieval
+        relevant_frames = self._retrieve_relevant_frames(
+            video_path,
+            plan['target_segments'],
+            max_frames=max_frames
+        )
+
+        # Step 3: Audio transcript for relevant segments
+        if include_audio:
+            transcript_segments = self._get_transcript_segments(
+                video_path,
+                plan['target_segments']
+            )
+        else:
+            transcript_segments = []
+
+        # Step 4: Multi-modal reasoning
+        answer = self._multimodal_reasoning(
+            query=query,
+            frames=relevant_frames,
+            transcripts=transcript_segments
+        )
+
+        return {
+            'answer': answer,
+            'supporting_frames': relevant_frames,
+            'transcript_segments': transcript_segments,
+            'retrieval_plan': plan
+        }
+
+    def _plan_retrieval(self, query: str, video_path: str) -> Dict:
+        """
+        Proactive planning: determine what segments to retrieve.
+
+        This avoids costly dense encoding of entire video.
+        """
+
+        # Use lightweight model to plan retrieval strategy
+        message = self.client.messages.create(
+            model="claude-3-5-haiku-20241022",
+            max_tokens=256,
+            messages=[{
+                "role": "user",
+                "content": f"""Plan retrieval for this video question.
+
+Question: {query}
+
+What types of content should we look for?
+1. Visual elements (scenes, objects, text on screen)
+2. Audio elements (speech, sounds, music)
+3. Temporal aspects (beginning, middle, end, specific events)
+
+Return a brief retrieval plan."""
+            }]
+        )
+
+        return {
+            'plan': message.content[0].text,
+            'target_segments': self._parse_target_segments(message.content[0].text)
+        }
+
+    def _retrieve_relevant_frames(
+        self,
+        video_path: str,
+        target_segments: List[str],
+        max_frames: int
+    ) -> List[Dict]:
+        """Retrieve most relevant frames based on plan."""
+        # Implementation: Extract frames, embed with CLIP, retrieve top-k
+        pass
+
+    def _get_transcript_segments(
+        self,
+        video_path: str,
+        target_segments: List[str]
+    ) -> List[str]:
+        """Get audio transcript for relevant segments."""
+        # Implementation: Extract audio, transcribe, segment
+        pass
+
+    def _multimodal_reasoning(
+        self,
+        query: str,
+        frames: List[Dict],
+        transcripts: List[str]
+    ) -> str:
+        """Reason over multiple modalities to answer question."""
+        # Build multi-modal prompt with frames and transcripts
+        pass
+```
+
+### Key Takeaways for Multi-Modal RAG
+
+1. **Budgeted Reasoning**: Don't process entire long videos - plan retrieval first
+2. **Fine-Grained Retrieval**: Retrieve specific frames/segments, not full documents
+3. **Proactive Planning**: Use lightweight model to plan what to retrieve
+4. **Cross-Modal Alignment**: Align audio, video, and text for coherent retrieval
+
 ## Limitations and Best Practices
 
 ### Image Quality Requirements
@@ -760,10 +908,13 @@ estimate_vision_cost(num_images=10, avg_tokens_per_image=150)
 
 ## References
 
+- [OmniRAG-Agent: Agentic Omnimodal Reasoning for Long Audio-Video QA (Feb 2026)](https://arxiv.org/abs/2602.03707)
 - [Claude Vision](https://docs.anthropic.com/en/docs/vision)
 - [GPT-4 Vision](https://platform.openai.com/docs/guides/vision)
+- [Gemini 2.0 Multimodal](https://deepmind.google/technologies/gemini/)
 - [CLIP: Connecting Text and Images](https://openai.com/research/clip)
 
 ## Version History
 
 - **v1.0** (2025-01-09): Initial multi-modal RAG pattern with medical imaging, pathology, ECG analysis, CLIP embeddings, and best practices
+- **v1.1** (2026-02-04): Added OmniRAG-Agent agentic multi-modal approach from arXiv:2602.03707

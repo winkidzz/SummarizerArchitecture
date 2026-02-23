@@ -654,6 +654,20 @@ def is_self_contained(chunk: str) -> bool:
     return not has_pronouns and len(chunk.split()) > 800
 ```
 
+## Comparison: Contextual Retrieval vs Late Chunking
+
+A 2025 research paper ([arXiv:2504.19754](https://arxiv.org/abs/2504.19754)) rigorously compared these two advanced chunking approaches:
+
+| Aspect | Contextual Retrieval | Late Chunking |
+|--------|---------------------|---------------|
+| **Approach** | LLM generates context prefix for each chunk | Process entire document first, then chunk embeddings |
+| **Semantic Coherence** | Better - preserves context explicitly | Good - uses natural embedding boundaries |
+| **Computational Cost** | Higher - requires LLM calls per chunk | Lower - no additional LLM calls |
+| **Implementation** | More complex - needs context generation pipeline | Simpler - works with existing embedding models |
+| **Best For** | High-accuracy needs, complex documents | Cost-sensitive, high-volume applications |
+
+**Recommendation**: Use Contextual Retrieval when accuracy is paramount and indexing cost is acceptable. Use Late Chunking for cost-effective, high-efficiency scenarios where some relevance trade-off is acceptable.
+
 ## Related Patterns
 - [Basic RAG](./basic-rag.md) - Contextual retrieval enhances basic RAG
 - [HyDE RAG](./hyde-rag.md) - Can be combined with contextual retrieval
@@ -664,7 +678,9 @@ def is_self_contained(chunk: str) -> bool:
 ## References
 - [Introducing Contextual Retrieval - Anthropic (Sept 2024)](https://www.anthropic.com/news/contextual-retrieval)
 - [Contextual Retrieval Research - Anthropic](https://www.anthropic.com/research/contextual-retrieval)
-- [RAG Performance Improvements with Contextual Embeddings](https://arxiv.org/abs/2409.xxxxx)
+- [Late Chunking: Contextual Chunk Embeddings (Jul 2025)](https://arxiv.org/abs/2409.04701)
+- [Reconstructing Context: Evaluating Advanced Chunking Strategies (Apr 2025)](https://arxiv.org/abs/2504.19754)
 
 ## Version History
 - **v1.0** (2025-01-09): Initial Contextual Retrieval pattern documentation
+- **v1.1** (2026-02-04): Added Late Chunking comparison and updated references
